@@ -31,25 +31,54 @@ using namespace std;
 #endif
 
 // Button input
+#ifdef ARDUINO_AVR_MEGA2560
+#define CTL_CLOCK A8
+#define CTL_LATCHB A9
+#define CTL_LATCHJ A10
+#define CTL_DATA A11
+#else
 #define CTL_CLOCK 11
 #define CTL_LATCHB 12
 #define CTL_LATCHJ 13
 #define CTL_DATA A4
+#endif
 
 // Graphics defines
+#ifdef ARDUINO_AVR_MEGA2560
+#define GFX_DATAPORT PORTB
+#define GFX_DATADIR  DDRB
+#define GFX_SCLKPORT PORTE
+#else
 #define GFX_DATAPORT PORTD
 #define GFX_DATADIR  DDRD
 #define GFX_SCLKPORT PORTB
+#endif
 
+#ifdef ARDUINO_AVR_MEGA2560
+// PORTB
+#define GFX_IR1 51
+#define GFX_IG1 50
+#define GFX_IB1 10
+#define GFX_IR2 11
+#define GFX_IG2 12
+#define GFX_IB2 13
+// PORTE
+#define GFX_CLK 5
+#define GFX_LAT 2
+#define GFX_OE  3
+#else
+// PORTD
 #define GFX_IR1 2
 #define GFX_IG1 3
 #define GFX_IB1 4
 #define GFX_IR2 5
 #define GFX_IG2 6
 #define GFX_IB2 7
+// PORTB
 #define GFX_CLK 8  // ??? MUST be on PORTB! (Use pin 11 on Mega)
 #define GFX_LAT 10
 #define GFX_OE  9
+#endif
 #define GFX_A   A0
 #define GFX_B   A1
 #define GFX_C   A2
@@ -62,7 +91,7 @@ using namespace std;
 #define COLOR_6BIT 0
 
 
-#if defined(ARDUINO_AVR_MEGA2560)
+#ifdef ARDUINO_AVR_MEGA2560
 // defined if frame buffer is supported
 #define FRAME_BUFFER
 #endif
