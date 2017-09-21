@@ -47,7 +47,7 @@ using namespace std;
 #define GFX_IR2 5
 #define GFX_IG2 6
 #define GFX_IB2 7
-#define GFX_CLK 8  // MUST be on PORTB! (Use pin 11 on Mega)
+#define GFX_CLK 8  // ??? MUST be on PORTB! (Use pin 11 on Mega)
 #define GFX_LAT 10
 #define GFX_OE  9
 #define GFX_A   A0
