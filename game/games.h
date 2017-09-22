@@ -11,6 +11,7 @@ extern game_instance BreakOut;
 extern game_instance Saper;
 #ifndef EMULATED /* for use only on real hardware */
 extern game_instance Dump;
+extern game_instance Player;
 #endif
 /* Register your game like so:
  * 
@@ -26,9 +27,10 @@ game_instance instances[] = {
 	  BreakOut,
 	  Saper,
     Raycaster,
-//    Tester,
+    Tester,
 #ifndef EMULATED /* for use only on real hardware */
-//    Dump,
+    Dump,
+    Player,
 #endif
 
     /* Register your game like so:
