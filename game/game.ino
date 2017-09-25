@@ -6,6 +6,7 @@
 #include "storage.h"
 #include "controls.h"
 
+void application_setup();
 // update logic (ms since last update), enforced by ups / ticks
 void update(unsigned long delta);
 
@@ -26,6 +27,7 @@ void setup()
     controls_setup();
     storage_init();
     game_set_ups(60);
+    application_setup();
     // Enable global interrupts
     sei();
 }

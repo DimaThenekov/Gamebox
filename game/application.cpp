@@ -5,10 +5,44 @@
 #include "graphics.h"
 #include "controls.h"
 #include "random.h"
+#include "menu.h"
 
-#define _OUTPUT_INSTANCES
-#include "games.h"
-#undef _OUTPUT_INSTANCES
+/* List of all games */
+
+extern game_instance BackspaceInvaders;
+extern game_instance Snake;
+extern game_instance Flappy;
+extern game_instance Tester;
+extern game_instance Raycaster;
+extern game_instance BreakOut;
+extern game_instance Saper;
+#ifndef EMULATED /* for use only on real hardware */
+extern game_instance Dump;
+extern game_instance Player;
+#endif
+/* Register your game like so:
+ * 
+ * extern game_instance YOUR_GAME_NAME;
+ */
+
+static const MenuItem main_menu[] = {
+    { "Invaders", &BackspaceInvaders },
+    { "Snake", &Snake },
+    { "Flappy", &Flappy },
+    { "BreakOut", &BreakOut },
+    { "Saper", &Saper },
+    { "3D", &Raycaster },
+    { "Font", &Tester },
+#ifndef EMULATED /* for use only on real hardware */
+    { "EEPROM", &Dump },
+    { "Music", &Player },
+#endif
+    /* Register your game like so:
+     * 
+     * { "YOUR_GAME_NAME", &YOUR_GAME_NAME },
+     */
+     { NULL, NULL }
+};
 
 #define UP BITMASK(BUTTON_NE) | BITMASK(BUTTON_UP)
 #define DOWN BITMASK(BUTTON_SE) | BITMASK(BUTTON_DOWN)
@@ -17,42 +51,24 @@
 // need some space for stack and system variables
 #define AVAIL_SPACE 1024
 
-#define N_GAMES (sizeof(instances) / sizeof(game_instance))
-
-static uint8_t sel = 0;
-
 static uint8_t memory[AVAIL_SPACE];
 
-static unsigned long cur_time = 0;
-
-static unsigned long btn_timeout = 0;
-#define BUTTON_DELAY 200
-
-static bool btn_pressed = false;
 static game_instance* ptr;
+
+void application_setup()
+{
+    menu_setup(main_menu);
+}
 
 void update(unsigned long delta)
 {
-    cur_time += delta;
     if (!ptr)
     {
-        if (cur_time < btn_timeout) return;
-        if ((game_is_any_button_pressed(DOWN)) && sel < (N_GAMES - 1))
-        {
-            sel++;
-            btn_timeout = cur_time + BUTTON_DELAY;
-        }
-        if ((game_is_any_button_pressed(UP)) && sel > 0)
-        {
-            sel--;
-            btn_timeout = cur_time + BUTTON_DELAY;
-        }
-        if (game_is_any_button_pressed(SELECT)) btn_pressed = true;
-        if (!game_is_any_button_pressed(SELECT) && btn_pressed)
+        ptr = menu_update(delta);
+        if (ptr)
         {
             random_setup();
             // run game
-            ptr = instances + sel;
             *(ptr->data) = memory;
             ptr->prepare();
         }
@@ -67,13 +83,7 @@ void render()
 {
     if (!ptr)
     {
-        for (uint8_t iter = 0; iter < N_GAMES; ++iter)
-        {
-            if (instances[iter].name)
-            {
-                game_draw_text(instances[iter].name, 0, 8 * iter, (iter == sel) ? RED : WHITE);
-            }
-        }
+        menu_render();
     }
     else
     {
