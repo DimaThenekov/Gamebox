@@ -6,6 +6,7 @@
 #include "graphics.h"
 #include "controls.h"
 #include "music.h"
+#include "menu.h"
 
 #define PREV BITMASK(BUTTON_NE) | BITMASK(BUTTON_LEFT)
 #define NEXT BITMASK(BUTTON_SE) | BITMASK(BUTTON_RIGHT)
@@ -91,18 +92,29 @@ static const uint8_t red_dawn[] PROGMEM = {
 0xfe, 0x02, 0x82, 0xfb, 0x83, 0x06, 0x03, 0xfd, 0xfa, 0xfa, 0xfd, 0x03, 0x82, 0x05, 0x83, 0x04, 
 0x02, 0xfe, 0xfc, 0xfc, 0xfe, 0x02, 0x82, 0xf4, 0x83, 0x80, 0x7a, 0xd1, };
 
+static const MenuItem tunes[] = {
+  {"Red dawn", red_dawn},
+  {NULL, NULL}
+};
+
 void Player_prepare()
 {
   game_set_ups(50);
-  fxm_init(red_dawn);
+  menu_setup(tunes);
 }
 
 static void Player_render()
 {
+  menu_render();
 }
 
 static void Player_update(unsigned long delta)
 {
+  void *p = menu_update(delta);
+  if (p)
+  {
+    fxm_init(p);
+  }
   fxm_loop();
 }
 
