@@ -260,6 +260,22 @@ void fxm_init(const uint8_t *fxm)
     channels[i].note_skip_counter = 1;
     channels[i].mixer = 8;
     channels[i].id = i;
+
+    channels[i].point_in_ornament = 0;
+    channels[i].ornament_pointer = 0;
+    channels[i].point_in_sample = 0;
+    channels[i].sample_pointer = 0;
+    channels[i].volume = 0;
+    channels[i].sample_tick_counter = 0;
+    channels[i].tone = 0;
+    channels[i].note = 0;
+    channels[i].transposit = 0;
+
+    channels[i].b0e = false;
+    channels[i].b1e = false;
+    channels[i].b2e = false;
+    channels[i].b3e = false;
+    channels[i].sp = 0;
   }
   channels[0].address_in_pattern = pgm_read_byte(fxm + 6) + (pgm_read_byte(fxm + 7) << 8);
   channels[1].address_in_pattern = pgm_read_byte(fxm + 8) + (pgm_read_byte(fxm + 9) << 8);
