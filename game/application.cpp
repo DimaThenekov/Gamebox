@@ -25,7 +25,7 @@ extern game_instance Player;
  * extern game_instance YOUR_GAME_NAME;
  */
 
-static const MenuItem main_menu[] = {
+static const MenuItem main_menu[] PROGMEM = {
     { "Invaders", &BackspaceInvaders },
     { "Snake", &Snake },
     { "Flappy", &Flappy },

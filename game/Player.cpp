@@ -8,9 +8,6 @@
 #include "music.h"
 #include "menu.h"
 
-#define PREV BITMASK(BUTTON_NE) | BITMASK(BUTTON_LEFT)
-#define NEXT BITMASK(BUTTON_SE) | BITMASK(BUTTON_RIGHT)
-
 struct PlayerData
 {
 };
@@ -2322,7 +2319,7 @@ static const uint8_t zub[] PROGMEM = {
 0x0f, 0x0c, 0x05, 0x0b, 0x04, 0x0a, 0x03, 0x09, 0x02, 0x08, 0x02, 0x07, 0x02, 0x06, 0x02, 0x05, 
 0x02, 0x04, 0x02, 0x03, 0x02, 0x02, 0x02, 0x01, 0x02, 0x00, 0xdf, 0x80, 0xa8, 0xde, };
 
-static const MenuItem tunes[] = {
+static const MenuItem tunes[] PROGMEM = {
   {"Alla Turca", alla_turca},
   {"Atomix", atomix},
   {"Axel F. Theme", axel_f_theme},

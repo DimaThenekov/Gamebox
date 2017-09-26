@@ -34,7 +34,8 @@ void *menu_update(unsigned long delta)
     {
         return NULL;
     }
-    if ((game_is_any_button_pressed(DOWN)) && menu[sel + 1].name)
+    if ((game_is_any_button_pressed(DOWN))
+        && pgm_read_pointer(&menu[sel + 1].name))
     {
         sel++;
         btn_timeout = cur_time + BUTTON_DELAY;
@@ -51,7 +52,7 @@ void *menu_update(unsigned long delta)
     else if (btn_pressed)
     {
         btn_pressed = false;
-        return menu[sel].opaque;
+        return pgm_read_pointer(&menu[sel].opaque);
     }
 
     return NULL;
@@ -61,16 +62,16 @@ void menu_render()
 {
     uint16_t page = sel / LINES * LINES;
     uint8_t iter = 0;
-    for ( ; menu[page + iter].name && iter < LINES ; ++iter)
+    for ( ; pgm_read_pointer(&menu[page + iter].name) && iter < LINES ; ++iter)
     {
-        game_draw_text(menu[page + iter].name, 0, (FONT_HEIGHT + 1) * iter,
+        game_draw_text(pgm_read_pointer(&menu[page + iter].name), 0, (FONT_HEIGHT + 1) * iter,
             (page + iter == sel) ? RED : WHITE);
     }
     if (page > 0)
     {
         game_draw_char(0x18, WIDTH - FONT_WIDTH, 0, GREEN);
     }
-    if (iter == LINES && menu[page + iter].name)
+    if (iter == LINES && pgm_read_pointer(&menu[page + iter].name))
     {
         game_draw_char(0x19, WIDTH - FONT_WIDTH, HEIGHT - FONT_HEIGHT, GREEN);
     }

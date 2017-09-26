@@ -219,6 +219,9 @@ void game_draw_text(const uint8_t *s, int x, int y, uint8_t color)
 
 void game_draw_char(uint8_t c, int x, int y, uint8_t color)
 {
+    // clipping is not supported
+    if (x < 0 || x > WIDTH - FONT_WIDTH)
+        return;
 #ifdef FRAME_BUFFER
     if (use_frame_buffer)
     {
