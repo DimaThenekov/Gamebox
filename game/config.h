@@ -45,8 +45,11 @@ using namespace std;
 
 // Graphics defines
 #ifdef ARDUINO_AVR_MEGA2560
+#define GFX_PORT2
 #define GFX_DATAPORT PORTB
 #define GFX_DATADIR  DDRB
+#define GFX_DATAPORT2 PORTA
+#define GFX_DATADIR2  DDRA
 #define GFX_SCLKPORT PORTE
 #else
 #define GFX_DATAPORT PORTD
@@ -56,12 +59,13 @@ using namespace std;
 
 #ifdef ARDUINO_AVR_MEGA2560
 // PORTB
-#define GFX_IR1 51
-#define GFX_IG1 50
-#define GFX_IB1 10
-#define GFX_IR2 11
-#define GFX_IG2 12
-#define GFX_IB2 13
+#define GFX_IR1 53
+#define GFX_IG1 52
+#define GFX_IB1 51
+// PORTA
+#define GFX_IR2 22
+#define GFX_IG2 23
+#define GFX_IB2 24
 // PORTE
 #define GFX_CLK 5
 #define GFX_LAT 2

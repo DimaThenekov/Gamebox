@@ -400,11 +400,11 @@ void graphics_setup()
     digitalWrite(GFX_IG2, HIGH);
     digitalWrite(GFX_IB2, HIGH);
 
-  // Set up Timer1 for interrupt:
-  TCCR1A  = _BV(WGM11); // Mode 14 (fast PWM), OC1A off
-  TCCR1B  = _BV(WGM13) | _BV(WGM12) | _BV(CS10) | _BV(CS11); // Mode 14, div 64
-  ICR1    = 0;
-  TIMSK1 |= _BV(TOIE1); // Enable Timer1 interrupt
+    // Set up Timer1 for interrupt:
+    TCCR1A  = _BV(WGM11); // Mode 14 (fast PWM), OC1A off
+    TCCR1B  = _BV(WGM13) | _BV(WGM12) | _BV(CS10) | _BV(CS11); // Mode 14, div 64
+    ICR1    = 0;
+    TIMSK1 |= _BV(TOIE1); // Enable Timer1 interrupt
 }
 
 static void graphics_update()
@@ -436,6 +436,24 @@ static void graphics_update()
         line1 = &lines[(BUF_LINES - 1) * WIDTH];
         line2 = &lines[(BUF_LINES - 2) * WIDTH];
     }
+#ifdef GFX_PORT2
+    uint8_t tmp;
+    #define pew asm volatile(                 \
+      "ld  %[tmp], %a[ptr1]+"       "\n\t"    \
+      "out %[data2], %[tmp]"        "\n\t"    \
+      "ld  %[tmp], %a[ptr2]+"       "\n\t"    \
+      "out %[data], %[tmp]"         "\n\t"    \
+      "out %[clk]     , %[tick]"     "\n\t"   \
+      "out %[clk]     , %[tock]"     "\n"     \
+      :  [ptr1] "+e" (line1),                 \
+         [ptr2] "+e" (line2),                 \
+         [tmp] "=r" (tmp)                     \
+      :  [data] "I" (_SFR_IO_ADDR(GFX_DATAPORT)), \
+         [data2] "I" (_SFR_IO_ADDR(GFX_DATAPORT2)), \
+         [clk]  "I" (_SFR_IO_ADDR(GFX_SCLKPORT)), \
+         [tick] "r" (tick),                   \
+         [tock] "r" (tock) );
+#else
     uint8_t const8 = 8;
     uint8_t const4 = 4;
     uint8_t tmp;
@@ -457,7 +475,7 @@ static void graphics_update()
          [clk]  "I" (_SFR_IO_ADDR(GFX_SCLKPORT)), \
          [tick] "r" (tick),                   \
          [tock] "r" (tock): "r0", "r1");
-
+#endif
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew 
