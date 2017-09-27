@@ -19,17 +19,17 @@ void music_setup(void) {
 static void set_address(char addr) {
   PORTF = (PORTF & ~MASK) | ADDRESS_MODE;
   PORTC = addr;
-  _delay_us(1.); //tAS = 300ns
+//  _delay_us(1.); //tAS = 300ns
   PORTF = (PORTF & ~MASK); // inactive
-  _delay_us(1.); //tAH = 80ns
+//  _delay_us(1.); //tAH = 80ns
 }
 
 static void set_data(uint8_t data) {
   PORTF = (PORTF & ~MASK) | DATA_WRITE;
   PORTC = data;
-  _delay_us(1.); // 300ns < tDW < 10us
+//  _delay_us(1.); // 300ns < tDW < 10us
   PORTF = (PORTF & ~MASK); // inactive
-  _delay_us(1.); // tDH = 80ns
+//  _delay_us(1.); // tDH = 80ns
 }
 
 void music_send_data(uint8_t addr, uint8_t data) {
