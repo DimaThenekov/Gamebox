@@ -1,4 +1,5 @@
 #pragma GCC optimize ("-O3")
+#include <Arduino.h>
 #include <avr/pgmspace.h>
 #include "music.h"
 
@@ -252,6 +253,8 @@ void fxm_init(const uint8_t *fxm)
     || pgm_read_byte(fxm + 3) != 'M')
     return;
 
+  noInterrupts();
+
   ram = fxm + 6;
   ram_addr = pgm_read_byte(fxm + 4) + (pgm_read_byte(fxm + 5) << 8);
   
@@ -283,6 +286,8 @@ void fxm_init(const uint8_t *fxm)
 
   // init hardware YM
   music_setup();
+
+  interrupts();
 }
 
 void fxm_loop()
@@ -297,5 +302,21 @@ void fxm_loop()
   z80_write_ay_reg(7, (channels[2].mixer << 2) | (channels[1].mixer << 1) | channels[0].mixer);
   for (int i = 13 ; i >= 0 ; --i)
     music_send_data(i, ayregs[i]);
+}
+
+void fxm_enable_int()
+{
+    // Set up Timer3 for interrupt:
+    TCCR3A  = _BV(WGM31); // Mode 14 (fast PWM), OC3A off
+    TCCR3B  = _BV(WGM33) | _BV(WGM32) | _BV(CS32); // Mode 14, div 256
+    ICR3    = 0;
+    TIMSK3 |= _BV(TOIE3); // Enable Timer3 interrupt
+}
+
+ISR(TIMER3_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
+  fxm_loop();              // Call refresh func
+  TIFR3 |= TOV3;                  // Clear Timer3 interrupt flag
+  ICR3      = 1250;        // Set interval for next interrupt
+  TCNT3     = 0;        // Restart interrupt timer
 }
 

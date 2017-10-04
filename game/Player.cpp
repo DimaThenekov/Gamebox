@@ -2364,6 +2364,7 @@ void Player_prepare()
 {
   game_set_ups(50);
   menu_setup(tunes);
+  fxm_enable_int();
 }
 
 static void Player_render()
@@ -2378,7 +2379,6 @@ static void Player_update(unsigned long delta)
   {
     fxm_init(p);
   }
-  fxm_loop();
 }
 
 game_instance Player = {

@@ -11,12 +11,14 @@
 #define ADDRESS_MODE (0x03 << 6)
 #define MASK 0xc0
 
-void music_setup(void) {
+void music_setup(void)
+{
   DDRF |= MASK;
   DDRC = 0xff;
 }
 
-static void set_address(char addr) {
+static void set_address(char addr)
+{
   PORTF = (PORTF & ~MASK) | ADDRESS_MODE;
   PORTC = addr;
 //  _delay_us(1.); //tAS = 300ns
@@ -24,7 +26,8 @@ static void set_address(char addr) {
 //  _delay_us(1.); //tAH = 80ns
 }
 
-static void set_data(uint8_t data) {
+static void set_data(uint8_t data)
+{
   PORTF = (PORTF & ~MASK) | DATA_WRITE;
   PORTC = data;
 //  _delay_us(1.); // 300ns < tDW < 10us
@@ -32,7 +35,8 @@ static void set_data(uint8_t data) {
 //  _delay_us(1.); // tDH = 80ns
 }
 
-void music_send_data(uint8_t addr, uint8_t data) {
+void music_send_data(uint8_t addr, uint8_t data)
+{
   set_address(addr);
   set_data(data);
 }
