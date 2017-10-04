@@ -2367,6 +2367,18 @@ void Player_prepare()
   fxm_enable_int();
 }
 
+void Player_setup_melody(int i)
+{
+  fxm_enable_int();
+  fxm_init(tunes[i].opaque);
+}
+
+void Player_setup_random_melody()
+{
+  //TODO
+  //Player_setup_melody(rand() % (sizeof(tunes) / sizeof(MenuItem) - 1));
+}
+
 static void Player_render()
 {
   menu_render();

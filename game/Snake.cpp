@@ -4,6 +4,7 @@
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
+#include "music.h"
 
 #define MAXLEN 64
 
@@ -105,6 +106,8 @@ static void Snake_prepare()
     data->rotRightPressed = false;
     data->half = false;
     generateFood();
+
+    Player_setup_melody(33);
 }
 
 static int velsign(int x)
