@@ -10,7 +10,6 @@
 
 #define LINES (HEIGHT / (FONT_HEIGHT + 1))
 
-#define BUTTON_DELAY 200
 static unsigned long cur_time;
 static unsigned long btn_timeout;
 static uint16_t sel;

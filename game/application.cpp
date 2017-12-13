@@ -47,6 +47,7 @@ static const MenuItem main_menu[] PROGMEM = {
 #define UP BITMASK(BUTTON_NE) | BITMASK(BUTTON_UP)
 #define DOWN BITMASK(BUTTON_SE) | BITMASK(BUTTON_DOWN)
 #define SELECT BITMASK(BUTTON_SW) | BITMASK(BUTTON_START)
+#define PAUSE BITMASK(BUTTON_SELECT)
 
 // need some space for stack and system variables
 #define AVAIL_SPACE 1024
@@ -54,6 +55,8 @@ static const MenuItem main_menu[] PROGMEM = {
 static uint8_t memory[AVAIL_SPACE];
 
 static game_instance* ptr;
+static long btn_timeout;
+static bool is_paused;
 
 void application_setup()
 {
@@ -75,7 +78,27 @@ void update(unsigned long delta)
     }
     else
     {
-        ptr->update(delta);
+        btn_timeout -= delta;
+        if (btn_timeout <= 0)
+        {
+            btn_timeout = 0;
+        }
+        if (!is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
+        {
+            is_paused = true;
+            btn_timeout = BUTTON_DELAY;
+        }
+        else if (is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
+        {
+            is_paused = false;
+            btn_timeout = BUTTON_DELAY;
+        }
+        else if (!is_paused)
+        {
+            // shouldn't use SELECT in games
+            game_reset_buttons(PAUSE);
+            ptr->update(delta);
+        }
     }
 }
 

@@ -5,6 +5,8 @@
 // BUTTONS
 ////////////////
 
+// typical delay for keypress
+#define BUTTON_DELAY 200
 
 // Physical buttons
 #define BUTTON_SW 6
@@ -26,6 +28,7 @@
 
 bool game_is_button_pressed(uint8_t button);
 bool game_is_any_button_pressed(uint16_t bitmask);
+void game_reset_buttons(uint16_t bitmask);
 
 // Internal functions
 void controls_setup();

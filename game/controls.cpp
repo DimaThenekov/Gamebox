@@ -20,6 +20,11 @@ bool game_is_any_button_pressed(uint16_t bitmask)
     return (buttons & bitmask);
 }
 
+void game_reset_buttons(uint16_t bitmask)
+{
+    buttons &= ~bitmask;
+}
+
 void controls_setup()
 {
     clockport = portOutputRegister(digitalPinToPort(CTL_CLOCK));
