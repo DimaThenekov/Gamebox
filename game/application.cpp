@@ -41,7 +41,7 @@ static const MenuItem main_menu[] PROGMEM = {
      * 
      * { "YOUR_GAME_NAME", &YOUR_GAME_NAME },
      */
-     { NULL, NULL }
+    { NULL, NULL }
 };
 
 #define UP BITMASK(BUTTON_NE) | BITMASK(BUTTON_UP)
@@ -54,22 +54,45 @@ static const MenuItem main_menu[] PROGMEM = {
 
 static uint8_t memory[AVAIL_SPACE];
 
+static Menu *menu;
 static game_instance* ptr;
 static long btn_timeout;
 static bool is_paused;
 
+void pause_continue()
+{
+    is_paused = false;
+    menu_finish(menu);
+    menu = NULL;
+    btn_timeout = BUTTON_DELAY;
+}
+
+void pause_exit()
+{
+    void (*f)() = 0;
+    f();
+}
+
+static const MenuItem pause_menu[] PROGMEM = {
+    { "Continue", pause_continue },
+    { "Exit game", pause_exit },
+    { NULL, NULL }
+};
+
 void application_setup()
 {
-    menu_setup(main_menu);
+    menu = menu_setup(main_menu);
 }
 
 void update(unsigned long delta)
 {
     if (!ptr)
     {
-        ptr = menu_update(delta);
+        ptr = menu_update(menu, delta);
         if (ptr)
         {
+            menu_finish(menu);
+            menu = NULL;
             random_setup();
             // run game
             *(ptr->data) = memory;
@@ -86,12 +109,12 @@ void update(unsigned long delta)
         if (!is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
         {
             is_paused = true;
+            menu = menu_setup(pause_menu, 10, 20);
             btn_timeout = BUTTON_DELAY;
         }
         else if (is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
         {
-            is_paused = false;
-            btn_timeout = BUTTON_DELAY;
+            pause_continue();
         }
         else if (!is_paused)
         {
@@ -99,18 +122,26 @@ void update(unsigned long delta)
             game_reset_buttons(PAUSE);
             ptr->update(delta);
         }
+        else
+        {
+            void (*f)() = menu_update(menu, delta);
+            if (f)
+            {
+                f();
+            }
+        }
     }
 }
 
 void render()
 {
-    if (!ptr)
-    {
-        menu_render();
-    }
-    else
+    if (ptr)
     {
         ptr->render();
+    }
+    if (menu)
+    {
+        menu_render(menu);
     }
 }
 

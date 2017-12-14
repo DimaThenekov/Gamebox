@@ -7,12 +7,16 @@ struct MenuItem
   void *opaque;
 };
 
+struct Menu;
+
 // Нужно вызвать для инициализации конкретного меню
-void menu_setup(MenuItem *items);
+Menu *menu_setup(MenuItem *items, uint8_t x = 0, uint8_t y = 0);
 // Возвращает указатель opaque выбранного пункта, если нажата кнопка выбора 
-void *menu_update(unsigned long delta);
+void *menu_update(Menu *m, unsigned long delta);
 // Отображает меню на экране
-void menu_render();
+void menu_render(Menu *m);
+// Завершает работу меню
+void menu_finish(Menu *m);
 
 #endif
 

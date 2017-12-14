@@ -10,69 +10,87 @@
 
 #define LINES (HEIGHT / (FONT_HEIGHT + 1))
 
-static unsigned long cur_time;
-static unsigned long btn_timeout;
-static uint16_t sel;
-static bool btn_pressed;
-
-static MenuItem *menu;
-
-void menu_setup(MenuItem *items)
+struct Menu
 {
-    menu = items;
-    sel = 0;
-    btn_pressed = false;
-    btn_timeout = 0;
-    cur_time = 0;
+    long btn_timeout;
+    uint16_t sel;
+    bool btn_pressed;
+    uint8_t menux, menuy;
+    MenuItem *menu;
+};
+
+static Menu menu[2];
+static uint8_t current;
+
+Menu *menu_setup(MenuItem *items, uint8_t x, uint8_t y)
+{
+    //assert(current < 2);
+    Menu *m = &menu[current];
+    ++current;
+    m->menu = items;
+    m->sel = 0;
+    m->btn_pressed = false;
+    m->btn_timeout = 0;
+    m->menux = x;
+    m->menuy = y;
+ 
+    return m;
 }
 
-void *menu_update(unsigned long delta)
+void *menu_update(Menu *m, unsigned long delta)
 {
-    cur_time += delta;
-    if (cur_time < btn_timeout)
+    m->btn_timeout -= delta;
+    if (m->btn_timeout > 0)
     {
         return NULL;
     }
+    m->btn_timeout = 0;
     if ((game_is_any_button_pressed(DOWN))
-        && pgm_read_pointer(&menu[sel + 1].name))
+        && pgm_read_pointer(&m->menu[m->sel + 1].name))
     {
-        sel++;
-        btn_timeout = cur_time + BUTTON_DELAY;
+        m->sel++;
+        m->btn_timeout = BUTTON_DELAY;
     }
-    else if ((game_is_any_button_pressed(UP)) && sel > 0)
+    else if ((game_is_any_button_pressed(UP)) && m->sel > 0)
     {
-        sel--;
-        btn_timeout = cur_time + BUTTON_DELAY;
+        m->sel--;
+        m->btn_timeout = BUTTON_DELAY;
     }
     else if (game_is_any_button_pressed(SELECT))
     {
-        btn_pressed = true;
+        m->btn_pressed = true;
     }
-    else if (btn_pressed)
+    else if (m->btn_pressed)
     {
-        btn_pressed = false;
-        return pgm_read_pointer(&menu[sel].opaque);
+        m->btn_pressed = false;
+        return pgm_read_pointer(&m->menu[m->sel].opaque);
     }
 
     return NULL;
 }
 
-void menu_render()
+void menu_render(Menu *m)
 {
-    uint16_t page = sel / LINES * LINES;
+    uint16_t page = m->sel / LINES * LINES;
     uint8_t iter = 0;
-    for ( ; pgm_read_pointer(&menu[page + iter].name) && iter < LINES ; ++iter)
+    for ( ; pgm_read_pointer(&m->menu[page + iter].name) && iter < LINES ; ++iter)
     {
-        game_draw_text(pgm_read_pointer(&menu[page + iter].name), 0, (FONT_HEIGHT + 1) * iter,
-            (page + iter == sel) ? RED : WHITE);
+        game_draw_text(pgm_read_pointer(&m->menu[page + iter].name),
+            m->menux, (FONT_HEIGHT + 1) * iter + m->menuy,
+            (page + iter == m->sel) ? RED : WHITE);
     }
     if (page > 0)
     {
         game_draw_char(0x18, WIDTH - FONT_WIDTH, 0, GREEN);
     }
-    if (iter == LINES && pgm_read_pointer(&menu[page + iter].name))
+    if (iter == LINES && pgm_read_pointer(&m->menu[page + iter].name))
     {
         game_draw_char(0x19, WIDTH - FONT_WIDTH, HEIGHT - FONT_HEIGHT, GREEN);
     }
 }
 
+void menu_finish(Menu *m)
+{
+    --current;
+    //assert(&menu[current] == m);
+}

@@ -11,6 +11,7 @@
 
 struct PlayerData
 {
+    Menu *menu;
 };
 static PlayerData* data;
 
@@ -58,7 +59,7 @@ static const MenuItem tunes[] PROGMEM = {
 void Player_prepare()
 {
   game_set_ups(50);
-  menu_setup(tunes);
+  data->menu = menu_setup(tunes);
   fxm_enable_int();
 }
 
@@ -76,12 +77,12 @@ void Player_setup_random_melody()
 
 static void Player_render()
 {
-  menu_render();
+  menu_render(data->menu);
 }
 
 static void Player_update(unsigned long delta)
 {
-  void *p = menu_update(delta);
+  void *p = menu_update(data->menu, delta);
   if (p)
   {
     fxm_init(p);
@@ -97,4 +98,3 @@ game_instance Player = {
     (void**)(&data)
 };
 #endif
-
