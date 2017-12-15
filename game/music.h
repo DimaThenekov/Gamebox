@@ -12,6 +12,8 @@ void fxm_init(const uint8_t *fxm);
 // enables interrupt-driven playing
 void fxm_enable_int();
 void fxm_loop();
+// disables sound and interrupts
+void fxm_disable();
 
 // TODO: improve this interface
 void Player_setup_melody(int i);

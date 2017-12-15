@@ -16,13 +16,14 @@ struct Menu
     uint16_t sel;
     bool btn_pressed;
     uint8_t menux, menuy;
+    uint8_t bg;
     MenuItem *menu;
 };
 
 static Menu menu[2];
 static uint8_t current;
 
-Menu *menu_setup(MenuItem *items, uint8_t x, uint8_t y)
+Menu *menu_setup(MenuItem *items, uint8_t x, uint8_t y, uint8_t bg)
 {
     //assert(current < 2);
     Menu *m = &menu[current];
@@ -33,7 +34,8 @@ Menu *menu_setup(MenuItem *items, uint8_t x, uint8_t y)
     m->btn_timeout = 0;
     m->menux = x;
     m->menuy = y;
- 
+    m->bg = bg;
+
     return m;
 }
 
@@ -77,7 +79,7 @@ void menu_render(Menu *m)
     {
         game_draw_text(pgm_read_pointer(&m->menu[page + iter].name),
             m->menux, (FONT_HEIGHT + 1) * iter + m->menuy,
-            (page + iter == m->sel) ? RED : WHITE);
+            (page + iter == m->sel) ? RED : WHITE, m->bg);
     }
     if (page > 0)
     {

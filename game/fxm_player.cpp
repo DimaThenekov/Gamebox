@@ -320,3 +320,9 @@ ISR(TIMER3_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
   TCNT3     = 0;        // Restart interrupt timer
 }
 
+void fxm_disable()
+{
+  TIMSK3 &= ~_BV(TOIE3); // Disable Timer3 interrupt
+  for (int i = 13 ; i >= 0 ; --i)
+    music_send_data(i, 0);
+}

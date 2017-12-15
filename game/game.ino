@@ -5,6 +5,7 @@
 #include "graphics.h"
 #include "storage.h"
 #include "controls.h"
+#include "music.h"
 
 void application_setup();
 // update logic (ms since last update), enforced by ups / ticks
@@ -23,6 +24,7 @@ void game_set_ups(int ups)
 
 void setup()
 {
+    fxm_disable();
     graphics_setup();
     controls_setup();
     storage_init();

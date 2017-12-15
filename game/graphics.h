@@ -13,6 +13,7 @@
 #define PURPLE (RED + BLUE)
 #define YELLOW (RED + GREEN)
 #define WHITE 63
+#define OPAQUE 0xff
 
 // SPRITE
 
@@ -37,8 +38,8 @@ uint8_t game_sprite_height(const struct game_sprite *s);
 
 void game_draw_pixel(int x, int y, uint8_t color);
 void game_draw_vline(int x, int y1, int y2, uint8_t color); // vertical line
-void game_draw_text(const uint8_t *s, int x, int y, uint8_t color); // text is drawn with default 5x7 font
-void game_draw_char(uint8_t c, int x, int y, uint8_t color); // char is drawn with default 5x7 font
+void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg = OPAQUE); // text is drawn with default 5x7 font
+void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg = OPAQUE); // char is drawn with default 5x7 font
 void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color);
 void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color);
 

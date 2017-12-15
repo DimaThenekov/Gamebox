@@ -201,7 +201,7 @@ bool game_is_drawing_lines(int y, int height)
     return false;
 }
 
-void game_draw_text(const uint8_t *s, int x, int y, uint8_t color)
+void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg)
 {
 #ifdef FRAME_BUFFER
     if (!use_frame_buffer)
@@ -212,12 +212,12 @@ void game_draw_text(const uint8_t *s, int x, int y, uint8_t color)
     }
     for (const uint8_t *c = s; *c; ++c)
     {
-        game_draw_char(*c, x, y, color);
+        game_draw_char(*c, x, y, color, bg);
         x += FONT_WIDTH + 1;
     }
 }
 
-void game_draw_char(uint8_t c, int x, int y, uint8_t color)
+void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
 {
     // clipping is not supported
     if (x < 0 || x > WIDTH - FONT_WIDTH)
@@ -237,6 +237,10 @@ void game_draw_char(uint8_t c, int x, int y, uint8_t color)
                 {
                     frame[y + dy][x + i] = game_make_color(color);
                 }
+                else if (bg != OPAQUE)
+                {
+                    frame[y + dy][x + i] = game_make_color(bg);
+                }
             }
         }
         return;    
@@ -254,6 +258,10 @@ void game_draw_char(uint8_t c, int x, int y, uint8_t color)
             if ((d >> (FONT_WIDTH - 1 - i)) & 1)
             {
                 game_render_buf[x + i + s * WIDTH] = game_make_color(color);
+            }
+            else if (bg != OPAQUE)
+            {
+                game_render_buf[x + i + s * WIDTH] = game_make_color(bg);
             }
         }
     }
