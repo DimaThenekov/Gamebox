@@ -14,6 +14,7 @@
 
 #define PREV BITMASK(BUTTON_NE) | BITMASK(BUTTON_LEFT)
 #define NEXT BITMASK(BUTTON_SE) | BITMASK(BUTTON_RIGHT)
+#define ASCII BITMASK(BUTTON_A)
 
 struct DumpData
 {
@@ -42,6 +43,7 @@ void Dump_render()
 {
     int i = 0;
     uint16_t addr = data->addr;
+    bool ascii = game_is_any_button_pressed(ASCII);
     for (int y = 0 ; y < ROWS * (FONT_HEIGHT + 1) ; y += FONT_HEIGHT + 1)
     {
         if (game_is_drawing_lines(y, FONT_HEIGHT))
@@ -54,6 +56,10 @@ void Dump_render()
                 uint8_t c = eeprom_read_byte((uint8_t*)addr);
                 game_draw_char(to_hex(c >> 4), 3 * FONT_WIDTH + 1 + x, y, WHITE);
                 game_draw_char(to_hex(c & 0xf), 3 * FONT_WIDTH + 1 + x + FONT_WIDTH + 1, y, WHITE);
+                if (ascii)
+                {
+                    game_draw_char(c, 3 * FONT_WIDTH + 1 + x, y, BLUE);
+                }
             }
         }
         else
