@@ -24,7 +24,7 @@ const game_sprite sprite_player PROGMEM = {
 
 #define PLAYER_X 12
 #define PLAYER_SKIP_Y 3
-#define LANDSCAPE_MAX 24
+#define LANDSCAPE_MAX 22
 #define BUBBLES 16
 
 struct FlappyData
@@ -61,6 +61,7 @@ static void Flappy_prepare()
 {
     game_set_ups(20);
     Flappy_reset();
+    game_load(&data->hiscore, sizeof(data->hiscore));
 }
 
 static void Flappy_render()
@@ -105,7 +106,10 @@ static void Flappy_update(unsigned long delta)
         {
             // save high score
             if (data->score > data->hiscore)
+            {
                 data->hiscore = data->score;
+                game_save(&data->hiscore, sizeof(data->hiscore));
+            }
             Flappy_reset();
         }
     }
