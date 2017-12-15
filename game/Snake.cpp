@@ -5,8 +5,9 @@
 #include "binary.h"
 #include "controls.h"
 #include "music.h"
+#include "font.h"
 
-#define MAXLEN 64
+#define MAXLEN 128
 
 #define ROTLEFT BUTTON_SE
 #define ROTRIGHT BUTTON_SW
@@ -64,6 +65,7 @@ struct SnakeData
     bool half;
     uint8_t snakeBegin;
     uint8_t snakeEnd;
+    uint8_t hiscore;
 
 };
 static SnakeData* data;
@@ -73,8 +75,8 @@ static void generateFood()
     while (1)
     {
         bool ok = true;
-        data->foodX = rand() % FIELD_WIDTH;
-        data->foodY = rand() % FIELD_HEIGHT;
+        data->foodX = DIGIT_WIDTH + rand() % (FIELD_WIDTH - 2 * DIGIT_WIDTH);
+        data->foodY = DIGIT_HEIGHT + rand() % (FIELD_HEIGHT - 2 * DIGIT_HEIGHT);
         for (int i = data->snakeBegin; i != data->snakeEnd; i = (i + 1) % MAXLEN)
         {
             if (data->snakeX[i] == data->foodX && data->snakeY[i] == data->foodY)
@@ -88,9 +90,8 @@ static void generateFood()
     }
 }
 
-static void Snake_prepare()
+static void Snake_reset()
 {
-    game_set_ups(40);
     data->phase = PHASE_GAME;
     data->snakeX[0] = 17;
     data->snakeY[0] = 16;
@@ -106,7 +107,14 @@ static void Snake_prepare()
     data->rotRightPressed = false;
     data->half = false;
     generateFood();
+}
 
+static void Snake_prepare()
+{
+    Snake_reset();
+    game_set_ups(40);
+    data->hiscore = 0;
+    game_load(&data->hiscore, sizeof(data->hiscore));
     Player_setup_melody(33);
 }
 
@@ -156,6 +164,11 @@ static void Snake_render()
     {
         game_draw_sprite(&gameOver, GAMEOVER_X, GAMEOVER_Y, WHITE);
     }
+
+    // draw score
+    game_draw_digits((MAXLEN + data->snakeEnd - data->snakeBegin) % MAXLEN, 3, 0, 0, WHITE);
+    // draw hiscore
+    game_draw_digits(data->hiscore, 3, WIDTH - (DIGIT_WIDTH + 1) * 3, 0, WHITE);
 }
 
 static void Snake_update(unsigned long delta)
@@ -181,6 +194,12 @@ static void Snake_update(unsigned long delta)
             if (newX == data->snakeX[i] && newY == data->snakeY[i])
             {
                 // game over
+                int score = (MAXLEN + data->snakeEnd - data->snakeBegin) % MAXLEN;
+                if (score > data->hiscore)
+                {
+                    data->hiscore = score;
+                    game_save(&data->hiscore, sizeof(data->hiscore));
+                }
                 data->phase = PHASE_GAMEOVER;
                 break;
             }
@@ -225,7 +244,7 @@ static void Snake_update(unsigned long delta)
     {
         if (game_is_any_button_pressed(-1))
         {
-            Snake_prepare(); 
+            Snake_reset(); 
         }
     }
     data->rotLeftPressed = game_is_button_pressed(ROTLEFT);

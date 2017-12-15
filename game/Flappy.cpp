@@ -61,7 +61,6 @@ static void Flappy_prepare()
 {
     game_set_ups(20);
     Flappy_reset();
-    game_load(&data->hiscore, sizeof(data->hiscore));
 }
 
 static void Flappy_render()
