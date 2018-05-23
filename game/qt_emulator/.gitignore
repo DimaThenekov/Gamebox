@@ -1,0 +1,8 @@
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+CMakeFiles/*
+gamebox
+gamebox_automoc.cpp
+moc_renderarea.cpp
+moc_window.cpp
