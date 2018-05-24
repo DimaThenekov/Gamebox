@@ -21,7 +21,6 @@ protected:
 
 private:
     RenderArea *renderArea;
-    QTimer *timer;
 };
 
 #endif // WINDOW_H

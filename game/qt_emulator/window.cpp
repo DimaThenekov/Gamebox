@@ -12,6 +12,8 @@ const int IdRole = Qt::UserRole;
 
 static uint16_t buttons; // buttons currently pressed
 
+static QTimer *timer;
+
 void render();
 void update(unsigned long delta);
 
@@ -89,10 +91,10 @@ static bool button_process(int key, bool press)
 
 void game_set_ups(int ups)
 {
-/*    if (ups)
-        window->setFramerateLimit(ups);
+    if (ups)
+        timer->setInterval(1000 / ups);
     else
-        window->setFramerateLimit(30);*/
+        timer->setInterval(1000 / 30);
 }
 
 /*****************************************/
