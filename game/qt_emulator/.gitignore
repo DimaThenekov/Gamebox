@@ -6,3 +6,6 @@ gamebox
 gamebox_automoc.cpp
 moc_renderarea.cpp
 moc_window.cpp
+*.sln
+*.vcxproj
+*.filters
