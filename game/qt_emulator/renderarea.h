@@ -13,6 +13,8 @@ public:
     QSize minimumSizeHint() const override;
     QSize sizeHint() const override;
 
+    void clear();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 };

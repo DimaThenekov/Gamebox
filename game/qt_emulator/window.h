@@ -12,8 +12,16 @@ class Window : public QWidget
 public:
     Window();
 
+private slots:
+    void updateScreen();
+
+protected:
+    virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void keyReleaseEvent(QKeyEvent *event) override;
+
 private:
     RenderArea *renderArea;
+    QTimer *timer;
 };
 
 #endif // WINDOW_H

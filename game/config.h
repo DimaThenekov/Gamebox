@@ -22,6 +22,7 @@ using namespace std;
 #define pgm_read_word_near(addr) (*((uint16_t*)(addr)))
 #define pgm_read_dword_near(addr) (*((uint32_t*)(addr)))
 #define pgm_read_pointer(addr) (*(addr))
+unsigned long millis();
 #else
 #if !defined(__INT_MAX__) || (__INT_MAX__ > 0xFFFF)
 #define pgm_read_pointer(addr) ((void *)pgm_read_dword(addr))

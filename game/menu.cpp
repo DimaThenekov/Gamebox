@@ -17,13 +17,13 @@ struct Menu
     bool btn_pressed;
     uint8_t menux, menuy;
     uint8_t bg;
-    MenuItem *menu;
+    const MenuItem *menu;
 };
 
 static Menu menu[2];
 static uint8_t current;
 
-Menu *menu_setup(MenuItem *items, uint8_t x, uint8_t y, uint8_t bg)
+Menu *menu_setup(const MenuItem *items, uint8_t x, uint8_t y, uint8_t bg)
 {
     //assert(current < 2);
     Menu *m = &menu[current];
@@ -47,13 +47,13 @@ void *menu_update(Menu *m, unsigned long delta)
         return NULL;
     }
     m->btn_timeout = 0;
-    if ((game_is_any_button_pressed(DOWN))
+    if (game_is_any_button_pressed(DOWN)
         && pgm_read_pointer(&m->menu[m->sel + 1].name))
     {
         m->sel++;
         m->btn_timeout = BUTTON_DELAY;
     }
-    else if ((game_is_any_button_pressed(UP)) && m->sel > 0)
+    else if (game_is_any_button_pressed(UP) && m->sel > 0)
     {
         m->sel--;
         m->btn_timeout = BUTTON_DELAY;
@@ -77,7 +77,7 @@ void menu_render(Menu *m)
     uint8_t iter = 0;
     for ( ; pgm_read_pointer(&m->menu[page + iter].name) && iter < LINES ; ++iter)
     {
-        game_draw_text(pgm_read_pointer(&m->menu[page + iter].name),
+        game_draw_text((const uint8_t *)pgm_read_pointer(&m->menu[page + iter].name),
             m->menux, (FONT_HEIGHT + 1) * iter + m->menuy,
             (page + iter == m->sel) ? RED : WHITE, m->bg);
     }

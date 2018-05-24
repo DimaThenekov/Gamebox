@@ -115,7 +115,9 @@ static void Snake_prepare()
     game_set_ups(40);
     data->hiscore = 0;
     game_load(&data->hiscore, sizeof(data->hiscore));
+#ifndef EMULATED
     Player_setup_melody(33);
+#endif
 }
 
 static int velsign(int x)

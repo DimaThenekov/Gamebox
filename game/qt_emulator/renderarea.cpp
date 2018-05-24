@@ -103,6 +103,17 @@ RenderArea::RenderArea(QWidget *parent)
     setAutoFillBackground(true);
 }
 
+void RenderArea::clear()
+{
+    for (int y = 0 ; y < HEIGHT ; ++y)
+    {
+        for (int x = 0 ; x < WIDTH ; ++x)
+        {
+            screen[y][x] = QColor(0, 0, 0);
+        }
+    }
+}
+
 QSize RenderArea::minimumSizeHint() const
 {
     return QSize(WIDTH * 4 + 1, HEIGHT * 4 + 1);
@@ -116,7 +127,7 @@ QSize RenderArea::sizeHint() const
 void RenderArea::paintEvent(QPaintEvent * /* event */)
 {
     QPainter painter(this);
-    painter.setPen(palette().dark().color());
+    painter.setPen(QColor(0, 0, 0));
     int pixelW = width() / WIDTH;
     int pixelH = height() / HEIGHT;
     for (int y = 0 ; y < HEIGHT ; ++y)

@@ -69,13 +69,19 @@ void pause_continue()
 
 void pause_exit()
 {
+#ifdef EMULATED
+#else
     void (*f)() = 0;
     f();
+#endif
 }
 
+#define CONTINUE ((void*)0xC0)
+#define EXIT     ((void*)0xE)
+
 static const MenuItem pause_menu[] PROGMEM = {
-    { "Continue", pause_continue },
-    { "Exit game", pause_exit },
+    { "Continue", CONTINUE },
+    { "Exit game", EXIT },
     { NULL, NULL }
 };
 
@@ -88,7 +94,7 @@ void update(unsigned long delta)
 {
     if (!ptr)
     {
-        ptr = menu_update(menu, delta);
+        ptr = (game_instance*)menu_update(menu, delta);
         if (ptr)
         {
             menu_finish(menu);
@@ -124,10 +130,14 @@ void update(unsigned long delta)
         }
         else
         {
-            void (*f)() = menu_update(menu, delta);
-            if (f)
+            void *r = menu_update(menu, delta);
+            if (r == CONTINUE)
             {
-                f();
+                pause_continue();
+            }
+            else if (r == EXIT)
+            {
+                pause_exit();
             }
         }
     }
