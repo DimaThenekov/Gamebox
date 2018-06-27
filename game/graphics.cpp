@@ -267,7 +267,7 @@ void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
     }
 }
 
-void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color)
+void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_t bg)
 {
 #ifdef FRAME_BUFFER
     if (!use_frame_buffer)
@@ -293,10 +293,16 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color)
                     uint8_t dd = pgm_read_byte_near(digits_data + d * DIGIT_HEIGHT + dy);
                     for (int b = 0 ; b < DIGIT_WIDTH ; ++b)
                     {
-                        if ((dd >> (DIGIT_WIDTH - 1 - b)) & 1)
+                        if (x + b >= 0 && x + b < WIDTH)
                         {
-                            if (x + b >= 0 && x + b < WIDTH)
+                            if ((dd >> (DIGIT_WIDTH - 1 - b)) & 1)
+                            {
                                 frame[y + dy][x + b] = game_make_color(color);
+                            }
+                            else if (bg != OPAQUE)
+                            {
+                                frame[y + dy][x + b] = game_make_color(bg);
+                            }
                         }
                     }
                 }
@@ -312,6 +318,10 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color)
                 if ((dd >> (DIGIT_WIDTH - 1 - b)) & 1)
                 {
                     game_render_buf[x + b + ((y & ADDR_HIGH) << ADDR_SHIFT)] = game_make_color(color);
+                }
+                else if (bg != OPAQUE)
+                {
+                    game_render_buf[x + b + ((y & ADDR_HIGH) << ADDR_SHIFT)] = game_make_color(bg);
                 }
             }
         }

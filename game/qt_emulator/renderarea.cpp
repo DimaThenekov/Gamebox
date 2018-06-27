@@ -10,6 +10,7 @@
 
 /* static functions and data for Arduino project compatibility */
 static QColor screen[HEIGHT][WIDTH];
+static bool use_frame_buffer;
 
 void game_draw_pixel(int x, int y, uint8_t c)
 {
@@ -70,7 +71,7 @@ void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg)
     }
 }
 
-void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color)
+void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_t bg)
 {
     x += (len - 1) * (DIGIT_WIDTH + 1);
     for (int i = len - 1 ; i >= 0 ; --i, x -= DIGIT_WIDTH + 1)
@@ -84,6 +85,8 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color)
             {
                 if ((dd >> (DIGIT_WIDTH - 1 - b)) & 1)
                     game_draw_pixel(x + b, y + dy, color);
+                else
+                    game_draw_pixel(x + b, y + dy, bg);
             }
         }
     }
@@ -92,6 +95,23 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color)
 bool game_is_drawing_lines(int y, int height)
 {
     return true;
+}
+
+static void clear_frame_buffer()
+{
+    for (int y = 0 ; y < HEIGHT ; ++y)
+    {
+        for (int x = 0 ; x < WIDTH ; ++x)
+        {
+            screen[y][x] = QColor(0, 0, 0);
+        }
+    }
+}
+
+void game_enable_frame_buffer()
+{
+    clear_frame_buffer();
+    use_frame_buffer = true;
 }
 
 /**************************************************************/
@@ -105,13 +125,10 @@ RenderArea::RenderArea(QWidget *parent)
 
 void RenderArea::clear()
 {
-    for (int y = 0 ; y < HEIGHT ; ++y)
-    {
-        for (int x = 0 ; x < WIDTH ; ++x)
-        {
-            screen[y][x] = QColor(0, 0, 0);
-        }
-    }
+    if (use_frame_buffer)
+        return;
+
+    clear_frame_buffer();
 }
 
 QSize RenderArea::minimumSizeHint() const

@@ -96,7 +96,7 @@ unsigned long millis();
 #define COLOR_6BIT 0
 
 
-#ifdef ARDUINO_AVR_MEGA2560
+#if defined(ARDUINO_AVR_MEGA2560) || defined(EMULATED)
 // defined if frame buffer is supported
 #define FRAME_BUFFER
 #endif

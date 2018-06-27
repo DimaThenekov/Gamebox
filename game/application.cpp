@@ -11,6 +11,9 @@
 
 extern game_instance BackspaceInvaders;
 extern game_instance Snake;
+#ifdef FRAME_BUFFER
+extern game_instance Snake2;
+#endif
 extern game_instance Flappy;
 extern game_instance Tester;
 extern game_instance Raycaster;
@@ -28,6 +31,9 @@ extern game_instance Player;
 static const MenuItem main_menu[] PROGMEM = {
     { "Invaders", &BackspaceInvaders },
     { "Snake", &Snake },
+#ifdef FRAME_BUFFER
+    { "Snake2", &Snake2 },
+#endif
     { "Flappy", &Flappy },
     { "BreakOut", &BreakOut },
     { "Saper", &Saper },
