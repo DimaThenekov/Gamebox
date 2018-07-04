@@ -97,7 +97,7 @@ bool game_is_drawing_lines(int y, int height)
     return true;
 }
 
-static void clear_frame_buffer()
+void game_clear_screen()
 {
     for (int y = 0 ; y < HEIGHT ; ++y)
     {
@@ -110,7 +110,7 @@ static void clear_frame_buffer()
 
 void game_enable_frame_buffer()
 {
-    clear_frame_buffer();
+    game_clear_screen();
     use_frame_buffer = true;
 }
 
@@ -128,7 +128,7 @@ void RenderArea::clear()
     if (use_frame_buffer)
         return;
 
-    clear_frame_buffer();
+    game_clear_screen();
 }
 
 QSize RenderArea::minimumSizeHint() const
