@@ -43,7 +43,7 @@ void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg = 
 void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg = OPAQUE); // char is drawn with default 5x7 font
 void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color);
 void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_t bg = OPAQUE);
-/* Clear screeen in frame buffer mode */
+/* Clear screen in frame buffer mode */
 void game_clear_screen();
 
 bool game_is_drawing_lines(int y, int height);

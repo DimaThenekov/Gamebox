@@ -79,9 +79,9 @@ static uint8_t game_make_color_id(uint8_t color)
     /* TODO */
     return 0;
 #else
-    return ((color & 1) << 5) |
-           ((color & 2) << 2) |
-           ((color & 4) >> 1);
+    return ((color & 1) << 5) | ((color & 1) << 4) |
+           ((color & 2) << 2) | ((color & 2) << 1) |
+           ((color & 4) >> 1) | ((color & 4) >> 2);
 #endif
 }
 

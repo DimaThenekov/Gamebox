@@ -60,8 +60,6 @@ struct SnakeData
     uint8_t snakeY[MAXLEN + 1];
     int8_t velX;
     int8_t velY;
-    uint8_t foodX;
-    uint8_t foodY;
     bool rotLeftPressed;
     bool rotRightPressed;
     uint8_t snakeBegin;
@@ -79,30 +77,26 @@ static void Snake_draw_rect(int x, int y, int c)
     game_draw_pixel((x * 2 + 1) % WIDTH, (y * 2 + 1) % HEIGHT, c);
 }
 
-static void generateFood()
+static void generateItem(int color)
 {
     while (1)
     {
-        bool ok = true;
-        data->foodX = DIGIT_WIDTH + rand() % (FIELD_WIDTH - 2 * DIGIT_WIDTH);
-        data->foodY = DIGIT_HEIGHT + rand() % (FIELD_HEIGHT - 2 * DIGIT_HEIGHT);
-        for (int i = data->snakeBegin; i != data->snakeEnd; i = (i + 1) % MAXLEN)
+        int x = DIGIT_WIDTH + rand() % (FIELD_WIDTH - 2 * DIGIT_WIDTH);
+        int y = DIGIT_HEIGHT + rand() % (FIELD_HEIGHT - 2 * DIGIT_HEIGHT);
+        if (game_get_pixel(2 * x, 2 * y) == BLACK)
         {
-            if (data->snakeX[i] == data->foodX && data->snakeY[i] == data->foodY)
-            {
-                ok = false;
-                break;
-            }
-        }
-        if (ok)
-        {
-            Snake_draw_rect(data->foodX, data->foodY, RED);
+            Snake_draw_rect(x, y, color);
             return;
         }
     }
 }
 
-static void Snake_score()
+static void generateFood()
+{
+    generateItem(RED);
+}
+
+static void Snake_render()
 {
     // draw score
     game_draw_digits((MAXLEN + data->snakeEnd - data->snakeBegin) % MAXLEN,
@@ -110,6 +104,8 @@ static void Snake_score()
     // draw hiscore
     game_draw_digits(data->hiscore, 3, WIDTH - (DIGIT_WIDTH + 1) * 3,
         0, WHITE, BLACK);
+    if (data->phase == PHASE_GAMEOVER)
+        game_draw_sprite(&gameOver, GAMEOVER_X, GAMEOVER_Y, WHITE);
 }
 
 static void Snake_reset()
@@ -128,19 +124,21 @@ static void Snake_reset()
     data->velY = 0;
     data->rotLeftPressed = false;
     data->rotRightPressed = false;
-    generateFood();
-    Snake_score();
+    for (int i = 0 ; i < 3 ; ++i)
+        generateFood();
+    for (int i = 0 ; i < 8 ; ++i)
+        generateItem(BLUE);
 }
 
 static void Snake_prepare()
 {
-    game_set_ups(20);
+    game_set_ups(15);
     game_enable_frame_buffer();
     Snake_reset();
     data->hiscore = 0;
     game_load(&data->hiscore, sizeof(data->hiscore));
 #ifndef EMULATED
-//    Player_setup_melody(33);
+    Player_setup_melody(33);
 #endif
 }
 
@@ -151,13 +149,13 @@ static void Snake_update(unsigned long delta)
         // move snake forward
         int newX = (data->snakeX[data->snakeBegin] + data->velX) % FIELD_WIDTH;
         int newY = (data->snakeY[data->snakeBegin] + data->velY) % FIELD_HEIGHT;
-        Snake_draw_rect(newX, newY, GREEN);
         data->snakeBegin = (data->snakeBegin + MAXLEN - 1) % MAXLEN;
         data->snakeEnd = (data->snakeEnd + MAXLEN - 1) % MAXLEN;
         Snake_draw_rect(data->snakeX[data->snakeEnd], data->snakeY[data->snakeEnd], BLACK);
         data->snakeX[data->snakeBegin] = newX;
-        data->snakeY[data->snakeBegin] = newY; 
-        if (newX == data->foodX && newY == data->foodY)
+        data->snakeY[data->snakeBegin] = newY;
+        uint8_t pixel = game_get_pixel(newX * 2, newY * 2);
+        if (pixel == RED)
         {
             if ((data->snakeEnd + 1) % MAXLEN != data->snakeBegin)
             {
@@ -165,25 +163,19 @@ static void Snake_update(unsigned long delta)
                 data->snakeEnd = (data->snakeEnd + 1) % MAXLEN;
             }
             generateFood();
-            Snake_score();
         }
-        for (int i = (data->snakeBegin + 1) % MAXLEN; i != data->snakeEnd; i = (i + 1) % MAXLEN)
+        else if (pixel != BLACK)
         {
-            if (newX == data->snakeX[i] && newY == data->snakeY[i])
+            // game over
+            int score = (MAXLEN + data->snakeEnd - data->snakeBegin) % MAXLEN;
+            if (score > data->hiscore)
             {
-                // game over
-                int score = (MAXLEN + data->snakeEnd - data->snakeBegin) % MAXLEN;
-                if (score > data->hiscore)
-                {
-                    data->hiscore = score;
-                    Snake_score();
-                    game_save(&data->hiscore, sizeof(data->hiscore));
-                }
-                data->phase = PHASE_GAMEOVER;
-                game_draw_sprite(&gameOver, GAMEOVER_X, GAMEOVER_Y, WHITE);
-                break;
+                data->hiscore = score;
+                game_save(&data->hiscore, sizeof(data->hiscore));
             }
+            data->phase = PHASE_GAMEOVER;
         }
+        Snake_draw_rect(newX, newY, GREEN);
 
         if (game_is_button_pressed(ROTLEFT) && !data->rotLeftPressed)
         {
@@ -234,7 +226,7 @@ static void Snake_update(unsigned long delta)
 game_instance Snake2 = {
     "Snake2",
     Snake_prepare,
-    NULL,
+    Snake_render,
     Snake_update,
     sizeof(SnakeData),
     (void**)(&data)
