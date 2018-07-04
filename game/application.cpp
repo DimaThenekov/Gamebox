@@ -151,7 +151,7 @@ void update(unsigned long delta)
 
 void render()
 {
-    if (ptr)
+    if (ptr && ptr->render)
     {
         ptr->render();
     }

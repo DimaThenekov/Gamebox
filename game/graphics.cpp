@@ -362,6 +362,17 @@ void game_enable_frame_buffer()
 #endif
 }
 
+void game_clear_screen()
+{
+#ifdef FRAME_BUFFER
+    if (use_frame_buffer)
+    {
+        memset(frame, 0, sizeof(frame));
+    }
+#endif
+}
+
+
 void graphics_setup()
 {
     sclkpin   = digitalPinToBitMask(GFX_CLK);
@@ -440,8 +451,8 @@ static void graphics_update()
         game_render_line((uint8_t*)lines, step);
     }
 
-    uint8_t *line1;
-    uint8_t *line2;
+    uint8_t *line1, *line1_;
+    uint8_t *line2, *line2_;
 #ifdef FRAME_BUFFER
     if (use_frame_buffer)
     {
@@ -509,6 +520,7 @@ static void graphics_update()
         line1 = &frame[step + 1 * (ADDR_LOW + 1)][0];
         line2 = &frame[step + 0 * (ADDR_LOW + 1)][0];
     }
+    else
 #endif
     {
         line1 = &lines[1 * WIDTH];

@@ -64,7 +64,6 @@ struct SnakeData
     uint8_t foodY;
     bool rotLeftPressed;
     bool rotRightPressed;
-    bool half;
     uint8_t snakeBegin;
     uint8_t snakeEnd;
     uint8_t hiscore;
@@ -103,8 +102,19 @@ static void generateFood()
     }
 }
 
+static void Snake_score()
+{
+    // draw score
+    game_draw_digits((MAXLEN + data->snakeEnd - data->snakeBegin) % MAXLEN,
+        3, 0, 0, WHITE, BLACK);
+    // draw hiscore
+    game_draw_digits(data->hiscore, 3, WIDTH - (DIGIT_WIDTH + 1) * 3,
+        0, WHITE, BLACK);
+}
+
 static void Snake_reset()
 {
+    game_clear_screen();
     data->phase = PHASE_GAME;
     data->snakeX[0] = 17;
     data->snakeY[0] = 16;
@@ -118,13 +128,13 @@ static void Snake_reset()
     data->velY = 0;
     data->rotLeftPressed = false;
     data->rotRightPressed = false;
-    data->half = false;
     generateFood();
+    Snake_score();
 }
 
 static void Snake_prepare()
 {
-    game_set_ups(40);
+    game_set_ups(20);
     game_enable_frame_buffer();
     Snake_reset();
     data->hiscore = 0;
@@ -134,27 +144,9 @@ static void Snake_prepare()
 #endif
 }
 
-static int velsign(int x)
-{
-    if (x == 0) return 0;
-    if (x == 1) return 1;
-    return -1;
-}
-
-static void Snake_render()
-{
-    // draw score
-    game_draw_digits((MAXLEN + data->snakeEnd - data->snakeBegin) % MAXLEN,
-        3, 0, 0, WHITE, BLACK);
-    // draw hiscore
-    game_draw_digits(data->hiscore, 3, WIDTH - (DIGIT_WIDTH + 1) * 3,
-        0, WHITE, BLACK);
-}
-
 static void Snake_update(unsigned long delta)
 {
-    if (data->phase == PHASE_GAME) data->half = !data->half; else data->half = false;
-    if (data->phase == PHASE_GAME && !data->half)
+    if (data->phase == PHASE_GAME)
     {
         // move snake forward
         int newX = (data->snakeX[data->snakeBegin] + data->velX) % FIELD_WIDTH;
@@ -173,6 +165,7 @@ static void Snake_update(unsigned long delta)
                 data->snakeEnd = (data->snakeEnd + 1) % MAXLEN;
             }
             generateFood();
+            Snake_score();
         }
         for (int i = (data->snakeBegin + 1) % MAXLEN; i != data->snakeEnd; i = (i + 1) % MAXLEN)
         {
@@ -183,6 +176,7 @@ static void Snake_update(unsigned long delta)
                 if (score > data->hiscore)
                 {
                     data->hiscore = score;
+                    Snake_score();
                     game_save(&data->hiscore, sizeof(data->hiscore));
                 }
                 data->phase = PHASE_GAMEOVER;
@@ -240,7 +234,7 @@ static void Snake_update(unsigned long delta)
 game_instance Snake2 = {
     "Snake2",
     Snake_prepare,
-    Snake_render,
+    NULL,
     Snake_update,
     sizeof(SnakeData),
     (void**)(&data)
