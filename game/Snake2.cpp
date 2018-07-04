@@ -30,7 +30,7 @@ static const uint8_t gameOverLines[] PROGMEM = {
     B01100000, B01101100, B11101110, B11000000,
     B11000000, B11000110, B11111110, B11000000,
     B11001110, B11000110, B11111110, B11111100,
-    B11000110, B11111110, B11010110, B11000000,  
+    B11000110, B11111110, B11010110, B11000000,
     B01100110, B11000110, B11000110, B11000000,
     B00111110, B11000110, B11000110, B11111110,
     B00000000, B00000000, B00000000, B00000000,
@@ -140,7 +140,7 @@ static void Snake_prepare()
     data->hiscore = 0;
     game_load(&data->hiscore, sizeof(data->hiscore));
 #ifndef EMULATED
-    Player_setup_melody(33);
+//    Player_setup_melody(33);
 #endif
 }
 

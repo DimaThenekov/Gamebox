@@ -37,11 +37,13 @@ uint8_t game_sprite_height(const struct game_sprite *s);
 // DRAWING FUNCTIONS
 
 void game_draw_pixel(int x, int y, uint8_t color);
+uint8_t game_get_pixel(int x, int y);
 void game_draw_vline(int x, int y1, int y2, uint8_t color); // vertical line
 void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg = OPAQUE); // text is drawn with default 5x7 font
 void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg = OPAQUE); // char is drawn with default 5x7 font
 void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color);
 void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_t bg = OPAQUE);
+/* Clear screeen in frame buffer mode */
 void game_clear_screen();
 
 bool game_is_drawing_lines(int y, int height);
@@ -50,7 +52,6 @@ bool game_is_drawing_lines(int y, int height);
 // Called only by libgame
 
 void graphics_setup();
-void graphics_render_frame();
 
 #endif
 

@@ -42,7 +42,6 @@ void loop()
     {
         controls_update();
         update(cur_time - last_update);
-        graphics_render_frame();
         last_update = cur_time;
     }
 }

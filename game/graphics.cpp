@@ -73,6 +73,17 @@ static uint8_t game_make_color(uint8_t color)
 #endif
 }
 
+static uint8_t game_make_color_id(uint8_t color)
+{
+#if defined(COLOR_6BIT) && COLOR_6BIT
+    /* TODO */
+    return 0;
+#else
+    return ((color & 1) << 5) |
+           ((color & 2) << 2) |
+           ((color & 4) >> 1);
+#endif
+}
 
 uint8_t game_sprite_width(const struct game_sprite *s)
 {
@@ -159,6 +170,21 @@ void game_draw_pixel(int x, int y, uint8_t color)
         game_render_buf[x + ((y & ADDR_HIGH) << ADDR_SHIFT)] = game_make_color(color);
     }
 }
+
+uint8_t game_get_pixel(int x, int y)
+{
+    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+        return 0;
+#ifdef FRAME_BUFFER
+    if (use_frame_buffer)
+    {
+        return game_make_color_id(frame[y][x]);
+    }
+#endif
+
+    return 0;
+}
+
 
 void game_draw_vline(int x, int y1, int y2, uint8_t color)
 {
@@ -328,30 +354,32 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
     }
 }
 
-void game_render_line(uint8_t *buf, int y)
+void game_render_line(uint8_t *buf, int line)
 {
-    for (int i = 0; i < WIDTH * BUF_LINES; ++i)
-        buf[i] = 0;
+    int i = 0;
+    for (int y = 0 ; y < BUF_LINES ; ++y)
+        for (int x = 0; x < WIDTH ; ++x, ++i)
+        {
+#ifdef FRAME_BUFFER
+            if (use_frame_buffer)
+                buf[i] = frame[line + y * (ADDR_LOW + 1)][x];
+            else
+#endif
+                buf[i] = 0;
+        }
 
     game_render_buf = buf;
-    game_render_y = y;
+    game_render_y = line;
 
     // call user render()
+    bool fb = use_frame_buffer;
+    use_frame_buffer = false;
     render();
+    use_frame_buffer = fb;
 
 #ifndef GFX_E
-    if (y == WIDTH / 4 - 1) // fix broken led
+    if (line == WIDTH / 4 - 1) // fix broken led
         buf[WIDTH * 4 - 1] = 0;
-#endif
-}
-
-void graphics_render_frame()
-{
-#ifdef FRAME_BUFFER
-    if (use_frame_buffer)
-    {
-        render();
-    }
 #endif
 }
 
@@ -444,27 +472,16 @@ static void graphics_update()
     tick = tock & ~sclkpin;
 
     uint8_t lines[BUF_LINES * WIDTH];
-#ifdef FRAME_BUFFER
-    if (!use_frame_buffer)
-#endif
+//#ifdef FRAME_BUFFER
+//    if (!use_frame_buffer)
+//#endif
     {
         game_render_line((uint8_t*)lines, step);
     }
 
-    uint8_t *line1, *line1_;
-    uint8_t *line2, *line2_;
-#ifdef FRAME_BUFFER
-    if (use_frame_buffer)
-    {
-        line1 = &frame[step + (BUF_LINES - 1) * (ADDR_LOW + 1)][0];
-        line2 = &frame[step + (BUF_LINES - 2) * (ADDR_LOW + 1)][0];
-    }
-    else
-#endif
-    {
-        line1 = &lines[(BUF_LINES - 1) * WIDTH];
-        line2 = &lines[(BUF_LINES - 2) * WIDTH];
-    }
+    uint8_t *line1 = &lines[(BUF_LINES - 1) * WIDTH];
+    uint8_t *line2 = &lines[(BUF_LINES - 2) * WIDTH];
+
 #ifdef GFX_PORT2
     uint8_t tmp;
     #define pew asm volatile(                 \
@@ -514,18 +531,8 @@ static void graphics_update()
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew
 #ifndef GFX_E
-#ifdef FRAME_BUFFER
-    if (use_frame_buffer)
-    {
-        line1 = &frame[step + 1 * (ADDR_LOW + 1)][0];
-        line2 = &frame[step + 0 * (ADDR_LOW + 1)][0];
-    }
-    else
-#endif
-    {
-        line1 = &lines[1 * WIDTH];
-        line2 = &lines[0 * WIDTH];
-    }
+    line1 = &lines[1 * WIDTH];
+    line2 = &lines[0 * WIDTH];
 
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew 
