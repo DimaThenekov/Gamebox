@@ -9,6 +9,7 @@
 #include <QPainter>
 
 /* static functions and data for Arduino project compatibility */
+static QColor frame[HEIGHT][WIDTH];
 static QColor screen[HEIGHT][WIDTH];
 static bool use_frame_buffer;
 
@@ -17,7 +18,18 @@ void game_draw_pixel(int x, int y, uint8_t c)
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return;
     QColor color(((c >> 4) & 3) * 85, ((c >> 2) & 3) * 85, (c & 3) * 85);
-    screen[y][x] = color;
+    if (use_frame_buffer)
+        frame[y][x] = color;
+    else
+        screen[y][x] = color;
+}
+
+uint8_t game_get_pixel(int x, int y)
+{
+    if (!use_frame_buffer || x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+        return 0;
+    QColor c = frame[y][x];
+    return ((c.red() / 85) << 4) | ((c.green() / 85) << 2) | ((c.blue() / 85));
 }
 
 void game_draw_vline(int x, int y1, int y2, uint8_t color)
@@ -85,7 +97,7 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
             {
                 if ((dd >> (DIGIT_WIDTH - 1 - b)) & 1)
                     game_draw_pixel(x + b, y + dy, color);
-                else
+                else if (bg != OPAQUE)
                     game_draw_pixel(x + b, y + dy, bg);
             }
         }
@@ -103,15 +115,18 @@ void game_clear_screen()
     {
         for (int x = 0 ; x < WIDTH ; ++x)
         {
-            screen[y][x] = QColor(0, 0, 0);
+            if (use_frame_buffer)
+                frame[y][x] = QColor(0, 0, 0);
+            else
+                screen[y][x] = QColor(0, 0, 0, 0);
         }
     }
 }
 
 void game_enable_frame_buffer()
 {
-    game_clear_screen();
     use_frame_buffer = true;
+    game_clear_screen();
 }
 
 /**************************************************************/
@@ -121,14 +136,19 @@ RenderArea::RenderArea(QWidget *parent)
 {
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
+    framebuffer = false;
 }
 
-void RenderArea::clear()
+void RenderArea::beginRender()
 {
-    if (use_frame_buffer)
-        return;
-
+    framebuffer = use_frame_buffer;
+    use_frame_buffer = false;
     game_clear_screen();
+}
+
+void RenderArea::endRender()
+{
+    use_frame_buffer = framebuffer;
 }
 
 QSize RenderArea::minimumSizeHint() const
@@ -151,7 +171,19 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
     {
         for (int x = 0 ; x < WIDTH ; ++x)
         {
-            QBrush brush(screen[y][x]);
+            QBrush brush;
+            if (screen[y][x].alpha())
+            {
+                brush = QBrush(screen[y][x]);
+            }
+            else if (use_frame_buffer)
+            {
+                brush = QBrush(frame[y][x]);
+            }
+            else
+            {
+                brush = QBrush(QColor(0, 0, 0));
+            }
             painter.setBrush(brush);
             painter.drawRect(QRect(x * pixelW, y * pixelH, pixelW, pixelH));
             painter.setBrush(Qt::NoBrush);

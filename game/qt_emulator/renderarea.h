@@ -13,10 +13,14 @@ public:
     QSize minimumSizeHint() const override;
     QSize sizeHint() const override;
 
-    void clear();
+    void beginRender();
+    void endRender();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+
+private:
+    bool framebuffer;
 };
 
 #endif // RENDERAREA_H

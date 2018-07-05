@@ -117,8 +117,9 @@ Window::Window()
 void Window::updateScreen()
 {
     ::update(timer->interval());
-    renderArea->clear();
+    renderArea->beginRender();
     ::render();
+    renderArea->endRender();
     renderArea->update();
 }
 
