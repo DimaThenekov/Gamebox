@@ -1,0 +1,42 @@
+CTL_CLOCK       A8          PK0
+CTL_LATCHB      A9          PK1 
+CTL_LATCHJ      A10         PK2 
+CTL_DATA        A11         PK3 
+
+GFX_IR1         53          PB0
+GFX_IG1         52          PB1
+GFX_IB1         51          PB2
+GFX_IR2         22          PA0
+GFX_IG2         23          PA1
+GFX_IB2         24          PA2
+
+GFX_CLK         5           PE3
+GFX_LAT         2           PE4
+GFX_OE          3           PE5
+
+GFX_A           A0          PF0
+GFX_B           A1          PF1
+GFX_C           A2          PF2
+GFX_D           A3          PF3
+
+-------------------------------
+
+PINK            0x0106      0xe6
+DDRK            0x0107      0xe7
+PORTK           0x0108      0xe8
+
+PINB            0x0023      0x03
+DDRB            0x0024      0x04
+PORTB           0x0025      0x05
+
+PINA            0x0020      0x00
+DDRA            0x0021      0x01
+PORTA           0x0022      0x02
+
+PINE            0x002c      0x0c
+DDRE            0x002d      0x0d
+PORTE           0x002e      0x0e
+
+PINF            0x002f      0x0f
+DDRF            0x0030      0x10
+PORTF           0x0031      0x11
