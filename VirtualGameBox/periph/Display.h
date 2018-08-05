@@ -7,7 +7,7 @@
 
 
 #include "AVRGPIO.h"
-#include <SFML/Graphics.hpp>
+#include "QtWidgets"
 
 #define SCALE 12
 #define WIDTH 64
@@ -15,6 +15,23 @@
 #define W_WIDTH (1 + WIDTH * (SCALE + 1))
 #define W_HEIGHT (1 + HEIGHT * (SCALE + 1))
 #define MAX_PASSES 8
+
+// Physical buttons
+#define BUTTON_SW 6
+#define BUTTON_NW 5
+#define BUTTON_SE 3
+#define BUTTON_NE 4
+
+// Joystick buttons
+#define BUTTON_UP 11
+#define BUTTON_LEFT 13
+#define BUTTON_DOWN 12
+#define BUTTON_RIGHT 14
+#define BUTTON_SELECT 9
+#define BUTTON_START 10
+#define BUTTON_A 7
+#define BUTTON_B 8
+
 
 class Display {
     friend class AVRGPIOA;
@@ -39,7 +56,7 @@ private:
     uint8_t frame[MAX_PASSES][64][64];
     uint8_t bufptr, btnptr;
     uint8_t line;
-    sf::VertexArray* screen;
+    QColor screen[HEIGHT * WIDTH];
 
     void update();
 
@@ -53,23 +70,25 @@ public:
     void reset();
 
     void start();
+    QColor *getScreen() { return screen; }
+    void button_update(int b, bool pressed);
 };
 
 class AVRGPIOA : public AVRGPIO {
 private:
-    AVRRegisterBank &rbank;
     Display &display;
+    AVRRegisterBank &rbank;
 
     void setPinValue(int pin, bool value) override;
 
 public:
-    AVRGPIOA(Display &display, AVRRegisterBank &rbank);
+    AVRGPIOA(Display &d, AVRRegisterBank &rbank);
 };
 
 class AVRGPIOB : public AVRGPIO {
 private:
-    AVRRegisterBank &rbank;
     Display &display;
+    AVRRegisterBank &rbank;
 
     void setPinValue(int pin, bool value) override;
 
@@ -79,8 +98,8 @@ public:
 
 class AVRGPIOE : public AVRGPIO {
 private:
-    AVRRegisterBank &rbank;
     Display &display;
+    AVRRegisterBank &rbank;
 
     void setPinValue(int pin, bool value) override;
 
@@ -90,8 +109,8 @@ public:
 
 class AVRGPIOF : public AVRGPIO {
 private:
-    AVRRegisterBank &rbank;
     Display &display;
+    AVRRegisterBank &rbank;
 
     void setPinValue(int pin, bool value) override;
 
@@ -101,8 +120,8 @@ public:
 
 class AVRGPIOK : public AVRGPIO {
 private:
-    AVRRegisterBank &rbank;
     Display &display;
+    AVRRegisterBank &rbank;
 
     void setPinValue(int pin, bool value) override;
 

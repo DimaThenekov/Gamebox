@@ -31,7 +31,7 @@ void AVRTimer16::tick(unsigned int cycles) {
         unsigned int triggers = ticks / prescaler;
         ticks %= prescaler;
 
-        for (int i = 0; i < triggers; ++i) {
+        for (unsigned int i = 0; i < triggers; ++i) {
             if (cnt >= icr) {
                 cnt = 0;
             } else {

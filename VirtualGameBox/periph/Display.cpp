@@ -5,43 +5,14 @@
 #include <cstdio>
 #include <thread>
 #include "Display.h"
-#include <SFML/Graphics.hpp>
+#include <QtWidgets>
 #include <cstring>
-
-// Physical buttons
-#define BUTTON_SW 6
-#define BUTTON_NW 5
-#define BUTTON_SE 3
-#define BUTTON_NE 4
-
-// Joystick buttons
-#define BUTTON_UP 11
-#define BUTTON_LEFT 13
-#define BUTTON_DOWN 12
-#define BUTTON_RIGHT 14
-#define BUTTON_SELECT 9
-#define BUTTON_START 10
-#define BUTTON_A 7
-#define BUTTON_B 8
 
 
 Display::Display() {
-    screen = new sf::VertexArray(sf::Quads, WIDTH * HEIGHT * 4);
     for (int x = 0; x < WIDTH; ++x) {
         for (int y = 0; y < HEIGHT; ++y) {
-            int pos = 4 * (x * HEIGHT + y);
-            int left = 1 + x * (SCALE + 1);
-            int top = 1 + y * (SCALE + 1);
-            int right = left + SCALE;
-            int bottom = top + SCALE;
-            (*screen)[pos + 0].position = sf::Vector2f(left, top);
-            (*screen)[pos + 1].position = sf::Vector2f(right, top);
-            (*screen)[pos + 2].position = sf::Vector2f(right, bottom);
-            (*screen)[pos + 3].position = sf::Vector2f(left, bottom);
-            (*screen)[pos + 0].color = sf::Color::Black;
-            (*screen)[pos + 1].color = sf::Color::Black;
-            (*screen)[pos + 2].color = sf::Color::Black;
-            (*screen)[pos + 3].color = sf::Color::Black;
+            screen[y * WIDTH + x] = QColor(0, 0, 0);
         }
     }
     reset();
@@ -74,6 +45,12 @@ void Display::reset() {
     }
 }
 
+void Display::button_update(int b, bool pressed)
+{
+    btn[b] = pressed;
+}
+
+/*
 void Display::start() {
     sf::RenderWindow window(sf::VideoMode(W_WIDTH, W_HEIGHT), "VirtualGameBox", sf::Style::Close);
     window.setVerticalSyncEnabled(true);
@@ -137,47 +114,49 @@ void Display::start() {
         window.display();
     }
 }
+*/
 
 void Display::update() {
     for (int i = 0; i < WIDTH; ++i) {
         for (int j = 0; j < HEIGHT; ++j) {
-            sf::Color color;
+            QColor color;
             if ((options & 0x7) == 0) {
                 // a single pass
 
                 uint8_t value = frame[0][i][j];
-                color = sf::Color(((value >> 0) & 1) * 255, ((value >> 1) & 1) * 255, ((value >> 2) & 1) * 255);
+                color = QColor(((value >> 0) & 1) * 255,
+                               ((value >> 1) & 1) * 255,
+                               ((value >> 2) & 1) * 255, 255);
             } else {
                 int line = j & 0xf;
                 long long totalTime = 0;
                 for (int p = 0; p <= (options & 0x7); ++p) {
                     totalTime += oe_end[p][line] - oe_begin[p][line];
                 }
-                color = sf::Color::Black;
+                color = QColor(0, 0, 0, 255);
                 if (totalTime > 0) {
                     for (int p = 0; p <= (options & 0x7); ++p) {
                         long long dur = oe_end[p][line] - oe_begin[p][line];
                         double frac = 1.0 * dur / totalTime;
                         uint8_t value = frame[p][i][j];
-                        sf::Color c(((value >> 0) & 1) * 255, ((value >> 1) & 1) * 255, ((value >> 2) & 1) * 255);
-                        color.r += (int) round(c.r * frac);
-                        color.g += (int) round(c.g * frac);
-                        color.b += (int) round(c.b * frac);
+                        QColor c(((value >> 0) & 1) * 255,
+                                 ((value >> 1) & 1) * 255,
+                                 ((value >> 2) & 1) * 255);
+                        color.setRed((int) round(c.red() * frac) + color.red());
+                        color.setGreen((int) round(c.green() * frac) + color.green());
+                        color.setBlue((int) round(c.blue() * frac) + color.blue());
                     }
                 }
             }
 
-            int pos = 4 * (i * HEIGHT + j);
-            (*screen)[pos + 0].color = color;
-            (*screen)[pos + 1].color = color;
-            (*screen)[pos + 2].color = color;
-            (*screen)[pos + 3].color = color;
+            screen[j * WIDTH + i] = color;
         }
     }
 }
 
-AVRGPIOA::AVRGPIOA(Display &display, AVRRegisterBank &rbank) : display(display), rbank(rbank) {
-
+AVRGPIOA::AVRGPIOA(Display &d, AVRRegisterBank &rbank)
+    : display(d), rbank(rbank)
+{
 }
 
 void AVRGPIOA::setPinValue(int pin, bool value) {
@@ -283,7 +262,7 @@ AVRGPIOK::AVRGPIOK(Display &display, AVRRegisterBank &rbank) : display(display),
 
 void AVRGPIOK::setPinValue(int pin, bool value) {
     bool old_cclock = display.cclock;
-    bool old_latchb = display.latchb;
+    //bool old_latchb = display.latchb;
     bool old_latchj = display.latchj;
 
     if (pin == 0) display.cclock = value;

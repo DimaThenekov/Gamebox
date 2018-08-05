@@ -63,8 +63,11 @@ void AVRGPIO::portWrite(uint8_t value) {
 }
 
 bool AVRGPIO::getPinValue(int pin) {
+    (void)pin;
     return false;
 }
 
 void AVRGPIO::setPinValue(int pin, bool value) {
+    (void)pin;
+    (void)value;
 }
