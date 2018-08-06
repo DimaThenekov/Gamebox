@@ -40,7 +40,7 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
 }
 
 
-Window::Window(std::vector<char> &buf)
+Window::Window(std::vector<uint8_t> &buf)
     : avr(display)
 {
     QBoxLayout *mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);

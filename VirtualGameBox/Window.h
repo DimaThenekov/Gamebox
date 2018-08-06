@@ -27,7 +27,7 @@ class Window : public QWidget
     Q_OBJECT
 
 public:
-    Window(std::vector<char> &buf);
+    Window(std::vector<uint8_t> &buf);
 
 private slots:
     void updateScreen();
