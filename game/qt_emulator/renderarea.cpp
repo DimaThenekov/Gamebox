@@ -38,6 +38,13 @@ void game_draw_vline(int x, int y1, int y2, uint8_t color)
         game_draw_pixel(x, i, color);
 }
 
+void game_draw_rect(int x, int y, int w, int h, uint8_t color)
+{
+    for (int dx = 0; dx < w ; ++dx)
+        for (int dy = 0; dy < h ; ++dy)
+            game_draw_pixel(x + dx, y + dy, color);
+}
+
 void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color)
 {
     for (int dx = 0; dx < s->width; ++dx)
@@ -56,6 +63,24 @@ void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color)
     }
 }
 
+void game_draw_color_sprite(const struct game_color_sprite *s, int x, int y)
+{
+    const uint8_t *data = s->lines;
+    for (int dy = 0; dy < s->height ; ++dy)
+    {
+        for (int dx = 0; dx < s->width ; ++dx, ++data)
+        {
+            int xx = x + dx;
+            int yy = y + dy;
+            if (xx < 0 || xx >= WIDTH || yy < 0 || yy >= HEIGHT)
+                continue;
+            int color = *data;
+            if (color != TRANSPARENT)
+                game_draw_pixel(xx, yy, color);
+        }
+    }
+}
+
 void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
 {
     int pos = (int)c * FONT_HEIGHT;
@@ -66,7 +91,7 @@ void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
             uint8_t d = font_data[pos + j];
             if ((d >> (FONT_WIDTH - 1 - i)) & 1)
                 game_draw_pixel(x + i, y + j, color);
-            else if (bg != OPAQUE)
+            else if (bg != TRANSPARENT)
                 game_draw_pixel(x + i, y + j, bg);
         }
     }
@@ -97,7 +122,7 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
             {
                 if ((dd >> (DIGIT_WIDTH - 1 - b)) & 1)
                     game_draw_pixel(x + b, y + dy, color);
-                else if (bg != OPAQUE)
+                else if (bg != TRANSPARENT)
                     game_draw_pixel(x + b, y + dy, bg);
             }
         }

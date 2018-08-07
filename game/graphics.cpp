@@ -95,9 +95,24 @@ uint8_t game_sprite_height(const struct game_sprite *s)
     return pgm_read_byte(&s->height);
 }
 
+uint8_t game_color_sprite_width(const struct game_color_sprite *s)
+{
+    return pgm_read_byte(&s->width);
+}
+
+uint8_t game_color_sprite_height(const struct game_color_sprite *s)
+{
+    return pgm_read_byte(&s->height);
+}
+
 const uint8_t *game_sprite_line(const struct game_sprite *s, uint8_t line)
 {
     return pgm_read_byte(&s->lineSize) * line + (const uint8_t*)pgm_read_pointer(&s->lines);
+}
+
+const uint8_t *game_color_sprite_line(const struct game_color_sprite *s, uint8_t line)
+{
+    return game_color_sprite_width(s) * line + (const uint8_t*)pgm_read_pointer(&s->lines);
 }
 
 void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int x, uint8_t y, int8_t color, uint8_t ry)
@@ -114,7 +129,7 @@ void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int x, u
         {
             if (spr & mask)
             {
-                game_render_buf[xx + ((ry & ADDR_HIGH) << ADDR_SHIFT)] = color;
+                buf[xx] = color;
             }
         }
         mask >>= 1;
@@ -123,6 +138,24 @@ void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int x, u
             mask = 0x80;
             ++ptr;
             spr = pgm_read_byte(ptr);
+        }
+    }
+}
+
+void game_color_sprite_render_line(const struct game_color_sprite *s,
+    uint8_t *buf, int x, uint8_t y, uint8_t ry)
+{
+    uint8_t line = ry - y;
+    uint8_t width = game_color_sprite_width(s);
+    const uint8_t *ptr = game_color_sprite_line(s, line);
+    for (uint8_t dx = 0; dx < width; ++dx)
+    {
+        uint8_t color = pgm_read_byte(ptr++);
+        int xx = x + dx;
+        if (xx >= 0 && xx < WIDTH)
+        {
+            if (color != TRANSPARENT)
+                buf[xx] = game_make_color(color);
         }
     }
 }
@@ -151,6 +184,69 @@ void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color)
     {
         game_sprite_render_line(s, game_render_buf + ((ry & ADDR_HIGH) << ADDR_SHIFT),
           x, y, game_make_color(color), ry);
+    }
+}
+
+void game_draw_line(uint8_t *buf, int x, uint8_t w, int8_t color)
+{
+    for (uint8_t dx = 0; dx < w; ++dx)
+    {
+        int xx = x + dx;
+        if (xx >= 0 && xx < WIDTH)
+        {
+            buf[xx] = color;
+        }
+    }
+}
+
+void game_draw_rect(int x, int y, int w, int h, uint8_t color)
+{
+#ifdef FRAME_BUFFER
+    if (use_frame_buffer)
+    {
+      for (uint8_t ry = y ; ry < y + h ; ++ry)
+      {
+        if (ry < 0 || ry >= HEIGHT)
+          continue;
+        game_draw_line(&frame[ry][0], x, w, game_make_color(color));
+      }
+      return;
+    }
+#endif
+    uint8_t ry = game_render_y + (y & ADDR_HIGH);
+    if (ry < y) ry += ADDR_LOW + 1;
+    if (ry >= HEIGHT) return;
+    if (ry < (y + h))
+    {
+        game_draw_line(game_render_buf + ((ry & ADDR_HIGH) << ADDR_SHIFT),
+          x, w, game_make_color(color));
+    }
+}
+
+void game_draw_color_sprite(const struct game_color_sprite *s, int x, int y)
+{
+    uint8_t height = game_color_sprite_height(s);
+#ifdef FRAME_BUFFER
+    if (use_frame_buffer)
+    {
+        for (uint8_t ry = y ; ry < y + height ; ++ry)
+        {
+            if (ry < 0 || ry >= HEIGHT)
+                continue;
+            game_color_sprite_render_line(s, &frame[ry][0],
+                x, y, ry);
+        }
+        return;
+    }
+#endif
+    uint8_t ry = game_render_y + (y & ADDR_HIGH);
+    if (ry < y) ry += ADDR_LOW + 1;
+    if (ry >= HEIGHT) return;
+    if (ry < (y + height))
+    {
+        game_color_sprite_render_line(s,
+            game_render_buf + ((ry & ADDR_HIGH) << ADDR_SHIFT),
+            x, y, ry);
     }
 }
 
@@ -263,7 +359,7 @@ void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
                 {
                     frame[y + dy][x + i] = game_make_color(color);
                 }
-                else if (bg != OPAQUE)
+                else if (bg != TRANSPARENT)
                 {
                     frame[y + dy][x + i] = game_make_color(bg);
                 }
@@ -285,7 +381,7 @@ void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
             {
                 game_render_buf[x + i + s * WIDTH] = game_make_color(color);
             }
-            else if (bg != OPAQUE)
+            else if (bg != TRANSPARENT)
             {
                 game_render_buf[x + i + s * WIDTH] = game_make_color(bg);
             }
@@ -325,7 +421,7 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
                             {
                                 frame[y + dy][x + b] = game_make_color(color);
                             }
-                            else if (bg != OPAQUE)
+                            else if (bg != TRANSPARENT)
                             {
                                 frame[y + dy][x + b] = game_make_color(bg);
                             }
@@ -345,7 +441,7 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
                 {
                     game_render_buf[x + b + ((y & ADDR_HIGH) << ADDR_SHIFT)] = game_make_color(color);
                 }
-                else if (bg != OPAQUE)
+                else if (bg != TRANSPARENT)
                 {
                     game_render_buf[x + b + ((y & ADDR_HIGH) << ADDR_SHIFT)] = game_make_color(bg);
                 }
