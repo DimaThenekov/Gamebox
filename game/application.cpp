@@ -14,6 +14,7 @@ extern game_instance Snake;
 #ifdef FRAME_BUFFER
 extern game_instance Snake2;
 extern game_instance Snail;
+extern game_instance Ghostbuster;
 #endif
 extern game_instance Flappy;
 extern game_instance Tester;
@@ -25,7 +26,7 @@ extern game_instance Dump;
 extern game_instance Player;
 #endif
 /* Register your game like so:
- * 
+ *
  * extern game_instance YOUR_GAME_NAME;
  */
 
@@ -35,6 +36,7 @@ static const MenuItem main_menu[] PROGMEM = {
 #ifdef FRAME_BUFFER
     { "Snake2", &Snake2 },
     { "Snail", &Snail },
+    { "GhostBuster", &Ghostbuster },
 #endif
     { "Flappy", &Flappy },
     { "BreakOut", &BreakOut },
@@ -46,7 +48,7 @@ static const MenuItem main_menu[] PROGMEM = {
     { "Music", &Player },
 #endif
     /* Register your game like so:
-     * 
+     *
      * { "YOUR_GAME_NAME", &YOUR_GAME_NAME },
      */
     { NULL, NULL }
@@ -176,4 +178,3 @@ void game_load(void *buf, uint16_t size)
 {
     storage_read((const char*)ptr->name, buf, size);
 }
-

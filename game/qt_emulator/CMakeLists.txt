@@ -12,11 +12,10 @@ find_package(Qt5Widgets)
 
 add_executable(gamebox main.cpp window.cpp renderarea.cpp)
 target_sources(gamebox PUBLIC ../BackspaceInvaders.cpp ../BreakOut.cpp ../Flappy.cpp
-               ../Raycaster.cpp ../Saper.cpp ../Snail.cpp
-               ../Snake.cpp ../Snake2.cpp ../Tester.cpp)
-target_sources(gamebox PUBLIC ../application.cpp ../avrfix.cpp ../menu.cpp
-               ../random.cpp)
+               ../Raycaster.cpp ../Saper.cpp ../Snake.cpp ../Snake2.cpp ../Tester.cpp)
+target_sources(gamebox PUBLIC ../application.cpp ../avrfix.cpp ../Ghostbuster.cpp ../menu.cpp ../random.cpp)
 target_compile_definitions(gamebox PUBLIC EMULATED)
 
 # Use the Widgets module from Qt 5.
 target_link_libraries(gamebox Qt5::Widgets)
+
