@@ -12,12 +12,12 @@
 #define UP BUTTON_UP
 #define DOWN BUTTON_DOWN
 
-#define R RED
+#define R RED_DARK
 #define G GREEN
 #define T TRANSPARENT
 #define K BLACK
 #define Y YELLOW
-#define W WHITE
+#define W WHITE_DARK
 static const uint8_t snail_lines[] PROGMEM = {
     T, R, R, R, T, T, T, T,
     R, K, K, K, R, G, T, G,
@@ -27,6 +27,17 @@ static const uint8_t snail_lines[] PROGMEM = {
     T, R, R, R, R, G, G, G,
     T, T, G, G, G, G, G, G,
     T, G, G, G, G, G, G, T,
+};
+
+static const uint8_t block_c_lines[] PROGMEM = {
+    R, R, W, R, R, R, R, R,
+    R, R, W, R, R, R, R, R,
+    R, R, W, R, R, R, R, R,
+    W, W, W, W, W, W, W, W,
+    R, R, R, R, R, W, R, R,
+    R, R, R, R, R, W, R, R,
+    R, R, R, R, R, W, R, R,
+    W, W, W, W, W, W, W, W,
 };
 
 #undef R
@@ -62,6 +73,10 @@ static const game_color_sprite snail PROGMEM = {
 
 static const game_sprite block PROGMEM = {
     8, 7, 1, block_lines
+};
+
+static const game_color_sprite block_c PROGMEM = {
+    8, 8, block_c_lines
 };
 
 static const game_sprite crate PROGMEM = {
@@ -119,13 +134,14 @@ static void Snail_draw_field_cell(int c, int r)
     switch (data->field[r][c])
     {
     case 'B':
-        game_draw_sprite(&block, c * CW, r * CH, RED);
+        game_draw_color_sprite(&block_c, c * CW, r * CH);
+        //game_draw_sprite(&block, c * CW, r * CH, RED_DARK);
         break;
     case 'D':
         game_draw_rect(c * CW + 1, r * CH + 1, CW - 2, CH - 2, BLUE);
         /* fall through */
     case 'C':
-        game_draw_sprite(&crate, c * CW, r * CH, YELLOW);
+        game_draw_sprite(&crate, c * CW, r * CH, YELLOW_DARK);
         break;
     case 'X':
         game_draw_rect(c * CW + 1, r * CH + 1, CW - 2, CH - 2, BLUE);

@@ -62,14 +62,15 @@ static uint8_t game_make_color_channel(uint8_t channel)
 
 static uint8_t game_make_color(uint8_t color)
 {
+    return color;
 #if defined(COLOR_6BIT) && COLOR_6BIT
-    return (game_make_color_channel((color >> 4) & 3)) |
+    return color_channel ? color >> 4 : color;/*(game_make_color_channel((color >> 4) & 3)) |
            (game_make_color_channel((color >> 2) & 3) << 1) |
-           (game_make_color_channel(color & 3) << 2);
+           (game_make_color_channel(color & 3) << 2);*/
 #else
-    return (color >> 5 & 1) |
+    return color;/*(color >> 5 & 1) |
            (color >> 3 & 1) << 1 |
-           (color >> 1 & 1) << 2;
+           (color >> 1 & 1) << 2;*/
 #endif
 }
 
@@ -613,6 +614,30 @@ static void graphics_update()
          [tick] "r" (tick),                   \
          [tock] "r" (tock): "r0", "r1");
 #endif
+
+#ifdef GFX_PORT2
+    #define pow asm volatile(                 \
+      "ld  %[tmp], %a[ptr1]+"       "\n\t"    \
+      "swap %[tmp]"                 "\n\t"    \
+      "out %[data2], %[tmp]"        "\n\t"    \
+      "ld  %[tmp], %a[ptr2]+"       "\n\t"    \
+      "swap %[tmp]"                 "\n\t"    \
+      "out %[data], %[tmp]"         "\n\t"    \
+      "out %[clk]     , %[tick]"     "\n\t"   \
+      "out %[clk]     , %[tock]"     "\n"     \
+      :  [ptr1] "+e" (line1),                 \
+         [ptr2] "+e" (line2),                 \
+         [tmp] "=r" (tmp)                     \
+      :  [data] "I" (_SFR_IO_ADDR(GFX_DATAPORT)), \
+         [data2] "I" (_SFR_IO_ADDR(GFX_DATAPORT2)), \
+         [clk]  "I" (_SFR_IO_ADDR(GFX_SCLKPORT)), \
+         [tick] "r" (tick),                   \
+         [tock] "r" (tock) );
+#endif
+#ifdef GFX_PORT2
+if (!color_channel)
+#endif
+{
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew 
@@ -634,6 +659,34 @@ static void graphics_update()
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew 
 #endif
+}
+#ifdef GFX_PORT2
+else
+{
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow
+#ifndef GFX_E
+    line1 = &lines[1 * WIDTH];
+    line2 = &lines[0 * WIDTH];
+
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+#endif
+}
+#endif
+
     *oeport |= oepin;
 
     if (step & 1)
@@ -666,7 +719,7 @@ static void graphics_update()
     step = (step + 1) & ADDR_LOW;
 #if defined(COLOR_6BIT) && COLOR_6BIT
     if (step == 0)
-        color_channel = (color_channel + 1) % 3;
+        color_channel ^= 1;
 #endif
 }
 
@@ -675,7 +728,7 @@ ISR(TIMER1_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
   TIFR1 |= TOV1;                  // Clear Timer1 interrupt flag
   // Interval 2 is too small even for invaders, but ok for 6-bit colors
   // 64 is ok for 3-bit colors
-  ICR1      = 64;        // Set interval for next interrupt
+  ICR1      = color_channel ? 64 : 32;        // Set interval for next interrupt
   TCNT1     = 0;        // Restart interrupt timer
 }
 

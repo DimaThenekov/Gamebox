@@ -17,7 +17,14 @@ void game_draw_pixel(int x, int y, uint8_t c)
 {
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return;
-    QColor color(((c >> 4) & 3) * 85, ((c >> 2) & 3) * 85, (c & 3) * 85);
+    //QColor color(((c >> 4) & 3) * 85, ((c >> 2) & 3) * 85, (c & 3) * 85);
+    int r = c & RED;
+    r = ((r & 0xf) + ((r & 0xf0) >> 4)) * 127;
+    int g = c & GREEN;
+    g = (((g & 0xf) >> 1) + ((g & 0xf0) >> 5)) * 127;
+    int b = c & BLUE;
+    b = (((b & 0xf) >> 2) + ((b & 0xf0) >> 6)) * 127;
+    QColor color(r, g, b);
     if (use_frame_buffer)
         frame[y][x] = color;
     else
