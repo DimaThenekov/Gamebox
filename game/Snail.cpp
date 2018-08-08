@@ -68,7 +68,7 @@ static const game_sprite crate PROGMEM = {
     8, 8, 1, crate_lines
 };
 
-static const uint8_t level1[] PROGMEM = {
+/*static const uint8_t level1[] PROGMEM = {
     "BBBBBBBB"
     "BS.BXXXB"
     "B..CC..B"
@@ -77,6 +77,17 @@ static const uint8_t level1[] PROGMEM = {
     "B..B...."
     "BBBB...."
     "........"
+};*/
+
+static const uint8_t level1[] PROGMEM = {
+    "...BBBBB"
+    ".BBB...B"
+    ".BSC.B.B"
+    "BBCC...B"
+    "B..BB.BB"
+    "BX.X...B"
+    "BB...X.B"
+    ".BBBBBBB"
 };
 
 static const uint8_t * const levels[] PROGMEM = {
