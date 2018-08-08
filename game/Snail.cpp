@@ -29,7 +29,7 @@ static const uint8_t snail_lines[] PROGMEM = {
     T, G, G, G, G, G, G, T,
 };
 
-static const uint8_t block_c_lines[] PROGMEM = {
+static const uint8_t block_lines[] PROGMEM = {
     R, R, W, R, R, R, R, R,
     R, R, W, R, R, R, R, R,
     R, R, W, R, R, R, R, R,
@@ -46,16 +46,6 @@ static const uint8_t block_c_lines[] PROGMEM = {
 #undef K
 #undef W
 
-static const uint8_t block_lines[] PROGMEM = {
-    B11011111,
-    B11011111,
-    B11011111,
-    B00000000,
-    B11111011,
-    B11111011,
-    B11111011,
-};
-
 static const uint8_t crate_lines[] PROGMEM = {
     B11111111,
     B10000001,
@@ -71,19 +61,40 @@ static const game_color_sprite snail PROGMEM = {
     8, 8, snail_lines
 };
 
-static const game_sprite block PROGMEM = {
-    8, 7, 1, block_lines
-};
-
-static const game_color_sprite block_c PROGMEM = {
-    8, 8, block_c_lines
+static const game_color_sprite block PROGMEM = {
+    8, 8, block_lines
 };
 
 static const game_sprite crate PROGMEM = {
     8, 8, 1, crate_lines
 };
 
-/*static const uint8_t level1[] PROGMEM = {
+/*
+Invalid???
+static const uint8_t level1[] PROGMEM = {
+    "BBBBBBBB"
+    "BS.B...B"
+    "B..B...B"
+    "B.CB..BB"
+    "BX.B...B"
+    "B.CC...B"
+    "BX.B...B"
+    "BBBBBBBB"
+};
+*/
+
+static const uint8_t level1[] PROGMEM = {
+    "BBBBB..."
+    "BS..B..."
+    "B.C.B..."
+    "B..BB..."
+    "B..B...."
+    "BXCB...."
+    "BX.B...."
+    "BBBB...."
+};
+
+static const uint8_t level2[] PROGMEM = {
     "BBBBBBBB"
     "BS.BXXXB"
     "B..CC..B"
@@ -92,9 +103,9 @@ static const game_sprite crate PROGMEM = {
     "B..B...."
     "BBBB...."
     "........"
-};*/
+};
 
-static const uint8_t level1[] PROGMEM = {
+static const uint8_t level3[] PROGMEM = {
     "...BBBBB"
     ".BBB...B"
     ".BSC.B.B"
@@ -106,7 +117,9 @@ static const uint8_t level1[] PROGMEM = {
 };
 
 static const uint8_t * const levels[] PROGMEM = {
-    level1
+    level1,
+    level2,
+    level3
 };
 
 
@@ -134,8 +147,7 @@ static void Snail_draw_field_cell(int c, int r)
     switch (data->field[r][c])
     {
     case 'B':
-        game_draw_color_sprite(&block_c, c * CW, r * CH);
-        //game_draw_sprite(&block, c * CW, r * CH, RED_DARK);
+        game_draw_color_sprite(&block, c * CW, r * CH);
         break;
     case 'D':
         game_draw_rect(c * CW + 1, r * CH + 1, CW - 2, CH - 2, BLUE);
@@ -168,6 +180,7 @@ void Snail_prepare_level(int lev)
     for (int r = 0 ; r < H ; ++r)
         for (int c = 0 ; c < W ; ++c)
         {
+            game_draw_rect(c * CW, r * CH, CW, CH, BLACK);
             char cell = pgm_read_byte(ptr++);
             data->field[r][c] = cell;
             if (cell == 'S')
@@ -232,18 +245,15 @@ void Snail_move(int dx, int dy)
 
 static void Snail_check_win()
 {
-    bool hasD = false;
-    bool hasC = false;
+    bool hasX = false;
     for (int r = 0 ; r < H ; ++r)
         for (int c = 0 ; c < W ; ++c)
         {
             char ch = data->field[r][c];
-            if (ch == 'D')
-                hasD = true;
-            else if (ch == 'C')
-                hasC = true;
+            if (ch == 'X')
+                hasX = true;
         }
-    if (hasD && !hasC)
+    if (!hasX)
         Snail_prepare_level(data->level + 1);
 }
 
