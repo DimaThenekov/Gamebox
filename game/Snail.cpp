@@ -114,7 +114,7 @@ static void Snail_draw_field_cell(int c, int r)
         game_draw_rect(c * CW + 1, r * CH + 1, CW - 2, CH - 2, BLUE);
         /* fall through */
     case 'C':
-        game_draw_sprite(&crate, c * CW, r * CH, BROWN);
+        game_draw_sprite(&crate, c * CW, r * CH, YELLOW);
         break;
     case 'X':
         game_draw_rect(c * CW + 1, r * CH + 1, CW - 2, CH - 2, BLUE);
@@ -154,6 +154,7 @@ void Snail_prepare_level(int lev)
                 data->field[r][c] = 0;
             }
         }
+    Snail_draw_field();
 }
 
 static void Snail_prepare()
@@ -164,7 +165,6 @@ static void Snail_prepare()
     data->y = 0;
     data->btn_timeout = 0;
     Snail_prepare_level(0);
-    Snail_draw_field();
 }
 
 void Snail_move(int dx, int dy)
@@ -203,6 +203,23 @@ void Snail_move(int dx, int dy)
     Snail_draw();
 }
 
+static void Snail_check_win()
+{
+    bool hasD = false;
+    bool hasC = false;
+    for (int r = 0 ; r < H ; ++r)
+        for (int c = 0 ; c < W ; ++c)
+        {
+            char ch = data->field[r][c];
+            if (ch == 'D')
+                hasD = true;
+            else if (ch == 'C')
+                hasC = true;
+        }
+    if (hasD && !hasC)
+        Snail_prepare_level(data->level + 1);
+}
+
 static void Snail_render()
 {
 }
@@ -232,6 +249,7 @@ static void Snail_update(unsigned long delta)
         dx = -1;
     }
     Snail_move(dx, dy);
+    Snail_check_win();
 }
 
 game_instance Snail = {
