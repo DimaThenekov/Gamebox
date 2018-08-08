@@ -568,12 +568,7 @@ static void graphics_update()
     tick = tock & ~sclkpin;
 
     uint8_t lines[BUF_LINES * WIDTH];
-//#ifdef FRAME_BUFFER
-//    if (!use_frame_buffer)
-//#endif
-    {
-        game_render_line((uint8_t*)lines, step);
-    }
+    game_render_line((uint8_t*)lines, step);
 
     uint8_t *line1 = &lines[(BUF_LINES - 1) * WIDTH];
     uint8_t *line2 = &lines[(BUF_LINES - 2) * WIDTH];

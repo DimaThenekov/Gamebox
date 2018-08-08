@@ -12,30 +12,77 @@
 #define UP BUTTON_UP
 #define DOWN BUTTON_DOWN
 
-#define S RED
-#define B GREEN
-#define O TRANSPARENT
-#define Z BLACK
-#define E WHITE
+#define R RED
+#define G GREEN
+#define T TRANSPARENT
+#define K BLACK
+#define Y YELLOW
+#define W WHITE
 static const uint8_t snail_lines[] PROGMEM = {
-    O, S, S, S, O, O, O, O,
-    S, Z, Z, Z, S, B, O, B,
-    S, Z, S, Z, S, B, B, B,
-    S, Z, S, S, S, E, B, E,
-    S, Z, Z, Z, Z, B, B, B,
-    O, S, S, S, S, B, B, B,
-    O, O, B, B, B, B, B, B,
-    O, B, B, B, B, B, B, O,
+    T, R, R, R, T, T, T, T,
+    R, K, K, K, R, G, T, G,
+    R, K, R, K, R, G, G, G,
+    R, K, R, R, R, W, G, W,
+    R, K, K, K, K, G, G, G,
+    T, R, R, R, R, G, G, G,
+    T, T, G, G, G, G, G, G,
+    T, G, G, G, G, G, G, T,
 };
-#undef S
-#undef B
-#undef O
-#undef Z
-#undef E
+
+#undef R
+#undef G
+#undef T
+#undef K
+#undef W
+
+static const uint8_t block_lines[] PROGMEM = {
+    B11011111,
+    B11011111,
+    B11011111,
+    B00000000,
+    B11111011,
+    B11111011,
+    B11111011,
+};
+
+static const uint8_t crate_lines[] PROGMEM = {
+    B11111111,
+    B10000001,
+    B10111101,
+    B10111101,
+    B10111101,
+    B10111101,
+    B10000001,
+    B11111111,
+};
 
 static const game_color_sprite snail PROGMEM = {
     8, 8, snail_lines
 };
+
+static const game_sprite block PROGMEM = {
+    8, 7, 1, block_lines
+};
+
+static const game_sprite crate PROGMEM = {
+    8, 8, 1, crate_lines
+};
+
+static const uint8_t level1[] PROGMEM = {
+    "BBBBBBBB"
+    "BS.BXXXB"
+    "B..CC..B"
+    "B.C...BB"
+    "B..BBBB."
+    "B..B...."
+    "BBBB...."
+    "........"
+};
+
+static const uint8_t * const levels[] PROGMEM = {
+    level1
+};
+
 
 #define CW 8
 #define CH 8
@@ -45,7 +92,9 @@ static const game_color_sprite snail PROGMEM = {
 struct SnailData
 {
     int8_t x, y;
+    uint8_t level;
     long btn_timeout;
+    uint8_t field[H][W];
 };
 static SnailData* data;
 
@@ -54,13 +103,103 @@ static void Snail_draw()
     game_draw_color_sprite(&snail, data->x * CW, data->y * CH);
 }
 
+static void Snail_draw_field_cell(int c, int r)
+{
+    switch (data->field[r][c])
+    {
+    case 'B':
+        game_draw_sprite(&block, c * CW, r * CH, RED);
+        break;
+    case 'D':
+        game_draw_rect(c * CW + 1, r * CH + 1, CW - 2, CH - 2, BLUE);
+        /* fall through */
+    case 'C':
+        game_draw_sprite(&crate, c * CW, r * CH, BROWN);
+        break;
+    case 'X':
+        game_draw_rect(c * CW + 1, r * CH + 1, CW - 2, CH - 2, BLUE);
+        break;
+    default:
+        game_draw_rect(c * CW, r * CH, CW, CH, BLACK);
+        break;
+    }
+}
+
+
+static void Snail_draw_field()
+{
+    for (int r = 0 ; r < H ; ++r)
+        for (int c = 0 ; c < W ; ++c)
+            Snail_draw_field_cell(c, r);
+    Snail_draw();
+}
+
+void Snail_prepare_level(int lev)
+{
+    data->level = lev;
+    uint8_t *ptr = (uint8_t*)pgm_read_pointer(&levels[lev]);
+    for (int r = 0 ; r < H ; ++r)
+        for (int c = 0 ; c < W ; ++c)
+        {
+            char cell = pgm_read_byte(ptr++);
+            data->field[r][c] = cell;
+            if (cell == 'S')
+            {
+                data->x = c;
+                data->y = r;
+                data->field[r][c] = 0;
+            }
+            else if (cell == '.')
+            {
+                data->field[r][c] = 0;
+            }
+        }
+}
+
 static void Snail_prepare()
 {
-    game_set_ups(15);
+    game_set_ups(8);
     game_enable_frame_buffer();
     data->x = 0;
     data->y = 0;
     data->btn_timeout = 0;
+    Snail_prepare_level(0);
+    Snail_draw_field();
+}
+
+void Snail_move(int dx, int dy)
+{
+    if (!dx && !dy)
+        return;
+    int newx = data->x + dx;
+    int newy = data->y + dy;
+    if (newx < 0 || newx >= W || newy < 0 || newy >= H)
+        return;
+    char next = data->field[newy][newx];
+    if (next == 'C' || next == 'D')
+    {
+        int cx = newx + dx;
+        int cy = newy + dy;
+        if (cx < 0 || cx >= W || cy < 0 || cy >= H)
+            return;
+        char next2 = data->field[cy][cx];
+        if (next2 && next2 != 'X')
+            return;
+        // move crate
+        game_draw_rect(cx * CW, cy * CH, CW, CH, BLACK);
+        data->field[cy][cx] = next2 ? 'D' : 'C';
+        data->field[newy][newx] = next == 'C' ? 0 : 'X';
+        Snail_draw_field_cell(cx, cy);
+    }
+    else if (next && next != 'X')
+    {
+        return;
+    }
+    game_draw_rect(newx * CW, newy * CH, CW, CH, BLACK);
+    game_draw_rect(data->x * CW, data->y * CH, CW, CH, BLACK);
+    Snail_draw_field_cell(data->x, data->y);
+    data->x = newx;
+    data->y = newy;
     Snail_draw();
 }
 
@@ -73,35 +212,26 @@ static void Snail_update(unsigned long delta)
     data->btn_timeout -= delta;
     if (data->btn_timeout > 0)
         return;
-    bool update = false;
-    int px = data->x;
-    int py = data->y;
+    int dx = 0;
+    int dy = 0;
     data->btn_timeout = 0;
-    if (game_is_button_pressed(DOWN) && data->y < H - 1)
+    if (game_is_button_pressed(DOWN))
     {
-        ++data->y;
-        update = true;
+        dy = 1;
     }
-    else if (game_is_button_pressed(UP) && data->y > 0)
+    else if (game_is_button_pressed(UP))
     {
-        --data->y;
-        update = true;
+        dy = -1;
     }
-    else if (game_is_button_pressed(RIGHT) && data->x < W - 1)
+    else if (game_is_button_pressed(RIGHT))
     {
-        ++data->x;
-        update = true;
+        dx = 1;
     }
-    else if (game_is_button_pressed(LEFT) && data->x > 0)
+    else if (game_is_button_pressed(LEFT))
     {
-        --data->x;
-        update = true;
+        dx = -1;
     }
-    if (update)
-    {
-        game_draw_rect(px * CW, py * CH, CW, CH, BLACK);
-        Snail_draw();
-    }
+    Snail_move(dx, dy);
 }
 
 game_instance Snail = {
