@@ -48,7 +48,7 @@ void *menu_update(Menu *m, unsigned long delta)
     }
     m->btn_timeout = 0;
     if (game_is_any_button_pressed(DOWN)
-        && pgm_read_pointer(&m->menu[m->sel + 1].name))
+        && pgm_read_byte(m->menu[m->sel + 1].name))
     {
         m->sel++;
         m->btn_timeout = BUTTON_DELAY;
@@ -75,17 +75,27 @@ void menu_render(Menu *m)
 {
     uint16_t page = m->sel / LINES * LINES;
     uint8_t iter = 0;
-    for ( ; pgm_read_pointer(&m->menu[page + iter].name) && iter < LINES ; ++iter)
+    for ( ; iter < LINES ; ++iter)
     {
-        game_draw_text((const uint8_t *)pgm_read_pointer(&m->menu[page + iter].name),
-            m->menux, (FONT_HEIGHT + 1) * iter + m->menuy,
-            (page + iter == m->sel) ? RED : WHITE, m->bg);
+        const char *ptr = (const char *)&m->menu[page + iter].name;
+        char c = pgm_read_byte(ptr++);
+        if (!c)
+            break;
+        int8_t x = m->menux;
+        int8_t y = (FONT_HEIGHT + 1) * iter + m->menuy;
+        int8_t color = (page + iter == m->sel) ? RED : WHITE;
+        while (c)
+        {
+            game_draw_char(c, x, y, color, m->bg);
+            c = pgm_read_byte(ptr++);
+            x += FONT_WIDTH + 1;
+        }
     }
     if (page > 0)
     {
         game_draw_char(0x18, WIDTH - FONT_WIDTH, 0, GREEN);
     }
-    if (iter == LINES && pgm_read_pointer(&m->menu[page + iter].name))
+    if (iter == LINES && pgm_read_byte(m->menu[page + iter].name))
     {
         game_draw_char(0x19, WIDTH - FONT_WIDTH, HEIGHT - FONT_HEIGHT, GREEN);
     }

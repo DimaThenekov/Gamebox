@@ -219,7 +219,7 @@ static const MenuItem level_menu[] PROGMEM = {
     { "One spare", (void*)9 },
     { "Dead end", (void*)10 },
     { "Very hard", (void*)11 },
-    { NULL, NULL }
+    { "", NULL }
 };
 
 #define CW 8

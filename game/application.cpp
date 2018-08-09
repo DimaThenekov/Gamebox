@@ -49,7 +49,7 @@ static const MenuItem main_menu[] PROGMEM = {
      * 
      * { "YOUR_GAME_NAME", &YOUR_GAME_NAME },
      */
-    { NULL, NULL }
+    { "", NULL }
 };
 
 #define UP BITMASK(BUTTON_NE) | BITMASK(BUTTON_UP)
@@ -90,7 +90,7 @@ void pause_exit()
 static const MenuItem pause_menu[] PROGMEM = {
     { "Continue", CONTINUE },
     { "Exit game", EXIT },
-    { NULL, NULL }
+    { "", NULL }
 };
 
 void application_setup()

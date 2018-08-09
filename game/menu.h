@@ -5,7 +5,7 @@
 
 struct MenuItem
 {
-  const char *name;
+  const char name[12];
   void *opaque;
 };
 
