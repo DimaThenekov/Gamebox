@@ -13,18 +13,33 @@ static QColor frame[HEIGHT][WIDTH];
 static QColor screen[HEIGHT][WIDTH];
 static bool use_frame_buffer;
 
+static int color_map[4] = {0, 128, 192, 255};
+
+static int rev_color_map(int c)
+{
+    switch (c)
+    {
+    case 128:
+        return 1;
+    case 192:
+        return 2;
+    case 255:
+        return 3;
+    }
+    return 0;
+}
+
 void game_draw_pixel(int x, int y, uint8_t c)
 {
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return;
-    //QColor color(((c >> 4) & 3) * 85, ((c >> 2) & 3) * 85, (c & 3) * 85);
     int r = c & RED;
-    r = ((r & 0xf) + ((r & 0xf0) >> 4)) * 127;
+    r = (r & 0xf) + ((r & 0xf0) >> 3);
     int g = c & GREEN;
-    g = (((g & 0xf) >> 1) + ((g & 0xf0) >> 5)) * 127;
+    g = ((g & 0xf) >> 1) + ((g & 0xf0) >> 4);
     int b = c & BLUE;
-    b = (((b & 0xf) >> 2) + ((b & 0xf0) >> 6)) * 127;
-    QColor color(r, g, b);
+    b = ((b & 0xf) >> 2) + ((b & 0xf0) >> 5);
+    QColor color(color_map[r], color_map[g], color_map[b]);
     if (use_frame_buffer)
         frame[y][x] = color;
     else
@@ -36,7 +51,13 @@ uint8_t game_get_pixel(int x, int y)
     if (!use_frame_buffer || x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return 0;
     QColor c = frame[y][x];
-    return ((c.red() / 85) << 4) | ((c.green() / 85) << 2) | ((c.blue() / 85));
+    int r = rev_color_map(c.red());
+    int g = rev_color_map(c.green());
+    int b = rev_color_map(c.blue());
+    r = ((r & 2) << 3) + (r & 1);
+    g = ((g & 2) << 4) + ((g & 1) << 1);
+    b = ((b & 2) << 5) + ((b & 1) << 2);
+    return r + g + b;
 }
 
 void game_draw_vline(int x, int y1, int y2, uint8_t color)

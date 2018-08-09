@@ -18,6 +18,7 @@
 #define WHITE (RED + GREEN + BLUE)
 /* for 6-bit colored games */
 /* brigthness of the msb is higher */
+#define BLUE_DARK 4
 #define RED_DARK 1
 #define RED_MIDDLE 0x10
 #define YELLOW_DARK 3

@@ -53,37 +53,14 @@ static bool use_frame_buffer;
 // Colors
 //////////////////////////
 
-#if defined(COLOR_6BIT) && COLOR_6BIT
-static uint8_t game_make_color_channel(uint8_t channel)
-{
-    return (color_channel < channel);
-}
-#endif
-
 static uint8_t game_make_color(uint8_t color)
 {
     return color;
-#if defined(COLOR_6BIT) && COLOR_6BIT
-    return color_channel ? color >> 4 : color;/*(game_make_color_channel((color >> 4) & 3)) |
-           (game_make_color_channel((color >> 2) & 3) << 1) |
-           (game_make_color_channel(color & 3) << 2);*/
-#else
-    return color;/*(color >> 5 & 1) |
-           (color >> 3 & 1) << 1 |
-           (color >> 1 & 1) << 2;*/
-#endif
 }
 
 static uint8_t game_make_color_id(uint8_t color)
 {
-#if defined(COLOR_6BIT) && COLOR_6BIT
-    /* TODO */
-    return 0;
-#else
-    return ((color & 1) << 5) | ((color & 1) << 4) |
-           ((color & 2) << 2) | ((color & 2) << 1) |
-           ((color & 4) >> 1) | ((color & 4) >> 2);
-#endif
+    return color;
 }
 
 uint8_t game_sprite_width(const struct game_sprite *s)
