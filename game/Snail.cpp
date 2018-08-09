@@ -71,19 +71,6 @@ static const game_sprite crate PROGMEM = {
     8, 8, 1, crate_lines
 };
 
-/*
-Invalid???
-static const uint8_t level1[] PROGMEM = {
-    "BBBBBBBB"
-    "BS.B...B"
-    "B..B...B"
-    "B.CB..BB"
-    "BX.B...B"
-    "B.CC...B"
-    "BX.B...B"
-    "BBBBBBBB"
-};
-*/
 
 static const uint8_t level1[] PROGMEM = {
     "BBBBB..."
@@ -118,16 +105,120 @@ static const uint8_t level3[] PROGMEM = {
     ".BBBBBBB"
 };
 
+static const uint8_t level4[] PROGMEM = {
+    "BBBBBBBB"
+    "B...BS.B"
+    "B....C.B"
+    "B...B..B"
+    "BBBBBCXB"
+    "....B.XB"
+    "....BBBB"
+    "........"
+};
+
+static const uint8_t level5[] PROGMEM = {
+    "BBBBBBBB"
+    "BS..B..B"
+    "B..CCC.B"
+    "BXX....B"
+    "BBBBBBBB"
+    "........"
+    "........"
+    "........"
+};
+
+static const uint8_t level6[] PROGMEM = {
+    ".BBBBBBB"
+    ".B.....B"
+    ".B.C...B"
+    ".B..B..B"
+    "BB.BBBBB"
+    "BSC...B."
+    "BX.X..B."
+    "BBBBBBB."
+};
+
+static const uint8_t level7[] PROGMEM = {
+    "BBBBBBBB"
+    "BS.B...B"
+    "B..B...B"
+    "B.CB..BB"
+    "BX.B...B"
+    "B.CC..CB"
+    "BX.B...B"
+    "BBBBBBBB"
+};
+
+static const uint8_t level8[] PROGMEM = {
+    "BBBBBBBB"
+    "BS.B...B"
+    "B..B...B"
+    "B.CB..BB"
+    "BX.B...B"
+    "B.CC..DB"
+    "BX.B...B"
+    "BBBBBBBB"
+};
+
+static const uint8_t level9[] PROGMEM = {
+    ".BBBBBBB"
+    "BB..BS.B"
+    "B..CXD.B"
+    "B..BB..B"
+    "B..B...B"
+    "B..B...B"
+    "B..B...B"
+    "BBBBBBBB"
+};
+
+static const uint8_t level10[] PROGMEM = {
+    "..BBBBB."
+    "BBBSXXB."
+    "B..C..B."
+    "B..C..B."
+    "B..BBBB."
+    "B.CC.XB."
+    "B.....B."
+    "BBBBBBB."
+};
+
+static const uint8_t level11[] PROGMEM = {
+    "BBBBBBB."
+    "BS....B."
+    "BXB...B."
+    "B....BBB"
+    "B...C..B"
+    "B.B.C..B"
+    "BX..BBBB"
+    "BBBBB..."
+};
+
 static const uint8_t * const levels[] PROGMEM = {
     level1,
     level2,
+    level4,
+    level5,
+    level6,
+    level7,
+    level8,
+    level9,
+    level10,
+    level11,
     level3
 };
 
 static const MenuItem level_menu[] PROGMEM = {
-    { "Level 1", (void*)1 },
-    { "Level 2", (void*)2 },
-    { "Very hard", (void*)3 },
+    { "Too easy", (void*)1 },
+    { "Still easy", (void*)2 },
+    { "Deja vu?", (void*)3 },
+    { "3 4 2", (void*)4 },
+    { "Seems easy", (void*)5 },
+    { "Not easy", (void*)6 },
+    { "Harder", (void*)7 },    
+    { "Almost done", (void*)8 },
+    { "One spare", (void*)9 },
+    { "Dead end", (void*)10 },
+    { "Very hard", (void*)11 },
     { NULL, NULL }
 };
 
