@@ -15,6 +15,7 @@ extern game_instance Snake;
 extern game_instance Snake2;
 #endif
 extern game_instance Flappy;
+extern game_instance SpaceShips;
 extern game_instance Tester;
 extern game_instance Raycaster;
 extern game_instance BreakOut;
@@ -35,6 +36,7 @@ static const MenuItem main_menu[] PROGMEM = {
     { "Snake2", &Snake2 },
 #endif
     { "Flappy", &Flappy },
+    { "SpaceShips", &SpaceShips },
     { "BreakOut", &BreakOut },
     { "Saper", &Saper },
     { "3D", &Raycaster },
