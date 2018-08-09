@@ -4,6 +4,7 @@
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
+#include "menu.h"
 
 #ifdef FRAME_BUFFER
 
@@ -11,6 +12,7 @@
 #define RIGHT BUTTON_RIGHT
 #define UP BUTTON_UP
 #define DOWN BUTTON_DOWN
+#define MENU BUTTON_START
 
 #define R RED_DARK
 #define G GREEN
@@ -122,11 +124,23 @@ static const uint8_t * const levels[] PROGMEM = {
     level3
 };
 
+static const MenuItem level_menu[] PROGMEM = {
+    { "Level 1", (void*)1 },
+    { "Level 2", (void*)2 },
+    { "Very hard", (void*)3 },
+    { NULL, NULL }
+};
 
 #define CW 8
 #define CH 8
 #define W (WIDTH / CW)
 #define H (HEIGHT / CH)
+
+enum GameState
+{
+    GS_PLAY,
+    GS_MENU,
+};
 
 struct SnailData
 {
@@ -134,6 +148,8 @@ struct SnailData
     uint8_t level;
     long btn_timeout;
     uint8_t field[H][W];
+    Menu *menu;
+    GameState state;
 };
 static SnailData* data;
 
@@ -204,7 +220,8 @@ static void Snail_prepare()
     data->x = 0;
     data->y = 0;
     data->btn_timeout = 0;
-    Snail_prepare_level(0);
+    data->state = GS_MENU;
+    data->menu = menu_setup(level_menu, 0, 0, BLUE_DARK);
 }
 
 void Snail_move(int dx, int dy)
@@ -259,17 +276,36 @@ static void Snail_check_win()
 
 static void Snail_render()
 {
+    if (data->state == GS_MENU)
+    {
+        menu_render(data->menu);
+    }
 }
 
 static void Snail_update(unsigned long delta)
 {
+    if (data->state == GS_MENU)
+    {
+        void *p = menu_update(data->menu, delta);
+        if (p)
+        {
+            Snail_prepare_level((ptrdiff_t)p - 1);
+            data->state = GS_PLAY;
+        }
+        return;
+    }
     data->btn_timeout -= delta;
     if (data->btn_timeout > 0)
         return;
     int dx = 0;
     int dy = 0;
     data->btn_timeout = 0;
-    if (game_is_button_pressed(DOWN))
+    if (game_is_button_pressed(MENU))
+    {
+        data->state = GS_MENU;
+        return;
+    }
+    else if (game_is_button_pressed(DOWN))
     {
         dy = 1;
     }
