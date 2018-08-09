@@ -430,7 +430,7 @@ void game_draw_digits(uint16_t num, int8_t len, int8_t x, int8_t y, uint8_t colo
 
 void game_render_line(uint8_t *buf, int8_t line)
 {
-    int8_t i = 0;
+    int i = 0;
     for (int8_t y = 0 ; y < BUF_LINES ; ++y)
         for (int8_t x = 0; x < WIDTH ; ++x, ++i)
         {
@@ -705,6 +705,6 @@ ISR(TIMER1_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
   TIFR1 |= TOV1;                  // Clear Timer1 interrupt flag
   // Interval 2 is too small even for invaders, but ok for 6-bit colors
   // 64 is ok for 3-bit colors
-  ICR1      = color_channel ? 64 : 32;        // Set interval for next interrupt
+  ICR1      = color_channel ? 32 : 8;        // Set interval for next interrupt
   TCNT1     = 0;        // Restart interrupt timer
 }
