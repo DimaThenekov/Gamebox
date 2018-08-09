@@ -7,8 +7,12 @@
 #include "atmega2560.h"
 #include "periph/Display.h"
 #include <cstdint>
+#include <QWidget>
 
-class AVR {
+class AVR : public QThread
+{
+    Q_OBJECT
+
 public:
     std::array<uint16_t, FLASH_SIZE> flash;
     std::array<uint8_t, SRAM_SIZE> sram;
@@ -19,6 +23,7 @@ private:
     AVRIO io;
     Display &display;
     bool do_log;
+    bool exit;
 
     uint8_t getData(uint16_t addr);
 
@@ -84,13 +89,14 @@ private:
     unsigned int popStack24();
 
 public:
-    AVR(Display &display);
+    AVR(Display &display, QObject *parent = 0);
 
     void reset();
 
     unsigned int tick();
 
     void run();
+    void stop();
 };
 
 #endif // AVR_H
