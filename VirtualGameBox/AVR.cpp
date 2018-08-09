@@ -173,13 +173,13 @@ void AVR::decode5d5r(uint16_t opcode, AVRRegister &Rd, AVRRegister &Rr) {
 }
 
 void AVR::decode4d4r(uint16_t opcode, AVRRegister &Rd, AVRRegister &Rr) {
-    Rd = static_cast<AVRRegister>((opcode >> 4) & 0x0f);
-    Rr = static_cast<AVRRegister>(opcode & 0x0f);
+    Rd = static_cast<AVRRegister>(0x10 | ((opcode >> 4) & 0x0f));
+    Rr = static_cast<AVRRegister>(0x10 | (opcode & 0x0f));
 }
 
 void AVR::decode3d3r(uint16_t opcode, AVRRegister &Rd, AVRRegister &Rr) {
-    Rd = static_cast<AVRRegister>(16 + ((opcode >> 4) & 0x07));
-    Rr = static_cast<AVRRegister>(16 + (opcode & 0x07));
+    Rd = static_cast<AVRRegister>(0x10 | ((opcode >> 4) & 0x07));
+    Rr = static_cast<AVRRegister>(0x10 | (opcode & 0x07));
 }
 
 void AVR::decodew4d4r(uint16_t opcode, AVRRegister &Rd, AVRRegister &Rr) {

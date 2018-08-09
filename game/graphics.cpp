@@ -536,6 +536,8 @@ void graphics_setup()
     TCCR1B  = _BV(WGM13) | _BV(WGM12) | _BV(CS10) | _BV(CS11); // Mode 14, div 64
     ICR1    = 0;
     TIMSK1 |= _BV(TOIE1); // Enable Timer1 interrupt
+
+    *((uint8_t*)0x58) = 0x01;
 }
 
 static void graphics_update()
