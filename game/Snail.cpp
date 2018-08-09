@@ -5,6 +5,7 @@
 #include "binary.h"
 #include "controls.h"
 #include "menu.h"
+#include "music.h"
 
 #ifdef FRAME_BUFFER
 
@@ -302,6 +303,9 @@ void Snail_prepare_level(int lev)
             }
         }
     Snail_draw_field();
+#ifndef EMULATED
+    Player_setup_random_melody();
+#endif
 }
 
 static void Snail_prepare()

@@ -71,8 +71,7 @@ void Player_setup_melody(int i)
 
 void Player_setup_random_melody()
 {
-  //TODO
-  //Player_setup_melody(rand() % (sizeof(tunes) / sizeof(MenuItem) - 1));
+  Player_setup_melody(rand() % 37/*(sizeof(tunes) / sizeof(MenuItem) - 1)*/);
 }
 
 static void Player_render()
