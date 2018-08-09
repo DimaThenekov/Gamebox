@@ -35,7 +35,7 @@ static uint8_t
 ;
 
 // RENDER VARS
-static int game_render_y;
+static int8_t game_render_y;
 static uint8_t *game_render_buf;
 #if defined(COLOR_6BIT) && COLOR_6BIT
 static uint8_t color_channel;
@@ -93,7 +93,7 @@ const uint8_t *game_color_sprite_line(const struct game_color_sprite *s, uint8_t
     return game_color_sprite_width(s) * line + (const uint8_t*)pgm_read_pointer(&s->lines);
 }
 
-void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int x, uint8_t y, int8_t color, uint8_t ry)
+static void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int8_t x, uint8_t y, int8_t color, uint8_t ry)
 {
     uint8_t line = ry - y;
     uint8_t mask = 0x80;
@@ -120,8 +120,8 @@ void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int x, u
     }
 }
 
-void game_color_sprite_render_line(const struct game_color_sprite *s,
-    uint8_t *buf, int x, uint8_t y, uint8_t ry)
+static void game_color_sprite_render_line(const struct game_color_sprite *s,
+    uint8_t *buf, int8_t x, uint8_t y, uint8_t ry)
 {
     uint8_t line = ry - y;
     uint8_t width = game_color_sprite_width(s);
@@ -138,7 +138,7 @@ void game_color_sprite_render_line(const struct game_color_sprite *s,
     }
 }
 
-void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color)
+void game_draw_sprite(const struct game_sprite *s, int8_t x, int8_t y, uint8_t color)
 {
     uint8_t height = game_sprite_height(s);
 #ifdef FRAME_BUFFER
@@ -165,7 +165,7 @@ void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color)
     }
 }
 
-void game_draw_line(uint8_t *buf, int x, uint8_t w, int8_t color)
+static void game_draw_line(uint8_t *buf, int8_t x, uint8_t w, int8_t color)
 {
     for (uint8_t dx = 0; dx < w; ++dx)
     {
@@ -177,7 +177,7 @@ void game_draw_line(uint8_t *buf, int x, uint8_t w, int8_t color)
     }
 }
 
-void game_draw_rect(int x, int y, int w, int h, uint8_t color)
+void game_draw_rect(int8_t x, int8_t y, int8_t w, int8_t h, uint8_t color)
 {
 #ifdef FRAME_BUFFER
     if (use_frame_buffer)
@@ -201,7 +201,7 @@ void game_draw_rect(int x, int y, int w, int h, uint8_t color)
     }
 }
 
-void game_draw_color_sprite(const struct game_color_sprite *s, int x, int y)
+void game_draw_color_sprite(const struct game_color_sprite *s, int8_t x, int8_t y)
 {
     uint8_t height = game_color_sprite_height(s);
 #ifdef FRAME_BUFFER
@@ -228,7 +228,7 @@ void game_draw_color_sprite(const struct game_color_sprite *s, int x, int y)
     }
 }
 
-void game_draw_pixel(int x, int y, uint8_t color)
+void game_draw_pixel(int8_t x, int8_t y, uint8_t color)
 {
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return;
@@ -245,7 +245,7 @@ void game_draw_pixel(int x, int y, uint8_t color)
     }
 }
 
-uint8_t game_get_pixel(int x, int y)
+uint8_t game_get_pixel(int8_t x, int8_t y)
 {
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return 0;
@@ -260,7 +260,7 @@ uint8_t game_get_pixel(int x, int y)
 }
 
 
-void game_draw_vline(int x, int y1, int y2, uint8_t color)
+void game_draw_vline(int8_t x, int8_t y1, int8_t y2, uint8_t color)
 {
     if (x < 0 || x >= WIDTH || y2 < 0 || y1 >= HEIGHT)
         return;
@@ -285,7 +285,7 @@ void game_draw_vline(int x, int y1, int y2, uint8_t color)
     }
 }
 
-bool game_is_drawing_lines(int y, int height)
+bool game_is_drawing_lines(int8_t y, int8_t height)
 {
 #ifdef FRAME_BUFFER
     if (use_frame_buffer)
@@ -301,7 +301,7 @@ bool game_is_drawing_lines(int y, int height)
     return false;
 }
 
-void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg)
+void game_draw_text(const uint8_t *s, int8_t x, int8_t y, uint8_t color, uint8_t bg)
 {
 #ifdef FRAME_BUFFER
     if (!use_frame_buffer)
@@ -317,7 +317,7 @@ void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg)
     }
 }
 
-void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
+void game_draw_char(uint8_t c, int8_t x, int8_t y, uint8_t color, uint8_t bg)
 {
     // clipping is not supported
     if (x < 0 || x > WIDTH - FONT_WIDTH)
@@ -367,7 +367,7 @@ void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
     }
 }
 
-void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_t bg)
+void game_draw_digits(uint16_t num, int8_t len, int8_t x, int8_t y, uint8_t color, uint8_t bg)
 {
 #ifdef FRAME_BUFFER
     if (!use_frame_buffer)
@@ -379,7 +379,7 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
     if (y <= -DIGIT_HEIGHT || y >= HEIGHT)
         return;
     x += (len - 1) * (DIGIT_WIDTH + 1);
-    for (int i = len - 1 ; i >= 0 ; --i, x -= DIGIT_WIDTH + 1)
+    for (int8_t i = len - 1 ; i >= 0 ; --i, x -= DIGIT_WIDTH + 1)
     {
         uint8_t d = num % 10;
         num /= 10;
@@ -391,7 +391,7 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
                 if (y + dy >= 0 && y + dy < HEIGHT)
                 {
                     uint8_t dd = pgm_read_byte_near(digits_data + d * DIGIT_HEIGHT + dy);
-                    for (int b = 0 ; b < DIGIT_WIDTH ; ++b)
+                    for (int8_t b = 0 ; b < DIGIT_WIDTH ; ++b)
                     {
                         if (x + b >= 0 && x + b < WIDTH)
                         {
@@ -428,11 +428,11 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
     }
 }
 
-void game_render_line(uint8_t *buf, int line)
+void game_render_line(uint8_t *buf, int8_t line)
 {
-    int i = 0;
-    for (int y = 0 ; y < BUF_LINES ; ++y)
-        for (int x = 0; x < WIDTH ; ++x, ++i)
+    int8_t i = 0;
+    for (int8_t y = 0 ; y < BUF_LINES ; ++y)
+        for (int8_t x = 0; x < WIDTH ; ++x, ++i)
         {
 #ifdef FRAME_BUFFER
             if (use_frame_buffer)
@@ -710,4 +710,3 @@ ISR(TIMER1_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
   ICR1      = color_channel ? 64 : 32;        // Set interval for next interrupt
   TCNT1     = 0;        // Restart interrupt timer
 }
-

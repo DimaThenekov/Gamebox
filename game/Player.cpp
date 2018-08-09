@@ -53,7 +53,7 @@ static const MenuItem tunes[] PROGMEM = {
   {"View to a Kill", view_to_a_kill},
   {"Where Time Dropped Dead", where_time_dropped_dead},
   {"ZUB", zub},
-  {NULL, NULL}
+  {"", NULL}
 };
 
 void Player_prepare()
