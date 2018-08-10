@@ -316,7 +316,7 @@ static void Snail_prepare()
     data->y = 0;
     data->btn_timeout = 0;
     data->state = GS_MENU;
-    data->menu = menu_setup(level_menu, 0, 0, BLUE_DARK);
+    data->menu = menu_setup(level_menu);
 }
 
 void Snail_move(int dx, int dy)
@@ -397,6 +397,7 @@ static void Snail_update(unsigned long delta)
     data->btn_timeout = 0;
     if (game_is_button_pressed(MENU))
     {
+        game_draw_rect(0, 0, WIDTH, HEIGHT, BLACK);
         data->state = GS_MENU;
         return;
     }

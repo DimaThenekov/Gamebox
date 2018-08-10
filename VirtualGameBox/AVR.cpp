@@ -218,8 +218,11 @@ unsigned int AVR::popStack24() {
     return res;
 }
 
-AVR::AVR(Display &display) : rbank(), io(rbank, display), display(display) {
+AVR::AVR(Display &display, QObject *parent)
+    : QThread(parent), rbank(), io(rbank, display), display(display)
+{
     do_log = false;
+    exit = false;
     reset();
 }
 
@@ -1370,7 +1373,7 @@ void AVR::run() {
     clock_t start = clock();
     unsigned long long last_burst = 0;
 
-    while (true) {
+    while (!exit) {
         tick();
         if (rbank.getCycles() - last_burst >= FREQ / BURSTS_PER_SECOND) {
             clock_t end = clock();
@@ -1383,4 +1386,9 @@ void AVR::run() {
             start = clock();
         }
     }
+}
+
+void AVR::stop()
+{
+    exit = true;
 }

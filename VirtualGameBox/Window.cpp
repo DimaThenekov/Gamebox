@@ -61,7 +61,12 @@ Window::Window(std::vector<uint8_t> &buf)
                 (((uint8_t)buf[i + 1]) << 8) | (uint8_t)buf[i];
     }
 
-    new std::thread(&AVR::run, &avr);
+    avr.start();
+}
+
+Window::~Window()
+{
+    avr.stop();
 }
 
 void Window::updateScreen()
