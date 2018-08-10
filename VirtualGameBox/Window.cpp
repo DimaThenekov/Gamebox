@@ -54,6 +54,8 @@ Window::Window(std::vector<uint8_t> &buf)
     connect(timer, SIGNAL(timeout()), this, SLOT(updateScreen()));
     timer->start(1000 / 30);
 
+    avr.flash.fill(0x00);
+
     for (size_t i = 0; i < buf.size(); i += 2) {
         avr.flash[i >> 1] =
                 (((uint8_t)buf[i + 1]) << 8) | (uint8_t)buf[i];
