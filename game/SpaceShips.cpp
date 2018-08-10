@@ -144,13 +144,13 @@ static void SpaceShips_prepare()
   
   data->ShipX = 5;
   data->ShipY = 32;
-  data->ObjY = 0 + rand() % 61;
+  data->ObjY = 6 + rand() % 55;
   data->ObjX = 61;
   data->Obj_spX = 0.5;
   data->Obj_spY = 0.5;
   data->count = 0;
   data->max_count = 1;
-  data->s = 0;
+  data->s = 10;
     /* Здесь код, который будет исполнятся один раз */
     /* Здесь нужно инициализировать переменные */
 }
@@ -159,10 +159,11 @@ static void SpaceShips_render()
 {
     game_draw_sprite(&ShipSprite,data->ShipX,data->ShipY,PURPLE);
     
-    if ((data->count <= data->max_count) && (data->ObjX > 0) && (data->s == 0))
+    if ((data->count <= data->max_count) && (data->ObjX > 0) && (data->s > 0))
     {   
         game_draw_sprite(&BallSprite,data->ObjX,data->ObjY,WHITE);
     }
+        game_draw_digits((uint16_t)data->s,2, 1, 0, WHITE);
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
 
@@ -180,7 +181,7 @@ static void SpaceShips_update(unsigned long delta)
       {
           --data->ShipX;
       }
-  if (game_is_button_pressed(BUTTON_UP) && data->ShipY > 0)
+  if (game_is_button_pressed(BUTTON_UP) && data->ShipY > 6)
       {
           --data->ShipY;
       }
@@ -190,9 +191,10 @@ static void SpaceShips_update(unsigned long delta)
         }
 
       // Random Objects
+      game_set_ups(100);
       if (data->ObjX == 0)
       {
-         data->ObjY = 0 + rand() % 61;
+         data->ObjY = 6 + rand() % 55;
          data->ObjX = 61;
       }
       if ((data->count < data->max_count) && (data->ObjX > 0))
@@ -200,10 +202,14 @@ static void SpaceShips_update(unsigned long delta)
            data->ObjX = data->ObjX - data->Obj_spX;
           };
 
-      if (data->ObjY == data->ShipY)
+      if ((data->ObjY >= (data->ShipY - 2)) && ((data->ObjY + 3) <= (data->ShipY + 10)) && ((data->ObjX >= data->ShipX - 2) && (data->ObjX + 3) <= (data->ShipX + 14)))
       {
-        ++data->s;
+        data->ObjX = 61;
+        data->ObjY = 6 + rand() % 55;
+        data->s = data->s - 1;
       }
+
+      
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
 
