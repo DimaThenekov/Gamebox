@@ -130,7 +130,8 @@ struct SpaceShipsData
     ObjX,
     max_count,
     count,
-    s;
+    lives,
+    score;
     float 
     Obj_spX
     ,Obj_spY;
@@ -146,11 +147,12 @@ static void SpaceShips_prepare()
   data->ShipY = 32;
   data->ObjY = 6 + rand() % 55;
   data->ObjX = 61;
-  data->Obj_spX = 0.5;
+  data->Obj_spX = 2;
   data->Obj_spY = 0.5;
   data->count = 0;
   data->max_count = 1;
-  data->s = 10;
+  data->lives = 10;
+  data->score = 0;
     /* Здесь код, который будет исполнятся один раз */
     /* Здесь нужно инициализировать переменные */
 }
@@ -159,11 +161,13 @@ static void SpaceShips_render()
 {
     game_draw_sprite(&ShipSprite,data->ShipX,data->ShipY,PURPLE);
     
-    if ((data->count <= data->max_count) && (data->ObjX > 0) && (data->s > 0))
+    if ((data->count <= data->max_count) && (data->ObjX > 0) && (data->lives > 0))
     {   
         game_draw_sprite(&BallSprite,data->ObjX,data->ObjY,WHITE);
     }
-        game_draw_digits((uint16_t)data->s,2, 1, 0, WHITE);
+        game_draw_digits((uint16_t)data->lives,2, 1, 0, WHITE);
+
+        game_draw_digits((uint16_t)data->score,3, 52, 0, WHITE);
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
 
@@ -191,11 +195,12 @@ static void SpaceShips_update(unsigned long delta)
         }
 
       // Random Objects
-      game_set_ups(100);
-      if (data->ObjX == 0)
+      game_set_ups(50);
+      if (data->ObjX == 1)
       {
          data->ObjY = 6 + rand() % 55;
          data->ObjX = 61;
+         ++data->score;
       }
       if ((data->count < data->max_count) && (data->ObjX > 0))
           {
@@ -206,9 +211,9 @@ static void SpaceShips_update(unsigned long delta)
       {
         data->ObjX = 61;
         data->ObjY = 6 + rand() % 55;
-        data->s = data->s - 1;
+        data->lives = data->lives - 1;
       }
-
+      // Score
       
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
