@@ -341,7 +341,7 @@ if(data->bb<data->h && data->gv==-1){
         --data->b;
     if(!game_is_button_pressed (BUTTON_RIGHT) &&   data->v>0 )
         --data->v;
-    if(game_is_button_pressed (BUTTON_START) &&   data->t[data->y][data->x]>9 && data->gv!=1 && data->gv>-1)
+    if(game_is_button_pressed (BUTTON_B) &&   data->t[data->y][data->x]>9 && data->gv!=1 && data->gv>-1)
         if(data->t[data->y][data->x]!=19){
             data->io=data->io+1;
             data->t[data->y][data->x]=data->t[data->y][data->x]-10;
@@ -401,7 +401,7 @@ if(i!=10)
 
         }
 
-        if(game_is_button_pressed (BUTTON_SELECT) )
+        if(game_is_button_pressed (BUTTON_START) )
         {/*9320939432483298493249832948392432492839432949349824343248380934289348934280923423*/
             Saper_prepare();
             
@@ -411,55 +411,6 @@ if(i!=10)
         if(data->gv==0 ){
             data->j=data->j+delta;
         }
-       /* if (game_is_button_pressed (BUTTON_START))
- for (int a=0 ;a<10;a++ )
-        for (int i=0 ;i<10;i++ )
-        {
-if(a!=0)
- if(data->t[a-1][i]==0)
-  if(data->t[a][i]>9)
-   data->t[a][i]=data->t[a][i]-10;
-
-if(a!=10)
- if(data->t[a+1][i]==0)
-  if(data->t[a][i]>9)
-   data->t[a][i]=data->t[a][i]-10;
-
-if(i!=0)
- if(data->t[a][i-1]==0)
-  if(data->t[a][i]>9)
-   data->t[a][i]=data->t[a][i]-10;
-
-if(i!=10)
- if(data->t[a][i+1]==0)
-  if(data->t[a][i]>9)
-   data->t[a][i]=data->t[a][i]-10;
-
-if(a!=0)
- if(i!=10)
-  if(data->t[a-1][i+1]==0)
-   if(data->t[a][i]>9)
-     data->t[a][i]=data->t[a][i]-10;
-
-if(a!=10)
- if(i!=0)
-  if(data->t[a+1][i-1]==0)
-   if(data->t[a][i]>9)
-    data->t[a][i]=data->t[a][i]-10;
-
-if(i!=0)
- if(a!=0)
-  if(data->t[a-1][i-1]==0)
-   if(data->t[a][i]>9)
-     data->t[a][i]=data->t[a][i]-10;
-
-if(i!=10)
- if(a!=10)
-  if(data->t[a+1][i+1]==0)
-   if(data->t[a][i]>9)
-     data->t[a][i]=data->t[a][i]-10;
-        }*/
-        /* Здесь можно работать с кнопками и обновлять переменные */
 }
 
 game_instance Saper = {
@@ -470,6 +421,3 @@ game_instance Saper = {
     sizeof(SaperData),
     (void**)(&data)
 };
-
-
-/* Не забудьте зарегистрировать игру в games.h */
