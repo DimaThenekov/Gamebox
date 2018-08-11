@@ -76,9 +76,9 @@ void Display::update() {
                         QColor c(((value >> 0) & 1) * 255,
                                  ((value >> 1) & 1) * 255,
                                  ((value >> 2) & 1) * 255);
-                        color.setRed((int) round(c.red() * frac) + color.red());
-                        color.setGreen((int) round(c.green() * frac) + color.green());
-                        color.setBlue((int) round(c.blue() * frac) + color.blue());
+                        color.setRed((int)(c.red() * frac) + color.red());
+                        color.setGreen((int)(c.green() * frac) + color.green());
+                        color.setBlue((int)(c.blue() * frac) + color.blue());
                     }
                 }
             }

@@ -332,7 +332,7 @@ unsigned int AVR::tick() {
                                     decode3d3r(opcode, Rd, Rr);
                                     int16_t vRd = static_cast<int8_t>(rbank.get(Rd));
                                     int16_t vRr = static_cast<int8_t>(rbank.get(Rr));
-                                    uint16_t res = (vRd * vRr) << 1;
+                                    uint16_t res = (uint16_t)(vRd * vRr) << 1;
                                     rbank.set(AVRRegister::R0, res & 0xff);
                                     rbank.set(AVRRegister::R1, res >> 8);
                                     rbank.setSREG(SREG_C, (res >> 15) & 1);
@@ -349,7 +349,7 @@ unsigned int AVR::tick() {
                                     decode3d3r(opcode, Rd, Rr);
                                     int16_t vRd = static_cast<int8_t>(rbank.get(Rd));
                                     uint16_t vRr = rbank.get(Rr);
-                                    uint16_t res = (vRd * vRr) << 1;
+                                    uint16_t res = (uint16_t)(vRd * vRr) << 1;
                                     rbank.set(AVRRegister::R0, res & 0xff);
                                     rbank.set(AVRRegister::R1, res >> 8);
                                     rbank.setSREG(SREG_C, (res >> 15) & 1);
