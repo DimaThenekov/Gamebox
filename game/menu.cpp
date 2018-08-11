@@ -77,7 +77,7 @@ void menu_render(Menu *m)
     uint8_t iter = 0;
     for ( ; iter < LINES ; ++iter)
     {
-        const char *ptr = (const char *)&m->menu[page + iter].name;
+        const char *ptr = (const char *)m->menu[page + iter].name;
         char c = pgm_read_byte(ptr++);
         if (!c)
             break;
