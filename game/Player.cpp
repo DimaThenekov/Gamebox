@@ -61,14 +61,13 @@ void Player_prepare()
 {
   game_set_ups(50);
   data->menu = menu_setup(tunes);
-  fxm_enable_int();
 }
 
 void Player_setup_melody(int i)
 {
   fxm_disable();
-  fxm_enable_int();
   fxm_init(pgm_read_pointer(&tunes[i].opaque));
+  fxm_enable();
 }
 
 void Player_setup_random_melody()
@@ -86,7 +85,9 @@ static void Player_update(unsigned long delta)
   void *p = menu_update(data->menu, delta);
   if (p)
   {
+    fxm_disable();
     fxm_init(p);
+    fxm_enable();
   }
 }
 

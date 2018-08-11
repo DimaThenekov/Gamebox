@@ -6,6 +6,7 @@
 #include "controls.h"
 #include "random.h"
 #include "menu.h"
+#include "music.h"
 
 /* List of all games */
 
@@ -75,6 +76,14 @@ void pause_continue()
     btn_timeout = BUTTON_DELAY;
 }
 
+void pause_mute()
+{
+#ifndef EMULATED
+    fxm_mute();
+    pause_continue();
+#endif
+}
+
 void pause_exit()
 {
 #ifdef EMULATED
@@ -85,10 +94,12 @@ void pause_exit()
 }
 
 #define CONTINUE ((void*)0xC0)
+#define MUTE     ((void*)0x50)
 #define EXIT     ((void*)0xE)
 
 static const MenuItem pause_menu[] PROGMEM = {
     { "Continue", CONTINUE },
+    { "Mute/Unmute", MUTE },
     { "Exit game", EXIT },
     { "", NULL }
 };
@@ -142,6 +153,10 @@ void update(unsigned long delta)
             if (r == CONTINUE)
             {
                 pause_continue();
+            }
+            else if (r == MUTE)
+            {
+                pause_mute();
             }
             else if (r == EXIT)
             {
