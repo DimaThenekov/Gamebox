@@ -179,8 +179,30 @@ struct SaperData
 };
 static SaperData* data; /* Эта переменная - указатель на структуру, которая содержит ваши переменные */
 
+static void Saper_draw_field()
+{
+    for (int a=0 ;a<10;a++ )
+      for (int i=0 ;i<10;i++ )
+      {
+          game_draw_sprite(&YourSprite1, 14+i*5, 14+a*5, BLACK);
+          static const game_sprite * const spr[20] PROGMEM = 
+            {&YourSprite1,&bl2,&bl3,&bl4,NULL,NULL,NULL,NULL,NULL,&bl1,
+              &YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,
+              &YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,
+              &YourSprite1,&YourSprite1};
+          static const uint8_t col[20] PROGMEM = {BLACK, BLUE, CYAN, 
+            BLUE, BLUE, BLUE, BLUE, BLUE, BLUE,RED, CYAN, CYAN, CYAN,
+            CYAN, CYAN, CYAN, CYAN, CYAN, CYAN, CYAN};
+          if (pgm_read_pointer(&spr[data->t[a][i]]))
+              game_draw_sprite((const game_sprite *)pgm_read_pointer(&spr[data->t[a][i]]),
+                14+i*5, 14+a*5, pgm_read_byte(&col[data->t[a][i]]));
+      }
+}
+
 static void Saper_prepare()
 {
+    game_enable_frame_buffer();
+
     data->gv=0;
     data->h=0;
     data->io=0;
@@ -223,32 +245,12 @@ static void Saper_prepare()
         /*3420932840932*/
     }
     /*0293019381293820938012981328932891328091328793287132287913287123712937123871213270132*/
+
+    Saper_draw_field();
 }
 
 static void Saper_render()
 {
-    /* Здесь код, который будет вывзваться для отрисовки кадра */
-    /* Он не должен менять состояние игры, для этого есть функция update */
-    for (int a=0 ;a<10;a++ )
-        if (game_is_drawing_lines(14 + a * 5, 5))
-        {
-            for (int i=0 ;i<10;i++ )
-            {
-                static const game_sprite * const spr[20] PROGMEM = 
-                  {NULL,&bl2,&bl3,&bl4,NULL,NULL,NULL,NULL,NULL,&bl1,
-                    &YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,
-                    &YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,
-                    &YourSprite1,&YourSprite1};
-                static const uint8_t col[20] PROGMEM = {BLACK, BLUE, CYAN, 
-                  BLUE, BLUE, BLUE, BLUE, BLUE, BLUE,RED, CYAN, CYAN, CYAN,
-                  CYAN, CYAN, CYAN, CYAN, CYAN, CYAN, CYAN};
-                if (pgm_read_pointer(&spr[data->t[a][i]]))
-                    game_draw_sprite((const game_sprite *)pgm_read_pointer(&spr[data->t[a][i]]),
-                      14+i*5, 14+a*5, pgm_read_byte(&col[data->t[a][i]]));
-            }
-        }
-
-
    game_draw_text((const uint8_t*)"HAVE   HI", 0, 0, BLUE);
    // game_draw_text((const uint8_t*)"11", 4, 7, RED);
 
@@ -348,10 +350,12 @@ if(data->bb<data->h && data->gv==-1){
         --data->b;
     if(!game_is_button_pressed (BUTTON_RIGHT) &&   data->v>0 )
         --data->v;
+    bool changed = false;
     if(game_is_button_pressed (BUTTON_B) &&   data->t[data->y][data->x]>9 && data->gv!=1 && data->gv>-1)
         if(data->t[data->y][data->x]!=19){
             data->io=data->io+1;
             data->t[data->y][data->x]=data->t[data->y][data->x]-10;
+            changed = true;
 
 for (int thin=0;thin<100;thin++)
             for (int a=0 ;a<10;a++ )
@@ -360,52 +364,74 @@ for (int thin=0;thin<100;thin++)
 if(a!=0)
  if(data->t[a-1][i]==0)
   if(data->t[a][i]>9)
-   data->t[a][i]=data->t[a][i]-10;
+  {
+    data->t[a][i]=data->t[a][i]-10;
+  }
 
 if(a!=10)
  if(data->t[a+1][i]==0)
   if(data->t[a][i]>9)
-   data->t[a][i]=data->t[a][i]-10;
+  {
+    data->t[a][i]=data->t[a][i]-10;
+  }
 
 if(i!=0)
  if(data->t[a][i-1]==0)
   if(data->t[a][i]>9)
-   data->t[a][i]=data->t[a][i]-10;
+  {
+    data->t[a][i]=data->t[a][i]-10;
+  }
 
 if(i!=10)
  if(data->t[a][i+1]==0)
   if(data->t[a][i]>9)
-   data->t[a][i]=data->t[a][i]-10;
+  {
+    data->t[a][i]=data->t[a][i]-10;
+  }
 
 if(a!=0)
  if(i!=10)
   if(data->t[a-1][i+1]==0)
    if(data->t[a][i]>9)
+   {
      data->t[a][i]=data->t[a][i]-10;
+   }
 
 if(a!=10)
  if(i!=0)
   if(data->t[a+1][i-1]==0)
    if(data->t[a][i]>9)
-    data->t[a][i]=data->t[a][i]-10;
+   {
+     data->t[a][i]=data->t[a][i]-10;
+   }
 
 if(i!=0)
  if(a!=0)
   if(data->t[a-1][i-1]==0)
    if(data->t[a][i]>9)
+   {
      data->t[a][i]=data->t[a][i]-10;
+   }
 
 if(i!=10)
  if(a!=10)
   if(data->t[a+1][i+1]==0)
    if(data->t[a][i]>9)
+   {
      data->t[a][i]=data->t[a][i]-10;
+   }
         }
             
 
         }else
-        {data->gv=1;
+        {
+           data->gv=1;
+           changed = true;
+        }
 
+        if (changed)
+        {
+          Saper_draw_field();
         }
 
         if(game_is_button_pressed (BUTTON_START) )
