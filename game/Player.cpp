@@ -8,6 +8,7 @@
 #include "music.h"
 #include "menu.h"
 #include "fxm_tunes.h"
+#include "random.h"
 
 struct PlayerData
 {
@@ -65,13 +66,14 @@ void Player_prepare()
 
 void Player_setup_melody(int i)
 {
+  fxm_disable();
   fxm_enable_int();
-  fxm_init(tunes[i].opaque);
+  fxm_init(pgm_read_pointer(&tunes[i].opaque));
 }
 
 void Player_setup_random_melody()
 {
-  Player_setup_melody(rand() % 37/*(sizeof(tunes) / sizeof(MenuItem) - 1)*/);
+  Player_setup_melody(rand() % (sizeof(tunes) / sizeof(MenuItem) - 1));
 }
 
 static void Player_render()

@@ -324,5 +324,8 @@ void fxm_disable()
 {
   TIMSK3 &= ~_BV(TOIE3); // Disable Timer3 interrupt
   for (int i = 13 ; i >= 0 ; --i)
+  {
+    ayregs[i] = 0;
     music_send_data(i, 0);
+  }
 }
