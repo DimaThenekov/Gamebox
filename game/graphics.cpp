@@ -537,6 +537,7 @@ void graphics_setup()
     ICR1    = 0;
     TIMSK1 |= _BV(TOIE1); // Enable Timer1 interrupt
 
+    /* Emulator hack */
     *((uint8_t*)0x58) = 0x01;
 }
 
