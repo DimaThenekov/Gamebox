@@ -134,7 +134,7 @@ void update(unsigned long delta)
         if (!is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
         {
             is_paused = true;
-            menu = menu_setup(pause_menu, 5, 20, BLUE);
+            menu = menu_setup(pause_menu, 0, 20, BLUE);
             btn_timeout = BUTTON_DELAY;
         }
         else if (is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
