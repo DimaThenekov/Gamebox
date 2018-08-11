@@ -234,10 +234,17 @@ static void Saper_render()
         {
             for (int i=0 ;i<10;i++ )
             {
-                static const game_sprite * const spr[20] PROGMEM = {NULL,&bl2,&bl3,&bl4,NULL,NULL,NULL,NULL,NULL,&bl1,&YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1};
-                static const uint8_t col[20] PROGMEM = {BLACK, BLUE, CYAN, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE,RED, CYAN, CYAN, CYAN, CYAN, CYAN, CYAN, CYAN, CYAN, CYAN, CYAN};
-                if (spr[data->t[a][i]])
-                    game_draw_sprite((const game_sprite *)pgm_read_pointer(&spr[data->t[a][i]]), 14+i*5, 14+a*5, pgm_read_byte(&col[data->t[a][i]]));
+                static const game_sprite * const spr[20] PROGMEM = 
+                  {NULL,&bl2,&bl3,&bl4,NULL,NULL,NULL,NULL,NULL,&bl1,
+                    &YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,
+                    &YourSprite1,&YourSprite1,&YourSprite1,&YourSprite1,
+                    &YourSprite1,&YourSprite1};
+                static const uint8_t col[20] PROGMEM = {BLACK, BLUE, CYAN, 
+                  BLUE, BLUE, BLUE, BLUE, BLUE, BLUE,RED, CYAN, CYAN, CYAN,
+                  CYAN, CYAN, CYAN, CYAN, CYAN, CYAN, CYAN};
+                if (pgm_read_pointer(&spr[data->t[a][i]]))
+                    game_draw_sprite((const game_sprite *)pgm_read_pointer(&spr[data->t[a][i]]),
+                      14+i*5, 14+a*5, pgm_read_byte(&col[data->t[a][i]]));
             }
         }
 
