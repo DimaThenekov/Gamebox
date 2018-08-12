@@ -149,7 +149,7 @@ void update(unsigned long delta)
         }
         else
         {
-            void *r = menu_update(menu, delta);
+            const void *r = menu_update(menu, delta);
             if (r == CONTINUE)
             {
                 pause_continue();

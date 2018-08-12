@@ -39,7 +39,7 @@ Menu *menu_setup(const MenuItem *items, uint8_t x, uint8_t y, uint8_t bg)
     return m;
 }
 
-void *menu_update(Menu *m, unsigned long delta)
+const void *menu_update(Menu *m, unsigned long delta)
 {
     m->btn_timeout -= delta;
     if (m->btn_timeout > 0)

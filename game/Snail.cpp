@@ -381,10 +381,10 @@ static void Snail_update(unsigned long delta)
 {
     if (data->state == GS_MENU)
     {
-        void *p = menu_update(data->menu, delta);
+        ptrdiff_t p = (ptrdiff_t)menu_update(data->menu, delta);
         if (p)
         {
-            Snail_prepare_level((ptrdiff_t)p - 1);
+            Snail_prepare_level(p - 1);
             data->state = GS_PLAY;
         }
         return;

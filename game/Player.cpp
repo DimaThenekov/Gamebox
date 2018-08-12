@@ -70,7 +70,7 @@ void Player_prepare()
 void Player_setup_melody(int i)
 {
   fxm_disable();
-  fxm_init(pgm_read_pointer(&tunes[i].opaque));
+  fxm_init((const uint8_t*)pgm_read_pointer(&tunes[i].opaque));
   fxm_enable();
 }
 
@@ -86,7 +86,7 @@ static void Player_render()
 
 static void Player_update(unsigned long delta)
 {
-  void *p = menu_update(data->menu, delta);
+  const uint8_t *p = (const uint8_t *)menu_update(data->menu, delta);
   if (p)
   {
     fxm_disable();

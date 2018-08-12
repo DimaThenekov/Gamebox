@@ -6,7 +6,11 @@
 struct MenuItem
 {
   const char name[12];
-  void *opaque;
+  /* Можно хранить любой указатель.
+     const написано для хранения указателей на
+     данные в программной памяти без необходимости
+     приведения их к (void*). */
+  const void *opaque;
 };
 
 struct Menu;
@@ -14,7 +18,7 @@ struct Menu;
 // Нужно вызвать для инициализации конкретного меню
 Menu *menu_setup(const MenuItem *items, uint8_t x = 0, uint8_t y = 0, uint8_t bg = TRANSPARENT);
 // Возвращает указатель opaque выбранного пункта, если нажата кнопка выбора 
-void *menu_update(Menu *m, unsigned long delta);
+const void *menu_update(Menu *m, unsigned long delta);
 // Отображает меню на экране
 void menu_render(Menu *m);
 // Завершает работу меню
