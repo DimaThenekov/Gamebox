@@ -5,9 +5,9 @@
 #include "binary.h"
 #include "controls.h"
 #define B BLUE
-#define P GREEN
-#define S RED
-#define C CYAN
+#define G GREEN
+#define R RED
+#define S CYAN
 #define P PURPLE
 #define W WHITE
 #define O TRANSPARENT
@@ -102,26 +102,92 @@ const game_sprite YourSprite PROGMEM = {
  * game_is_any_button_pressed(mask) - Нажата ли хотя бы одна кнопка? Например: game_is_any_button_pressed(BITMASK(BUTTON_SW) | BITMASK(BUTTON_DOWN))
  *
  * */
- const uint8_t player_lines[] PROGMEM = {
-   O, O, O, O, G, G, G, G, G, G, O, O, O,
-   O, O, O, G, G, G, G, G, G, G, G, G, O,
-   O, G, G, G, Y, Y, Y, Y, L, Y, G, O, O,
-   G, Y, G, Y, Y, Y, Y, Y, L, Y, Y, Y, O,
-   G, Y, G, G, Y, Y, Y, Y, Y, Y, Y, Y, Y,
-   O, L, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, O,
-   L, L, W, W, W, W, W, W, W, O, O, O, O,
-   L, W, W, W, W, S, S, W, W, W, W, O, O,
-   W, W, W, W, S, S, S, S, W, W, W, W, O,
-   Y, L, W, W, S, S, S, S, W, W, L, Y, O,
-   Y, L, L, L, L, L, L, L, L, L, L, L, L,
-   Y, Y, L, L, L, L, L, L, L, L, L, L, L,
-   O, O, W, W, W, O, O, W, W, W, L, O, O,
-   O, G, G, G, O, O, O, O, G, G, G, O, O,
-   G, G, G, G, O, O, O, O, G, G, G, G, O
+  const uint8_t player_lines[] PROGMEM = {
+   O, O, O, O, P, P, P, P, P, P, O, O, O, 
+   O, O, O, P, P, P, P, P, P, P, P, P, O, 
+   O, P, P, Y, Y, Y, Y, Y, L, Y, P, O, O, 
+   P, Y, P, Y, Y, Y, Y, Y, L, Y, Y, Y, O, 
+   P, Y, P, P, Y, Y, Y, Y, Y, Y, Y, Y, Y,  
+   O, B, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, O, 
+   B, B, S, S, W, S, S, S, S, O, O, O, O, 
+   B, S, S, S, W, R, R, W, S, S, S, O, O, 
+   S, S, S, S, R, W, O, R, S, S, S, S, O, 
+   Y, B, S, W, R, O, W, R, W, S, B, Y, O, 
+   Y, B, B, B, B, B, B, B, B, B, B, B, B, 
+   Y, Y, B, B, B, B, B, B, B, B, B, B, B, 
+   O, O, W, W, W, O, O, W, W, W, B, O, O, 
+   O, P, P, P, O, O, O, O, P, P, P, O, O, 
+   P, P, P, P, O, O, O, O, P, P, P, P, O 
  };
+  
+  
+ const game_color_sprite player PROGMEM = {
+    13,15,player_lines
+ };
+
+ const uint8_t player_left_lines[] PROGMEM = {
+
+    0, 0, 0, P, P, P, P, P, P, 0, 0, 0, 0,
+    0, P, P, P, P, P, P, P, P, P, 0, 0, 0,
+    0,0 ,P ,Y ,L ,Y ,Y ,Y ,Y ,Y ,P ,P , 0,
+    0, Y, Y, Y, L, Y, Y, Y, Y, Y, P, Y, P,
+    Y, Y, Y, Y, Y, Y, Y, Y, Y, P, P, Y, P,
+    0, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, B, 0,
+    0, 0, 0, 0, S, S, S, S, W, S, S, B, B,
+    0, 0, S, S, S, W, R, R, W, S, S, S, B,
+    0, S, S, S, S, R, 0, W, R, S, S, S, S,
+    0, Y, B, S, W, R, W, 0, R, W, S, B, Y,
+    B, B, B, B, B, B, B, B, B, B, B, B, Y,
+    B, B, B, B, B, B, B, B, B, B, B, Y, Y,
+    0, 0, B, W, W, W, 0, 0, W, W, W, 0, 0,
+    0, 0, P, P, P, 0, 0, 0, 0, P, P, P, 0,
+    0, P, P, P, P, 0, 0, 0, 0, P, P, P, P
+  
+ };
+
+ const game_color_sprite player_left PROGMEM = {
+  13,15,player_left_lines
+ };
+
+ const uint8_t slimer_lines[] PROGMEM = {
+    0,0,G,G,G,0,0,
+    0,G,G,G,G,G,0,
+    G,G,0,G,0,G,G,
+    G,G,G,G,G,G,G,
+    G,W,W,W,W,G,G,
+    G,R,R,R,R,G,G,
+    G,W,R,R,W,G,G,
+    G,G,R,R,G,G,G,
+    0,G,G,G,G,G,0,
+    0,0,0,0,G,G,0,
+    0,0,0,0,0,G,G,
+    0,0,0,0,0,0,G
+ };
+
+ const game_color_sprite slimer PROGMEM = {
+
+    7,12,slimer_lines
+
+ };
+
+ const uint8_t shoot_lines[] PROGMEM = {
+
+    S,R,
+    R,S
+  
+ };
+
+ const game_color_sprite shoot PROGMEM = {
+
+    2,2,shoot_lines
+  
+ };
+ 
 struct GhostbusterData
 {
    int8_t pposy;
+   int8_t sposy,ShootPosy[5];
+   bool flag,isShoot;
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
@@ -131,20 +197,54 @@ static void Ghostbuster_prepare()
 {
     /* Здесь код, который будет исполнятся один раз */
     /* Здесь нужно инициализировать переменные */
+    data->flag = true;
+    data->isShoot = false;
 }
 
 static void Ghostbuster_render()
 {
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
-    game_draw_color_sprite(&snail, 10, data->pposy);
+    game_draw_color_sprite(&slimer, data->sposy, 52);
+    if(data->flag) game_draw_color_sprite(&player, data->pposy, 49);
+    else game_draw_color_sprite(&player_left, data->pposy, 49);
+    if(data->isShoot)
+      for(int i = 0; i < 6; i++) {
+        game_draw_color_sprite(&shoot, data->ShootPosy[i], 59);
+      }
     /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
 }
 
 static void Ghostbuster_update(unsigned long delta)
 {
-  if(game_is_button_pressed(BUTTON_LEFT))
-    date->pposy--;
+  if( (game_is_button_pressed(BUTTON_A)) && (data->flag) ) {
+
+    data->isShoot = true;
+    for(int i = 0; i < 6; i++) {
+      data->ShootPosy[i] = data->pposy + 13 + i*2;
+    }
+    
+  }
+  else if( (game_is_button_pressed(BUTTON_A)) && (!data->flag) ) {
+
+    data->isShoot = true;
+    for(int i = 0; i < 6; i++) {
+      data->ShootPosy[i] = data->pposy - i*2;
+    }
+    
+  }
+  else data->isShoot = false;
+  
+  if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
+    data->pposy--;
+    data->flag = false;
+  }
+  else if (game_is_button_pressed(BUTTON_LEFT)) data->flag = false;
+   if( (game_is_button_pressed(BUTTON_RIGHT)) && (!data->isShoot) ) {
+      data->pposy++;
+      data->flag = true;
+   }
+   
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
 
