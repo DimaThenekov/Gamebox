@@ -19,6 +19,7 @@ extern game_instance Tester;
 extern game_instance Raycaster;
 extern game_instance BreakOut;
 extern game_instance Saper;
+extern game_instance Mario;
 #ifndef EMULATED /* for use only on real hardware */
 extern game_instance Dump;
 extern game_instance Player;
@@ -42,6 +43,7 @@ static const MenuItem main_menu[] PROGMEM = {
 #ifndef EMULATED /* for use only on real hardware */
     { "EEPROM", &Dump },
     { "Music", &Player },
+    { "Mario", &Mario},
 #endif
     /* Register your game like so:
      * 

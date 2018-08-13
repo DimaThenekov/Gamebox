@@ -16,7 +16,7 @@ struct PlayerData
 static PlayerData* data;
 
 static const MenuItem tunes[] PROGMEM = {
-  {"Alla Turca", alla_turca},
+  {"Alla Turca", (void*)alla_turca},
   {"Atomix", atomix},
   {"Axel F. Theme", axel_f_theme},
   {"Aztec", aztec},
