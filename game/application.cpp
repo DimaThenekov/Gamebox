@@ -6,6 +6,7 @@
 #include "controls.h"
 #include "random.h"
 #include "menu.h"
+#include "music.h"
 
 /* List of all games */
 
@@ -51,7 +52,7 @@ static const MenuItem main_menu[] PROGMEM = {
      *
      * { "YOUR_GAME_NAME", &YOUR_GAME_NAME },
      */
-    { NULL, NULL }
+    { "", NULL }
 };
 
 #define UP BITMASK(BUTTON_NE) | BITMASK(BUTTON_UP)
@@ -77,6 +78,14 @@ void pause_continue()
     btn_timeout = BUTTON_DELAY;
 }
 
+void pause_mute()
+{
+#ifndef EMULATED
+    fxm_mute();
+    pause_continue();
+#endif
+}
+
 void pause_exit()
 {
 #ifdef EMULATED
@@ -87,12 +96,14 @@ void pause_exit()
 }
 
 #define CONTINUE ((void*)0xC0)
+#define MUTE     ((void*)0x50)
 #define EXIT     ((void*)0xE)
 
 static const MenuItem pause_menu[] PROGMEM = {
     { "Continue", CONTINUE },
+    { "Mute/Unmute", MUTE },
     { "Exit game", EXIT },
-    { NULL, NULL }
+    { "", NULL }
 };
 
 void application_setup()
@@ -125,7 +136,7 @@ void update(unsigned long delta)
         if (!is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
         {
             is_paused = true;
-            menu = menu_setup(pause_menu, 5, 20, BLUE);
+            menu = menu_setup(pause_menu, 0, 20, BLUE);
             btn_timeout = BUTTON_DELAY;
         }
         else if (is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
@@ -140,10 +151,14 @@ void update(unsigned long delta)
         }
         else
         {
-            void *r = menu_update(menu, delta);
+            const void *r = menu_update(menu, delta);
             if (r == CONTINUE)
             {
                 pause_continue();
+            }
+            else if (r == MUTE)
+            {
+                pause_mute();
             }
             else if (r == EXIT)
             {

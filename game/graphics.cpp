@@ -35,7 +35,7 @@ static uint8_t
 ;
 
 // RENDER VARS
-static int game_render_y;
+static int8_t game_render_y;
 static uint8_t *game_render_buf;
 #if defined(COLOR_6BIT) && COLOR_6BIT
 static uint8_t color_channel;
@@ -53,36 +53,14 @@ static bool use_frame_buffer;
 // Colors
 //////////////////////////
 
-#if defined(COLOR_6BIT) && COLOR_6BIT
-static uint8_t game_make_color_channel(uint8_t channel)
-{
-    return (color_channel < channel);
-}
-#endif
-
 static uint8_t game_make_color(uint8_t color)
 {
-#if defined(COLOR_6BIT) && COLOR_6BIT
-    return (game_make_color_channel((color >> 4) & 3)) |
-           (game_make_color_channel((color >> 2) & 3) << 1) |
-           (game_make_color_channel(color & 3) << 2);
-#else
-    return (color >> 5 & 1) |
-           (color >> 3 & 1) << 1 |
-           (color >> 1 & 1) << 2;
-#endif
+    return color;
 }
 
 static uint8_t game_make_color_id(uint8_t color)
 {
-#if defined(COLOR_6BIT) && COLOR_6BIT
-    /* TODO */
-    return 0;
-#else
-    return ((color & 1) << 5) | ((color & 1) << 4) |
-           ((color & 2) << 2) | ((color & 2) << 1) |
-           ((color & 4) >> 1) | ((color & 4) >> 2);
-#endif
+    return color;
 }
 
 uint8_t game_sprite_width(const struct game_sprite *s)
@@ -115,7 +93,7 @@ const uint8_t *game_color_sprite_line(const struct game_color_sprite *s, uint8_t
     return game_color_sprite_width(s) * line + (const uint8_t*)pgm_read_pointer(&s->lines);
 }
 
-void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int x, uint8_t y, int8_t color, uint8_t ry)
+static void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int8_t x, uint8_t y, int8_t color, uint8_t ry)
 {
     uint8_t line = ry - y;
     uint8_t mask = 0x80;
@@ -142,8 +120,8 @@ void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int x, u
     }
 }
 
-void game_color_sprite_render_line(const struct game_color_sprite *s,
-    uint8_t *buf, int x, uint8_t y, uint8_t ry)
+static void game_color_sprite_render_line(const struct game_color_sprite *s,
+    uint8_t *buf, int8_t x, uint8_t y, uint8_t ry)
 {
     uint8_t line = ry - y;
     uint8_t width = game_color_sprite_width(s);
@@ -160,7 +138,7 @@ void game_color_sprite_render_line(const struct game_color_sprite *s,
     }
 }
 
-void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color)
+void game_draw_sprite(const struct game_sprite *s, int8_t x, int8_t y, uint8_t color)
 {
     uint8_t height = game_sprite_height(s);
 #ifdef FRAME_BUFFER
@@ -187,7 +165,7 @@ void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color)
     }
 }
 
-void game_draw_line(uint8_t *buf, int x, uint8_t w, int8_t color)
+static void game_draw_line(uint8_t *buf, int8_t x, uint8_t w, int8_t color)
 {
     for (uint8_t dx = 0; dx < w; ++dx)
     {
@@ -199,7 +177,7 @@ void game_draw_line(uint8_t *buf, int x, uint8_t w, int8_t color)
     }
 }
 
-void game_draw_rect(int x, int y, int w, int h, uint8_t color)
+void game_draw_rect(int8_t x, int8_t y, int8_t w, int8_t h, uint8_t color)
 {
 #ifdef FRAME_BUFFER
     if (use_frame_buffer)
@@ -223,7 +201,7 @@ void game_draw_rect(int x, int y, int w, int h, uint8_t color)
     }
 }
 
-void game_draw_color_sprite(const struct game_color_sprite *s, int x, int y)
+void game_draw_color_sprite(const struct game_color_sprite *s, int8_t x, int8_t y)
 {
     uint8_t height = game_color_sprite_height(s);
 #ifdef FRAME_BUFFER
@@ -250,7 +228,7 @@ void game_draw_color_sprite(const struct game_color_sprite *s, int x, int y)
     }
 }
 
-void game_draw_pixel(int x, int y, uint8_t color)
+void game_draw_pixel(int8_t x, int8_t y, uint8_t color)
 {
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return;
@@ -267,7 +245,7 @@ void game_draw_pixel(int x, int y, uint8_t color)
     }
 }
 
-uint8_t game_get_pixel(int x, int y)
+uint8_t game_get_pixel(int8_t x, int8_t y)
 {
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return 0;
@@ -282,7 +260,7 @@ uint8_t game_get_pixel(int x, int y)
 }
 
 
-void game_draw_vline(int x, int y1, int y2, uint8_t color)
+void game_draw_vline(int8_t x, int8_t y1, int8_t y2, uint8_t color)
 {
     if (x < 0 || x >= WIDTH || y2 < 0 || y1 >= HEIGHT)
         return;
@@ -307,7 +285,7 @@ void game_draw_vline(int x, int y1, int y2, uint8_t color)
     }
 }
 
-bool game_is_drawing_lines(int y, int height)
+bool game_is_drawing_lines(int8_t y, int8_t height)
 {
 #ifdef FRAME_BUFFER
     if (use_frame_buffer)
@@ -323,7 +301,7 @@ bool game_is_drawing_lines(int y, int height)
     return false;
 }
 
-void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg)
+void game_draw_text(const uint8_t *s, int8_t x, int8_t y, uint8_t color, uint8_t bg)
 {
 #ifdef FRAME_BUFFER
     if (!use_frame_buffer)
@@ -339,7 +317,7 @@ void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg)
     }
 }
 
-void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
+void game_draw_char(uint8_t c, int8_t x, int8_t y, uint8_t color, uint8_t bg)
 {
     // clipping is not supported
     if (x < 0 || x > WIDTH - FONT_WIDTH)
@@ -389,7 +367,7 @@ void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
     }
 }
 
-void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_t bg)
+void game_draw_digits(uint16_t num, int8_t len, int8_t x, int8_t y, uint8_t color, uint8_t bg)
 {
 #ifdef FRAME_BUFFER
     if (!use_frame_buffer)
@@ -401,7 +379,7 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
     if (y <= -DIGIT_HEIGHT || y >= HEIGHT)
         return;
     x += (len - 1) * (DIGIT_WIDTH + 1);
-    for (int i = len - 1 ; i >= 0 ; --i, x -= DIGIT_WIDTH + 1)
+    for (int8_t i = len - 1 ; i >= 0 ; --i, x -= DIGIT_WIDTH + 1)
     {
         uint8_t d = num % 10;
         num /= 10;
@@ -413,7 +391,7 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
                 if (y + dy >= 0 && y + dy < HEIGHT)
                 {
                     uint8_t dd = pgm_read_byte_near(digits_data + d * DIGIT_HEIGHT + dy);
-                    for (int b = 0 ; b < DIGIT_WIDTH ; ++b)
+                    for (int8_t b = 0 ; b < DIGIT_WIDTH ; ++b)
                     {
                         if (x + b >= 0 && x + b < WIDTH)
                         {
@@ -450,11 +428,11 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
     }
 }
 
-void game_render_line(uint8_t *buf, int line)
+void game_render_line(uint8_t *buf, int8_t line)
 {
     int i = 0;
-    for (int y = 0 ; y < BUF_LINES ; ++y)
-        for (int x = 0; x < WIDTH ; ++x, ++i)
+    for (int8_t y = 0 ; y < BUF_LINES ; ++y)
+        for (int8_t x = 0; x < WIDTH ; ++x, ++i)
         {
 #ifdef FRAME_BUFFER
             if (use_frame_buffer)
@@ -558,6 +536,9 @@ void graphics_setup()
     TCCR1B  = _BV(WGM13) | _BV(WGM12) | _BV(CS10) | _BV(CS11); // Mode 14, div 64
     ICR1    = 0;
     TIMSK1 |= _BV(TOIE1); // Enable Timer1 interrupt
+
+    /* Emulator hack */
+    *((uint8_t*)0x58) = 0x01;
 }
 
 static void graphics_update()
@@ -568,12 +549,7 @@ static void graphics_update()
     tick = tock & ~sclkpin;
 
     uint8_t lines[BUF_LINES * WIDTH];
-//#ifdef FRAME_BUFFER
-//    if (!use_frame_buffer)
-//#endif
-    {
-        game_render_line((uint8_t*)lines, step);
-    }
+    game_render_line((uint8_t*)lines, step);
 
     uint8_t *line1 = &lines[(BUF_LINES - 1) * WIDTH];
     uint8_t *line2 = &lines[(BUF_LINES - 2) * WIDTH];
@@ -618,6 +594,30 @@ static void graphics_update()
          [tick] "r" (tick),                   \
          [tock] "r" (tock): "r0", "r1");
 #endif
+
+#ifdef GFX_PORT2
+    #define pow asm volatile(                 \
+      "ld  %[tmp], %a[ptr1]+"       "\n\t"    \
+      "swap %[tmp]"                 "\n\t"    \
+      "out %[data2], %[tmp]"        "\n\t"    \
+      "ld  %[tmp], %a[ptr2]+"       "\n\t"    \
+      "swap %[tmp]"                 "\n\t"    \
+      "out %[data], %[tmp]"         "\n\t"    \
+      "out %[clk]     , %[tick]"     "\n\t"   \
+      "out %[clk]     , %[tock]"     "\n"     \
+      :  [ptr1] "+e" (line1),                 \
+         [ptr2] "+e" (line2),                 \
+         [tmp] "=r" (tmp)                     \
+      :  [data] "I" (_SFR_IO_ADDR(GFX_DATAPORT)), \
+         [data2] "I" (_SFR_IO_ADDR(GFX_DATAPORT2)), \
+         [clk]  "I" (_SFR_IO_ADDR(GFX_SCLKPORT)), \
+         [tick] "r" (tick),                   \
+         [tock] "r" (tock) );
+#endif
+#ifdef GFX_PORT2
+if (!color_channel)
+#endif
+{
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew 
@@ -639,6 +639,34 @@ static void graphics_update()
     pew pew pew pew pew pew pew pew 
     pew pew pew pew pew pew pew pew 
 #endif
+}
+#ifdef GFX_PORT2
+else
+{
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow
+#ifndef GFX_E
+    line1 = &lines[1 * WIDTH];
+    line2 = &lines[0 * WIDTH];
+
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+    pow pow pow pow pow pow pow pow 
+#endif
+}
+#endif
+
     *oeport |= oepin;
 
     if (step & 1)
@@ -671,7 +699,7 @@ static void graphics_update()
     step = (step + 1) & ADDR_LOW;
 #if defined(COLOR_6BIT) && COLOR_6BIT
     if (step == 0)
-        color_channel = (color_channel + 1) % 3;
+        color_channel ^= 1;
 #endif
 }
 
@@ -680,7 +708,6 @@ ISR(TIMER1_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
   TIFR1 |= TOV1;                  // Clear Timer1 interrupt flag
   // Interval 2 is too small even for invaders, but ok for 6-bit colors
   // 64 is ok for 3-bit colors
-  ICR1      = 64;        // Set interval for next interrupt
+  ICR1      = color_channel ? 32 : 8;        // Set interval for next interrupt
   TCNT1     = 0;        // Restart interrupt timer
 }
-

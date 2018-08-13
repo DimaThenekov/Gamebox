@@ -13,39 +13,67 @@ static QColor frame[HEIGHT][WIDTH];
 static QColor screen[HEIGHT][WIDTH];
 static bool use_frame_buffer;
 
-void game_draw_pixel(int x, int y, uint8_t c)
+static int color_map[4] = {0, 128, 192, 255};
+
+static int rev_color_map(int c)
+{
+    switch (c)
+    {
+    case 128:
+        return 1;
+    case 192:
+        return 2;
+    case 255:
+        return 3;
+    }
+    return 0;
+}
+
+void game_draw_pixel(int8_t x, int8_t y, uint8_t c)
 {
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return;
-    QColor color(((c >> 4) & 3) * 85, ((c >> 2) & 3) * 85, (c & 3) * 85);
+    int r = c & RED;
+    r = (r & 0xf) + ((r & 0xf0) >> 3);
+    int g = c & GREEN;
+    g = ((g & 0xf) >> 1) + ((g & 0xf0) >> 4);
+    int b = c & BLUE;
+    b = ((b & 0xf) >> 2) + ((b & 0xf0) >> 5);
+    QColor color(color_map[r], color_map[g], color_map[b]);
     if (use_frame_buffer)
         frame[y][x] = color;
     else
         screen[y][x] = color;
 }
 
-uint8_t game_get_pixel(int x, int y)
+uint8_t game_get_pixel(int8_t x, int8_t y)
 {
     if (!use_frame_buffer || x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
         return 0;
     QColor c = frame[y][x];
-    return ((c.red() / 85) << 4) | ((c.green() / 85) << 2) | ((c.blue() / 85));
+    int r = rev_color_map(c.red());
+    int g = rev_color_map(c.green());
+    int b = rev_color_map(c.blue());
+    r = ((r & 2) << 3) + (r & 1);
+    g = ((g & 2) << 4) + ((g & 1) << 1);
+    b = ((b & 2) << 5) + ((b & 1) << 2);
+    return r + g + b;
 }
 
-void game_draw_vline(int x, int y1, int y2, uint8_t color)
+void game_draw_vline(int8_t x, int8_t y1, int8_t y2, uint8_t color)
 {
     for (int i = y1 ; i <= y2 ; ++i)
         game_draw_pixel(x, i, color);
 }
 
-void game_draw_rect(int x, int y, int w, int h, uint8_t color)
+void game_draw_rect(int8_t x, int8_t y, int8_t w, int8_t h, uint8_t color)
 {
     for (int dx = 0; dx < w ; ++dx)
         for (int dy = 0; dy < h ; ++dy)
             game_draw_pixel(x + dx, y + dy, color);
 }
 
-void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color)
+void game_draw_sprite(const struct game_sprite *s, int8_t x, int8_t y, uint8_t color)
 {
     for (int dx = 0; dx < s->width; ++dx)
     {
@@ -63,7 +91,7 @@ void game_draw_sprite(const struct game_sprite *s, int x, int y, uint8_t color)
     }
 }
 
-void game_draw_color_sprite(const struct game_color_sprite *s, int x, int y)
+void game_draw_color_sprite(const struct game_color_sprite *s, int8_t x, int8_t y)
 {
     const uint8_t *data = s->lines;
     for (int dy = 0; dy < s->height ; ++dy)
@@ -81,7 +109,7 @@ void game_draw_color_sprite(const struct game_color_sprite *s, int x, int y)
     }
 }
 
-void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
+void game_draw_char(uint8_t c, int8_t x, int8_t y, uint8_t color, uint8_t bg)
 {
     int pos = (int)c * FONT_HEIGHT;
     for (int i = 0; i < FONT_WIDTH; ++i)
@@ -97,7 +125,7 @@ void game_draw_char(uint8_t c, int x, int y, uint8_t color, uint8_t bg)
     }
 }
 
-void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg)
+void game_draw_text(const uint8_t *s, int8_t x, int8_t y, uint8_t color, uint8_t bg)
 {
     int xx = x;
     int yy = y;
@@ -108,7 +136,7 @@ void game_draw_text(const uint8_t *s, int x, int y, uint8_t color, uint8_t bg)
     }
 }
 
-void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_t bg)
+void game_draw_digits(uint16_t num, int8_t len, int8_t x, int8_t y, uint8_t color, uint8_t bg)
 {
     x += (len - 1) * (DIGIT_WIDTH + 1);
     for (int i = len - 1 ; i >= 0 ; --i, x -= DIGIT_WIDTH + 1)
@@ -129,7 +157,7 @@ void game_draw_digits(uint16_t num, int len, int x, int y, uint8_t color, uint8_
     }
 }
 
-bool game_is_drawing_lines(int y, int height)
+bool game_is_drawing_lines(int8_t y, int8_t height)
 {
     return true;
 }
