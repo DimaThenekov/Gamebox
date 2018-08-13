@@ -38,12 +38,13 @@ static const MenuItem main_menu[] PROGMEM = {
     { "Flappy", &Flappy },
     { "BreakOut", &BreakOut },
     { "Saper", &Saper },
+    { "Mario", &Mario},
     { "3D", &Raycaster },
-    { "Font", &Tester },
 #ifndef EMULATED /* for use only on real hardware */
+    { "Font", &Tester },
     { "EEPROM", &Dump },
     { "Music", &Player },
-    { "Mario", &Mario},
+    
 #endif
     /* Register your game like so:
      * 
