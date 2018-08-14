@@ -131,10 +131,12 @@ struct SpaceShipsData
     max_count,
     count,
     lives,
-    score;
+    score,
+    game_set;
     float 
     Obj_spX
     ,Obj_spY;
+    
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
@@ -145,14 +147,13 @@ static void SpaceShips_prepare()
   
   data->ShipX = 5;
   data->ShipY = 32;
-  data->ObjY = 6 + rand() % 55;
+  data->ObjY = (data->ShipY - 5) + rand() % (13 - data->ShipY);
   data->ObjX = 61;
-  data->Obj_spX = 2;
-  data->Obj_spY = 0.5;
-  data->count = 0;
-  data->max_count = 1;
-  data->lives = 10;
+  data->Obj_spX = 0.01;
+  data->Obj_spY = 0.01;
+  data->lives = 3;
   data->score = 0;
+  data->game_set = 0;
     /* Здесь код, который будет исполнятся один раз */
     /* Здесь нужно инициализировать переменные */
 }
@@ -161,21 +162,107 @@ static void SpaceShips_render()
 {
     game_draw_sprite(&ShipSprite,data->ShipX,data->ShipY,PURPLE);
     
-    if ((data->count <= data->max_count) && (data->ObjX > 0) && (data->lives > 0))
+    if ((data->ObjX > 0) && (data->lives > 0))
     {   
         game_draw_sprite(&BallSprite,data->ObjX,data->ObjY,WHITE);
     }
         game_draw_digits((uint16_t)data->lives,2, 1, 0, WHITE);
 
         game_draw_digits((uint16_t)data->score,3, 52, 0, WHITE);
+
+    if (data->game_set == 0)
+    game_draw_text((uint8_t*)"EASY", 20, 0, CYAN);
+    
+    if (data->game_set == 1)
+    game_draw_text((uint8_t*)"NORM.", 20, 0, BLUE);
+
+    if (data->game_set == 2)
+    game_draw_text((uint8_t*)"HARD", 20, 0, GREEN);
+
+    if (data->game_set == 3)
+    game_draw_text((uint8_t*)"EXTR.", 20, 0, YELLOW);
+
+    if (data->game_set == 4)
+    game_draw_text((uint8_t*)"EXT.H", 20, 0, RED);
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
 
     /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
 }
 
+// Spawns
+
+void CoolSpawn()
+{
+  if (data->ShipY <= 7)
+          {
+            data->ObjY = 7 + rand() % 16;
+            data->ObjX = 61;
+          ++data->score;
+          }
+          else
+              if (data ->ShipY >= 53)
+              {
+                data->ObjY = 50 + rand() % 11;
+                data->ObjX = 61;
+              ++data->score;
+              }
+              else
+            {
+              data->ObjY = (data->ShipY - 5) + rand() % (13 - data->ShipY);
+              data->ObjX = 61;
+              ++data->score;
+            };
+}
+
 static void SpaceShips_update(unsigned long delta)
 {
+  //Difficity
+
+  switch(data->score)
+  {
+    case 0: //Easy
+    {
+      game_set_ups(25);
+      data->game_set = 0;
+      data->Obj_spX = 0.01;
+      data->Obj_spY = 0.01;
+      break;
+    }
+    case 25: //Normal
+    {      
+      game_set_ups(25);
+      data->game_set = 1;
+      data->Obj_spX = 0.1;
+      data->Obj_spY = 0.1;
+      break;
+    }
+    case 50: //Hard
+    {
+      game_set_ups(25);
+      data->game_set = 2;
+      data->Obj_spX = 1;
+      data->Obj_spY = 1;
+      break;
+    }
+    case 100: //Extremal
+    {
+      game_set_ups(50);
+      data->game_set = 3;
+      data->Obj_spX = 1;
+      data->Obj_spY = 1;
+      break;
+    }
+    case 200: //Extra Hard!!!
+    {      
+      game_set_ups(75);
+      data->game_set = 4;
+      data->Obj_spX = 1;
+      data->Obj_spY = 1;
+      break;
+    }
+  }
+  
   // Ship Controls
   if (game_is_button_pressed(BUTTON_RIGHT) && data->ShipX < 52 )
       {
@@ -185,7 +272,7 @@ static void SpaceShips_update(unsigned long delta)
       {
           --data->ShipX;
       }
-  if (game_is_button_pressed(BUTTON_UP) && data->ShipY > 6)
+  if (game_is_button_pressed(BUTTON_UP) && data->ShipY > 7)
       {
           --data->ShipY;
       }
@@ -195,24 +282,44 @@ static void SpaceShips_update(unsigned long delta)
         }
 
       // Random Objects
-      game_set_ups(50);
+
+      
+
+      //Easy
+  if (data->game_set >= 0)
+  {
       if (data->ObjX == 1)
       {
-         data->ObjY = 6 + rand() % 55;
-         data->ObjX = 61;
-         ++data->score;
-      }
-      if ((data->count < data->max_count) && (data->ObjX > 0))
+        CoolSpawn();
+      };
+      if ((data->ObjX > 0))
           {
            data->ObjX = data->ObjX - data->Obj_spX;
           };
 
       if ((data->ObjY >= (data->ShipY - 2)) && ((data->ObjY + 3) <= (data->ShipY + 10)) && ((data->ObjX >= data->ShipX - 2) && (data->ObjX + 3) <= (data->ShipX + 14)))
       {
-        data->ObjX = 61;
-        data->ObjY = 6 + rand() % 55;
+        CoolSpawn();
         data->lives = data->lives - 1;
       }
+  }
+
+      //Normal
+ // if (data->game_set == 1)
+
+
+      //Hard
+
+
+
+      //Extremal
+
+
+
+      //Extra Hard!!!
+
+
+      
       // Score
       
     /* Здесь код, который будет выполняться в цикле */
