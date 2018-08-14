@@ -151,7 +151,7 @@ static void SpaceShips_prepare()
   data->ObjX = 61;
   data->Obj_spX = 0.01;
   data->Obj_spY = 0.01;
-  data->lives = 3;
+  data->lives = 99;
   data->score = 0;
   data->game_set = 0;
     /* Здесь код, который будет исполнятся один раз */
@@ -194,22 +194,22 @@ static void SpaceShips_render()
 
 void CoolSpawn()
 {
-  if (data->ShipY <= 7)
+  if (data->ShipY <= 13)
           {
-            data->ObjY = 7 + rand() % 16;
+            data->ObjY = 8 + rand() % 18;
             data->ObjX = 61;
           ++data->score;
           }
           else
-              if (data ->ShipY >= 53)
+              if (data ->ShipY >= 48)
               {
-                data->ObjY = 50 + rand() % 11;
+                data->ObjY = 48 + rand() % 13;
                 data->ObjX = 61;
               ++data->score;
               }
               else
             {
-              data->ObjY = (data->ShipY - 5) + rand() % (13 - data->ShipY);
+              data->ObjY = (data->ShipY - 5) + rand() % 18;
               data->ObjX = 61;
               ++data->score;
             };
@@ -272,7 +272,7 @@ static void SpaceShips_update(unsigned long delta)
       {
           --data->ShipX;
       }
-  if (game_is_button_pressed(BUTTON_UP) && data->ShipY > 7)
+  if (game_is_button_pressed(BUTTON_UP) && data->ShipY > 8)
       {
           --data->ShipY;
       }
