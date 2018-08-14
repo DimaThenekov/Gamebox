@@ -103,24 +103,24 @@ const game_sprite YourSprite PROGMEM = {
  *
  * */
   const uint8_t player_lines[] PROGMEM = {
-   O, O, O, O, P, P, P, P, P, P, O, O, O,
-   O, O, O, P, P, P, P, P, P, P, P, P, O,
-   O, P, P, Y, Y, Y, Y, Y, L, Y, P, O, O,
-   P, Y, P, Y, Y, Y, Y, Y, L, Y, Y, Y, O,
-   P, Y, P, P, Y, Y, Y, Y, Y, Y, Y, Y, Y,
-   O, B, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, O,
-   B, B, S, S, W, S, S, S, S, O, O, O, O,
-   B, S, S, S, W, R, R, W, S, S, S, O, O,
-   S, S, S, S, R, W, O, R, S, S, S, S, O,
-   Y, B, S, W, R, O, W, R, W, S, B, Y, O,
-   Y, B, B, B, B, B, B, B, B, B, B, B, B,
-   Y, Y, B, B, B, B, B, B, B, B, B, B, B,
-   O, O, W, W, W, O, O, W, W, W, B, O, O,
-   O, P, P, P, O, O, O, O, P, P, P, O, O,
-   P, P, P, P, O, O, O, O, P, P, P, P, O
+   O, O, O, O, P, P, P, P, P, P, O, O, O, 
+   O, O, O, P, P, P, P, P, P, P, P, P, O, 
+   O, P, P, Y, Y, Y, Y, Y, L, Y, P, O, O, 
+   P, Y, P, Y, Y, Y, Y, Y, L, Y, Y, Y, O, 
+   P, Y, P, P, Y, Y, Y, Y, Y, Y, Y, Y, Y,  
+   O, B, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, O, 
+   B, B, S, S, W, S, S, S, S, O, O, O, O, 
+   B, S, S, S, W, R, R, W, S, S, S, O, O, 
+   S, S, S, S, R, W, O, R, S, S, S, S, O, 
+   Y, B, S, W, R, O, W, R, W, S, B, Y, O, 
+   Y, B, B, B, B, B, B, B, B, B, B, B, B, 
+   Y, Y, B, B, B, B, B, B, B, B, B, B, B, 
+   O, O, W, W, W, O, O, W, W, W, B, O, O, 
+   O, P, P, P, O, O, O, O, P, P, P, O, O, 
+   P, P, P, P, O, O, O, O, P, P, P, P, O 
  };
-
-
+  
+  
  const game_color_sprite player PROGMEM = {
     13,15,player_lines
  };
@@ -142,7 +142,7 @@ const game_sprite YourSprite PROGMEM = {
     0, 0, B, W, W, W, 0, 0, W, W, W, 0, 0,
     0, 0, P, P, P, 0, 0, 0, 0, P, P, P, 0,
     0, P, P, P, P, 0, 0, 0, 0, P, P, P, P
-
+  
  };
 
  const game_color_sprite player_left PROGMEM = {
@@ -174,18 +174,27 @@ const game_sprite YourSprite PROGMEM = {
 
     S,R,
     R,S
-
+  
  };
 
  const game_color_sprite shoot PROGMEM = {
 
     2,2,shoot_lines
-
+  
  };
 
+ const uint8_t place_lines[] PROGMEM = {
+      R,R,
+      R,R
+ };
+
+ const game_color_sprite place PROGMEM = {
+    2,2,place_lines
+ };
+ 
 struct GhostbusterData
 {
-   int8_t pposy, ShootCounter;
+   int8_t pposy, ShootCounter,placeposy;
    int8_t sposy,ShootPosy[5];
    bool flag,isShoot;
     /* Объявляйте ваши переменные здесь */
@@ -200,6 +209,8 @@ static void Ghostbuster_prepare()
     data->flag = true;
     data->isShoot = false;
     data->ShootCounter = 0;
+    data->sposy = 50;
+    data->placeposy = -50;
 }
 
 static void Ghostbuster_render()
@@ -207,69 +218,30 @@ static void Ghostbuster_render()
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
     game_draw_color_sprite(&slimer, data->sposy, 52);
-
-    if(data->flag)
-      game_draw_color_sprite(&player, data->pposy, 49);
-    else
-      game_draw_color_sprite(&player_left, data->pposy, 49);
-
-    if( (data->isShoot) && (data->ShootCounter<6) )
-    {
-      for(int i = 0; i <= data->ShootCounter*4; i++)
-        if(i%4 == 0)
-          game_draw_color_sprite(&shoot, data->ShootPosy[i/4], 59);
-    }
-    else if(data->isShoot)
-      for(int i = 0; i <= 6; i++)
-      {
-        game_draw_color_sprite(&shoot, data->ShootPosy[i], 59);
-      }
-
+    game_draw_color_sprite(&place, data->placeposy, 62);
+    if(data->flag) game_draw_color_sprite(&player, data->pposy, 47);
+    else game_draw_color_sprite(&player_left, data->pposy, 47);
     /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
 }
 
 static void Ghostbuster_update(unsigned long delta)
 {
-  if( (game_is_button_pressed(BUTTON_A)) && (data->flag) ) {
-
-    data->isShoot = true;
-    for(int i = 0; i < 6; i++) {
-      data->ShootPosy[i] = data->pposy + 13 + i*2;
-    }
-    data->ShootCounter++;
-
-  }
-  else if( (game_is_button_pressed(BUTTON_A)) && (!data->flag) ) {
-    data->isShoot = true;
-    for(int i = 0; i < 6; i++) {
-      data->ShootPosy[i] = data->pposy - i;
-    }
-
-    data->ShootCounter++;
-
-  }
-  else { data->isShoot = false; data->ShootCounter = 0; }
-
-  if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
-    data->pposy--;
-    data->flag = false;
-  }
-  else if (game_is_button_pressed(BUTTON_LEFT)) data->flag = false;
-   if( (game_is_button_pressed(BUTTON_RIGHT)) && (!data->isShoot) ) {
-      data->pposy++;
-      data->flag = true;
-   }
-
-
-
+   
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
-
+      if(game_is_button_pressed(BUTTON_LEFT)) {
+          data->sposy++;
+          data->placeposy++;
+      }
+      else if (game_is_button_pressed(BUTTON_RIGHT)) {
+        data->sposy--;
+        data->placeposy--;
+      }
     /* Здесь можно работать с кнопками и обновлять переменные */
 }
 
 game_instance Ghostbuster = {
-    "Ghostbus",         /* Имя, отображаемое в меню */
+    "Ghostbuster",         /* Имя, отображаемое в меню */
     Ghostbuster_prepare,
     Ghostbuster_render,
     Ghostbuster_update,
