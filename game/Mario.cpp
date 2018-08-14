@@ -238,7 +238,7 @@ static void Mario_prepare()
   data->MarioY = 32;
   //data->Map[2][2]=1;
   int MapReal[10][4] = {{ 1, 1, 1, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 },{ 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 1, 1, 1, 1 }};
-  for (int i = 0; i <= 10; i++) 
+  for (int i = 0; i <= 9; i++) 
     for (int j = 0; j <= 3; j++)
     {
       data->Map[i][j]=MapReal[i][j];
@@ -260,7 +260,7 @@ static void Mario_render()
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
-  for (int i = 0; i <= 10; i++) 
+  for (int i = 0; i <= 9; i++) 
     for (int j = 0; j <= 3; j++)
     if (data->Map[i][j] == 1){
     game_draw_sprite(&StoneGreen, data->MapX+(i*16), j*16, RED);
