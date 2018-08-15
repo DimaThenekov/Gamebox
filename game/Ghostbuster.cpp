@@ -103,26 +103,26 @@ const game_sprite YourSprite PROGMEM = {
  *
  * */
   const uint8_t player_lines[] PROGMEM = {
-   O, O, O, O, P, P, P, P, P, P, O, O, O, 
-   O, O, O, P, P, P, P, P, P, P, P, P, O, 
-   O, P, P, Y, Y, Y, Y, Y, L, Y, P, O, O, 
-   P, Y, P, Y, Y, Y, Y, Y, L, Y, Y, Y, O, 
-   P, Y, P, P, Y, Y, Y, Y, Y, Y, Y, Y, Y,  
-   O, B, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, O, 
-   B, B, S, S, W, S, S, S, S, O, O, O, O, 
-   B, S, S, S, W, R, R, W, S, S, S, O, O, 
-   S, S, S, S, R, W, O, R, S, S, S, S, O, 
-   Y, B, S, W, R, O, W, R, W, S, B, Y, O, 
-   Y, B, B, B, B, B, B, B, B, B, B, B, B, 
-   Y, Y, B, B, B, B, B, B, B, B, B, B, B, 
-   O, O, W, W, W, O, O, W, W, W, B, O, O, 
-   O, P, P, P, O, O, O, O, P, P, P, O, O, 
-   P, P, P, P, O, O, O, O, P, P, P, P, O 
+   O, O, O, O, P, P, P, P, P, P, O, O, O,
+   O, O, O, P, P, P, P, P, P, P, P, P, O,
+   O, P, P, Y, Y, Y, Y, Y, L, Y, P, O, O,
+   P, Y, P, Y, Y, Y, Y, Y, L, Y, Y, Y, O,
+   P, Y, P, P, Y, Y, Y, Y, Y, Y, Y, Y, Y,
+   O, B, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, O,
+   B, B, S, S, W, S, S, S, S, O, O, O, O,
+   B, S, S, S, W, R, R, W, S, S, S, O, O,
+   S, S, S, S, R, W, O, R, S, S, S, S, O,
+   Y, B, S, W, R, O, W, R, W, S, B, Y, O,
+   Y, B, B, B, B, B, B, B, B, B, B, B, B,
+   Y, Y, B, B, B, B, B, B, B, B, B, B, B,
+   O, O, W, W, W, O, O, W, W, W, B, O, O,
+   O, P, P, P, O, O, O, O, P, P, P, O, O,
+   P, P, P, P, O, O, O, O, P, P, P, P, O
  };
-  
-  
+
+
  const game_color_sprite player PROGMEM = {
-    13,15,player_lines
+    13, 15, player_lines
  };
 
  const uint8_t player_left_lines[] PROGMEM = {
@@ -142,7 +142,7 @@ const game_sprite YourSprite PROGMEM = {
     0, 0, B, W, W, W, 0, 0, W, W, W, 0, 0,
     0, 0, P, P, P, 0, 0, 0, 0, P, P, P, 0,
     0, P, P, P, P, 0, 0, 0, 0, P, P, P, P
-  
+
  };
 
  const game_color_sprite player_left PROGMEM = {
@@ -174,13 +174,13 @@ const game_sprite YourSprite PROGMEM = {
 
     S,R,
     R,S
-  
+
  };
 
  const game_color_sprite shoot PROGMEM = {
 
     2,2,shoot_lines
-  
+
  };
 
  const uint8_t place_lines[] PROGMEM = {
@@ -191,12 +191,12 @@ const game_sprite YourSprite PROGMEM = {
  const game_color_sprite place PROGMEM = {
     2,2,place_lines
  };
- 
+
 struct GhostbusterData
 {
    int8_t pposy, ShootCounter, pyposy;
    int8_t sposy,ShootPosy[10];
-   bool flag,isShoot,isJump;
+   bool flag, isShoot, isJump, loli, gameover;
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
@@ -214,22 +214,25 @@ static void Ghostbuster_prepare()
     data->pyposy = 47;
     data->isJump = false;
 }
-
 static void Ghostbuster_render()
 {
+  if(data->gameover)
+  {
+    game_draw_text((const unsigned char *)"GAME OVER", 6, 29, RED);
+  }
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
     game_draw_color_sprite(&slimer, data->sposy, 50);
-    
+
     for(int i = 0; i < 34; i++)
       game_draw_color_sprite(&place, 0+i*2, 62);
-      
-    if(data->flag) 
+
+    if(data->flag)
       game_draw_color_sprite(&player, data->pposy, data->pyposy);
-    else 
+    else
       game_draw_color_sprite(&player_left, data->pposy, data->pyposy);
 
-      if(data->isShoot) 
+      if(data->isShoot)
         for(int i = 0; i < data->ShootCounter; i+=10) {
           game_draw_color_sprite(&shoot, data->ShootPosy[i/10], 57);
         }
@@ -238,9 +241,16 @@ static void Ghostbuster_render()
 
 static void Ghostbuster_update(unsigned long delta)
 {
-   
+    if(data->gameover)
+      return;
+
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
+      data->loli = !data->loli;
+      if(data->sposy != data->pposy && data->loli)
+        data->sposy+=data->sposy>data->pposy?-1:1;
+      if(data->sposy == data->pposy)
+        data->gameover = true;
       if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
           data->sposy++;
           data->flag = false;
@@ -260,7 +270,7 @@ static void Ghostbuster_update(unsigned long delta)
       if( (!data->isJump) && (data->pyposy<47) )
         data->pyposy++;
 
-      
+
 
       if( (game_is_button_pressed(BUTTON_A)) && (data->pyposy == 47) )
         data->isShoot = true;
@@ -272,16 +282,16 @@ static void Ghostbuster_update(unsigned long delta)
       else if(!data->isShoot)
         data->ShootCounter = 0;
 
-      if( (data->isShoot) && (data->flag) ) 
+      if( (data->isShoot) && (data->flag) )
         for(int i = 0; i < data->ShootCounter; i+=10) {
           data->ShootPosy[i/10] = data->pposy + 13 + i/5;
         }
-      else if(data->isShoot) 
+      else if(data->isShoot)
           for(int i = 0; i < data->ShootCounter; i+=10) {
           data->ShootPosy[i/10] = data->pposy - 2 - i/5;
         }
 
-        
+
     /* Здесь можно работать с кнопками и обновлять переменные */
 }
 
