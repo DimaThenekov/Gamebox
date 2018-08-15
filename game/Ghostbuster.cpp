@@ -194,9 +194,9 @@ const game_sprite YourSprite PROGMEM = {
  
 struct GhostbusterData
 {
-   int8_t pposy, ShootCounter,placeposy;
+   int8_t pposy, ShootCounter, pyposy;
    int8_t sposy,ShootPosy[5];
-   bool flag,isShoot;
+   bool flag,isShoot,isJump;
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
@@ -210,17 +210,29 @@ static void Ghostbuster_prepare()
     data->isShoot = false;
     data->ShootCounter = 0;
     data->sposy = 50;
-    data->placeposy = -50;
+    data->pposy = 10;
+    data->pyposy = 47;
+    data->isJump = false;
 }
 
 static void Ghostbuster_render()
 {
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
-    game_draw_color_sprite(&slimer, data->sposy, 52);
-    game_draw_color_sprite(&place, data->placeposy, 62);
-    if(data->flag) game_draw_color_sprite(&player, data->pposy, 47);
-    else game_draw_color_sprite(&player_left, data->pposy, 47);
+    game_draw_color_sprite(&slimer, data->sposy, 50);
+    
+    for(int i = 0; i < 34; i++)
+      game_draw_color_sprite(&place, 0+i*2, 62);
+      
+    if(data->flag) 
+      game_draw_color_sprite(&player, data->pposy, data->pyposy);
+    else 
+      game_draw_color_sprite(&player_left, data->pposy, data->pyposy);
+
+      if(data->isShoot) 
+        for(int i = 0; i < data->ShootCounter; i+=10) {
+          game_draw_color_sprite(&shoot, data->ShootPosy[i/10], 57);
+        }
     /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
 }
 
@@ -229,14 +241,47 @@ static void Ghostbuster_update(unsigned long delta)
    
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
-      if(game_is_button_pressed(BUTTON_LEFT)) {
+      if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
           data->sposy++;
-          data->placeposy++;
+          data->flag = false;
       }
-      else if (game_is_button_pressed(BUTTON_RIGHT)) {
+      else if ( (game_is_button_pressed(BUTTON_RIGHT)) && (!data->isShoot) ) {
         data->sposy--;
-        data->placeposy--;
+        data->flag = true;
       }
+
+      if( (game_is_button_pressed(BUTTON_B)) && (data->pyposy == 47) && (!data->isJump) )
+        data->isJump = true;
+      if(data->pyposy <= 37)
+        data->isJump = false;
+
+      if(data->isJump) data->pyposy--;
+
+      if( (!data->isJump) && (data->pyposy<47) )
+        data->pyposy++;
+
+      
+
+      if( (game_is_button_pressed(BUTTON_A)) && (data->pyposy == 47) )
+        data->isShoot = true;
+      else
+        data->isShoot = false;
+
+      if( (data->isShoot) && (data->ShootCounter <= 90) )
+        data->ShootCounter++;
+      else if(!data->isShoot)
+        data->ShootCounter = 0;
+
+      if( (data->isShoot) && (data->flag) ) 
+        for(int i = 0; i < data->ShootCounter; i+=10) {
+          data->ShootPosy[i/10] = data->pposy + 13 + i/5;
+        }
+      else if(data->isShoot) 
+          for(int i = 0; i < data->ShootCounter; i+=10) {
+          data->ShootPosy[i/10] = data->pposy - 2 - i/5;
+        }
+
+        
     /* Здесь можно работать с кнопками и обновлять переменные */
 }
 
