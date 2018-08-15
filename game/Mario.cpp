@@ -263,15 +263,7 @@ static void Mario_render()
 {
   /* Здесь код, который будет вывзваться для отрисовки кадра */
   /* Он не должен менять состояние игры, для этого есть функция update */
-  char s[5];
-    sprintf(s, "%d", (round(((0-data->MapX)+30) / 16 )));
-    game_draw_text((uint8_t*)s, 43, 7, RED);
-
-    
-  if (data->Map[(0-round((data->MapX+3) / 16 ))+2][1]==0){
-  game_draw_text("1000", 64/2, 0, RED);
   
-  }
   
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
   game_draw_sprite(&MarioYellow, data->MarioX, data->MarioY, YELLOW);
@@ -302,10 +294,11 @@ static void Mario_update(unsigned long delta)
   } else {
     data->ButtonRight = 0;
   }
+  if ((round(((0-data->MapX)+30+12) / 16 ))>-1)
 if (data->Map[(round(((0-data->MapX)+30) / 16 ))][1]==0){
   data->MapX = data->MapX + ((delta / 10) * data->ButtonLeft);
 }
-
+if ((round(((0-data->MapX)+30+12) / 16 ))>-1)
 if (data->Map[(round(((0-data->MapX)+30+12) / 16 ))][1]==0){
   data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
 }
