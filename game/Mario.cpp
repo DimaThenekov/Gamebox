@@ -294,13 +294,15 @@ static void Mario_update(unsigned long delta)
   } else {
     data->ButtonRight = 0;
   }
-  if ((((0-data->MapX)+30+12) / 16 )>-1)
-if (data->Map[(((0-data->MapX)+30) / 16 )][1]==0){
   data->MapX = data->MapX + ((delta / 10) * data->ButtonLeft);
+  data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
+  if ((((0-data->MapX)+30+12) / 16 )>-1)
+if (data->Map[(((0-data->MapX)+30) / 16 )][1]!=0){
+  data->MapX = data->MapX - ((delta / 10) * data->ButtonLeft);
 }
 if ((((0-data->MapX)+30+12) / 16 )>-1)
-if (data->Map[(((0-data->MapX)+30+12) / 16 )][1]==0){
-  data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
+if (data->Map[(((0-data->MapX)+30+12) / 16 )][1]!=0){
+  data->MapX = data->MapX + ((delta / 10) * data->ButtonRight);
 }
 
   //BUTTON_LEFT, BUTTON_RIGHT,
