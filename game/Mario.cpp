@@ -220,7 +220,7 @@ struct MarioData
   int MapX = 0;
   int i = 0;
   int j = 0;
-  int Map[100][4];
+  int Map[100][10];
   //int Map[5][5] = {{ 1, 1, 1, 1, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 }};
   /* Объявляйте ваши переменные здесь */
   /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
@@ -234,10 +234,21 @@ static void Mario_prepare()
 {
   /* Здесь код, который будет исполнятся один раз */
   /* Здесь нужно инициализировать переменные */
+  int MapX = 0;
   data->MarioX = 30;
   data->MarioY = 32;
   //data->Map[2][2]=1;
-  int MapReal[10][4] = {{ 1, 1, 1, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 },{ 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 1, 1, 1, 1 }};
+  int MapReal[10][4] = {
+    { 1, 1, 1, 1 }, 
+    { 1, 1, 1, 1 }, 
+    { 0, 0, 0, 1 }, 
+    { 0, 0, 0, 1 }, 
+    { 0, 0, 0, 1 },
+    { 0, 0, 0, 1 }, 
+    { 0, 0, 0, 1 }, 
+    { 1, 1, 1, 1 }, 
+    { 1, 1, 1, 1 }, 
+    { 1, 1, 1, 1 }};
   for (int i = 0; i <= 9; i++) 
     for (int j = 0; j <= 3; j++)
     {
@@ -252,15 +263,23 @@ static void Mario_render()
 {
   /* Здесь код, который будет вывзваться для отрисовки кадра */
   /* Он не должен менять состояние игры, для этого есть функция update */
-  //game_draw_text(data->Map[1][1], 0, 0, RED);
-  //int Map[5][4] = {{ 1, 1, 1, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 1, 1, 1, 1 }};
+  char s[5];
+    sprintf(s, "%d", (round(((0-data->MapX)+30) / 16 )));
+    game_draw_text((uint8_t*)s, 43, 7, RED);
+
+    
+  if (data->Map[(0-round((data->MapX+3) / 16 ))+2][1]==0){
+  game_draw_text("1000", 64/2, 0, RED);
+  
+  }
+  
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
   game_draw_sprite(&MarioYellow, data->MarioX, data->MarioY, YELLOW);
   game_draw_sprite(&MarioGreen , data->MarioX, data->MarioY, GREEN);
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
-  for (int i = 0; i <= 9; i++) 
+  for (int i =0 ; i <= 9; i++) 
     for (int j = 0; j <= 3; j++)
     if (data->Map[i][j] == 1){
     game_draw_sprite(&StoneGreen, data->MapX+(i*16), j*16, RED);
@@ -283,9 +302,14 @@ static void Mario_update(unsigned long delta)
   } else {
     data->ButtonRight = 0;
   }
-
+if (data->Map[(round(((0-data->MapX)+30) / 16 ))][1]==0){
   data->MapX = data->MapX + ((delta / 10) * data->ButtonLeft);
+}
+
+if (data->Map[(round(((0-data->MapX)+30+12) / 16 ))][1]==0){
   data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
+}
+
   //BUTTON_LEFT, BUTTON_RIGHT,
   /* Здесь код, который будет выполняться в цикле */
   /* Переменная delta содержит количество миллисекунд с последнего вызова */
