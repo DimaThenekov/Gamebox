@@ -68,21 +68,21 @@ xxx  xxx  xxx
  --------------------------------
 
 const uint8_t YourSprite_lines[] PROGMEM = {
-    B00010000, B01000000,
-    B00001000, B10000000,
-    B00000101, B00000000,
-    B00111111, B11100000,
-    B01111111, B11110000,
-    B11100111, B00111000,
-    B01111111, B11110000,
-    B00111111, B11100000,
-    B00001010, B10000000,
-    B00010000, B01000000
+    BOOO1OOOO, BO1OOOOOO,
+    BOOOO1OOO, B1OOOOOOO,
+    BOOOOO1O1, BOOOOOOOO,
+    BOO111111, B111OOOOO,
+    BO1111111, B1111OOOO,
+    B111OO111, BOO111OOO,
+    BO1111111, B1111OOOO,
+    BOO111111, B111OOOOO,
+    BOOOO1O1O, B1OOOOOOO,
+    BOOO1OOOO, BO1OOOOOO
 };
 
 const game_sprite YourSprite PROGMEM = {
     // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    13, 10, 2, YourSprite_lines
+    13, 1O, 2, YourSprite_lines
 };
 
 */
@@ -111,8 +111,8 @@ const game_sprite YourSprite PROGMEM = {
    O, B, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, O,
    B, B, S, S, W, S, S, S, S, O, O, O, O,
    B, S, S, S, W, R, R, W, S, S, S, O, O,
-   S, S, S, S, R, W, O, R, S, S, S, S, O,
-   Y, B, S, W, R, O, W, R, W, S, B, Y, O,
+   S, S, S, S, R, W, 0, R, S, S, S, S, O,
+   Y, B, S, W, R, 0, W, R, W, S, B, Y, O,
    Y, B, B, B, B, B, B, B, B, B, B, B, B,
    Y, Y, B, B, B, B, B, B, B, B, B, B, B,
    O, O, W, W, W, O, O, W, W, W, B, O, O,
@@ -127,21 +127,21 @@ const game_sprite YourSprite PROGMEM = {
 
  const uint8_t player_left_lines[] PROGMEM = {
 
-    0, 0, 0, P, P, P, P, P, P, 0, 0, 0, 0,
-    0, P, P, P, P, P, P, P, P, P, 0, 0, 0,
-    0,0 ,P ,Y ,L ,Y ,Y ,Y ,Y ,Y ,P ,P , 0,
-    0, Y, Y, Y, L, Y, Y, Y, Y, Y, P, Y, P,
+    O, O, O, P, P, P, P, P, P, O, O, O, O,
+    O, P, P, P, P, P, P, P, P, P, O, O, O,
+    O,O ,P ,Y ,L ,Y ,Y ,Y ,Y ,Y ,P ,P , O,
+    O, Y, Y, Y, L, Y, Y, Y, Y, Y, P, Y, P,
     Y, Y, Y, Y, Y, Y, Y, Y, Y, P, P, Y, P,
-    0, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, B, 0,
-    0, 0, 0, 0, S, S, S, S, W, S, S, B, B,
-    0, 0, S, S, S, W, R, R, W, S, S, S, B,
-    0, S, S, S, S, R, 0, W, R, S, S, S, S,
-    0, Y, B, S, W, R, W, 0, R, W, S, B, Y,
+    O, Y, Y, Y, Y, Y, Y, Y, Y, Y, Y, B, O,
+    O, O, O, O, S, S, S, S, W, S, S, B, B,
+    O, O, S, S, S, W, R, R, W, S, S, S, B,
+    O, S, S, S, S, R, 0, W, R, S, S, S, S,
+    O, Y, B, S, W, R, W, 0, R, W, S, B, Y,
     B, B, B, B, B, B, B, B, B, B, B, B, Y,
     B, B, B, B, B, B, B, B, B, B, B, Y, Y,
-    0, 0, B, W, W, W, 0, 0, W, W, W, 0, 0,
-    0, 0, P, P, P, 0, 0, 0, 0, P, P, P, 0,
-    0, P, P, P, P, 0, 0, 0, 0, P, P, P, P
+    O, O, B, W, W, W, O, O, W, W, W, O, O,
+    O, O, P, P, P, O, O, O, O, P, P, P, O,
+    O, P, P, P, P, O, O, O, O, P, P, P, P
 
  };
 
@@ -150,18 +150,18 @@ const game_sprite YourSprite PROGMEM = {
  };
 
  const uint8_t slimer_lines[] PROGMEM = {
-    0,0,G,G,G,0,0,
-    0,G,G,G,G,G,0,
-    G,G,0,G,0,G,G,
+    O,O,G,G,G,O,O,
+    O,G,G,G,G,G,O,
+    G,G,O,G,O,G,G,
     G,G,G,G,G,G,G,
     G,W,W,W,W,G,G,
     G,R,R,R,R,G,G,
     G,W,R,R,W,G,G,
     G,G,R,R,G,G,G,
-    0,G,G,G,G,G,0,
-    0,0,0,0,G,G,0,
-    0,0,0,0,0,G,G,
-    0,0,0,0,0,0,G
+    O,G,G,G,G,G,O,
+    O,O,O,O,G,G,O,
+    O,O,O,O,O,G,G,
+    O,O,O,O,O,O,G
  };
 
  const game_color_sprite slimer PROGMEM = {
@@ -197,6 +197,7 @@ struct GhostbusterData
    int8_t pposy, ShootCounter, pyposy;
    int8_t sposy,ShootPosy[10];
    bool flag, isShoot, isJump, loli, gameover;
+   int8_t syposy;
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
@@ -213,6 +214,7 @@ static void Ghostbuster_prepare()
     data->pposy = 10;
     data->pyposy = 47;
     data->isJump = false;
+    data->syposy = 50;
 }
 static void Ghostbuster_render()
 {
@@ -222,7 +224,7 @@ static void Ghostbuster_render()
   }
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
-    game_draw_color_sprite(&slimer, data->sposy, 50);
+    game_draw_color_sprite(&slimer, data->sposy, data->syposy);
 
     for(int i = 0; i < 34; i++)
       game_draw_color_sprite(&place, 0+i*2, 62);
@@ -247,9 +249,9 @@ static void Ghostbuster_update(unsigned long delta)
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
       data->loli = !data->loli;
-      if(data->sposy != data->pposy && data->loli)
+      if( data->sposy != data->pposy && data->loli )
         data->sposy+=data->sposy>data->pposy?-1:1;
-      if(data->sposy == data->pposy)
+      if( ((data->sposy == data->pposy) || (data->pposy + 13 == data->sposy)) && (data->syposy == 50)  )
         data->gameover = true;
       if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
           data->sposy++;
@@ -260,7 +262,7 @@ static void Ghostbuster_update(unsigned long delta)
         data->flag = true;
       }
 
-      if( (game_is_button_pressed(BUTTON_B)) && (data->pyposy == 47) && (!data->isJump) )
+      if( (game_is_button_pressed(BUTTON_UP)) && (data->pyposy == 47) && (!data->isJump) )
         data->isJump = true;
       if(data->pyposy <= 37)
         data->isJump = false;
@@ -290,6 +292,10 @@ static void Ghostbuster_update(unsigned long delta)
           for(int i = 0; i < data->ShootCounter; i+=10) {
           data->ShootPosy[i/10] = data->pposy - 2 - i/5;
         }
+
+        for(int i = 0; i < data->ShootCounter; i+=10)
+            if(data->ShootPosy[i/10] == data->sposy)
+              data->syposy = 100;
 
 
     /* Здесь можно работать с кнопками и обновлять переменные */
