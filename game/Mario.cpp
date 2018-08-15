@@ -263,6 +263,7 @@ static void Mario_render()
 {
   /* Здесь код, который будет вывзваться для отрисовки кадра */
   /* Он не должен менять состояние игры, для этого есть функция update */
+  //data->MarioX/16
   
   
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
@@ -296,12 +297,12 @@ static void Mario_update(unsigned long delta)
   }
   data->MapX = data->MapX + ((delta / 10) * data->ButtonLeft);
   data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
-  if ((((0-data->MapX)+30+12) / 16 )>-1)
-if (data->Map[(((0-data->MapX)+30) / 16 )][1]!=0){
+  if ((((0-data->MapX)+data->MarioX) / 16 )>-1)
+if (data->Map[(((0-data->MapX)+data->MarioX) / 16 )][3-data->MarioX/16]!=0){
   data->MapX = data->MapX - ((delta / 10) * data->ButtonLeft);
 }
-if ((((0-data->MapX)+30+12) / 16 )>-1)
-if (data->Map[(((0-data->MapX)+30+12) / 16 )][1]!=0){
+if ((((0-data->MapX)+data->MarioX+11) / 16 )>-1)
+if (data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][3-data->MarioX/16]!=0){
   data->MapX = data->MapX + ((delta / 10) * data->ButtonRight);
 }
 
