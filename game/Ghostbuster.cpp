@@ -195,7 +195,7 @@ const game_sprite YourSprite PROGMEM = {
 struct GhostbusterData
 {
    int8_t pposy, ShootCounter, pyposy;
-   int8_t sposy,ShootPosy[5];
+   int8_t sposy,ShootPosy[10];
    bool flag,isShoot,isJump;
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
