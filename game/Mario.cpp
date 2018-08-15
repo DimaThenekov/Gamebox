@@ -217,6 +217,8 @@ struct MarioData
   int MarioY = 0;
   int ButtonLeft = 0;
   int ButtonRight = 0;
+  int ButtonDown = 0;
+  int ButtonUp = 0;
   int MapX = 0;
   int i = 0;
   int j = 0;
@@ -234,7 +236,7 @@ static void Mario_prepare()
 {
   /* Здесь код, который будет исполнятся один раз */
   /* Здесь нужно инициализировать переменные */
-  int MapX = 0;
+  int MapX = 30;
   data->MarioX = 30;
   data->MarioY = 32;
   //data->Map[2][2]=1;
@@ -243,7 +245,7 @@ static void Mario_prepare()
     { 1, 1, 1, 1 }, 
     { 0, 0, 0, 1 }, 
     { 0, 0, 0, 1 }, 
-    { 0, 0, 0, 1 },
+    { 0, 1, 0, 1 },
     { 0, 0, 0, 1 }, 
     { 0, 0, 0, 1 }, 
     { 1, 1, 1, 1 }, 
@@ -265,6 +267,7 @@ static void Mario_render()
   /* Он не должен менять состояние игры, для этого есть функция update */
   //data->MarioX/16
   
+
   
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
   game_draw_sprite(&MarioYellow, data->MarioX, data->MarioY, YELLOW);
@@ -278,7 +281,7 @@ static void Mario_render()
     game_draw_sprite(&StoneGreen, data->MapX+(i*16), j*16, RED);
     game_draw_sprite(&StoneWhite, data->MapX+(i*16), j*16, WHITE);
     }
-  
+  game_draw_text((uint8_t*)"Down & Up", 0, 0, BLUE);
   /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
   /*game_draw_sprite(YourSprite, 0, 0, RED);*/
 }
@@ -295,22 +298,41 @@ static void Mario_update(unsigned long delta)
   } else {
     data->ButtonRight = 0;
   }
+  //BUTTON_UP, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_DOWN,
+    if (game_is_button_pressed (BUTTON_UP)) {
+    data->ButtonUp = 1;
+  } else {
+    data->ButtonUp = 0;
+  }
+  if (game_is_button_pressed (BUTTON_DOWN)) {
+    data->ButtonDown = 1;
+  } else {
+    data->ButtonDown = 0;
+  }
   data->MapX = data->MapX + ((delta / 10) * data->ButtonLeft);
   data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
   if ((((0-data->MapX)+data->MarioX) / 16 )>-1)
-if (data->Map[(((0-data->MapX)+data->MarioX) / 16 )][3-data->MarioX/16]!=0){
+if ((data->Map[(((0-data->MapX)+data->MarioX) / 16 )][2-((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][2-((data->MarioY)/16)]!=0)){
   data->MapX = data->MapX - ((delta / 10) * data->ButtonLeft);
 }
 if ((((0-data->MapX)+data->MarioX+11) / 16 )>-1)
-if (data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][3-data->MarioX/16]!=0){
+if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][2-((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][2-((data->MarioY)/16)]!=0)){
   data->MapX = data->MapX + ((delta / 10) * data->ButtonRight);
 }
+data->MarioY = data->MarioY - ((delta / 10) * data->ButtonUp);
+data->MarioY = data->MarioY + ((delta / 10) * data->ButtonDown);
 
   //BUTTON_LEFT, BUTTON_RIGHT,
   /* Здесь код, который будет выполняться в цикле */
   /* Переменная delta содержит количество миллисекунд с последнего вызова */
 
   /* Здесь можно работать с кнопками и обновлять переменные */
+  if (data->MarioY <1){
+    data->MarioY = 0;
+    }
+      if (data->MarioY >(64/4)*2){
+    data->MarioY = (64/4)*2;
+    }
 }
 
 game_instance Mario = {
