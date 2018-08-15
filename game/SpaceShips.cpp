@@ -105,6 +105,22 @@ const game_sprite BallSprite PROGMEM = {
     3, 3, 1, BallSprite_lines
 };
 
+const uint8_t GameoverSprite_lines[] PROGMEM = {
+    B00001111, B10000000,B00000000,B00000000,B00000011,B11100000,B00000000,B00000000,
+    B00011000, B10000000,B00000000,B00000000,B00000110,B00110000,B00000000,B00000000,
+    B00010000, B00001110,B00011101,B10000110,B00000100,B00010100,B00100110,B00101100,
+    B00010000, B00000001,B00100010,B01001001,B00000100,B00010110,B01101001,B00110000,
+    B00010011, B10001111,B00100010,B01001111,B00000100,B00010010,B01001111,B00100000,
+    B00010000, B10010001,B00100010,B01001000,B00000100,B00010010,B01001000,B00100000,
+    B00011000, B10010001,B00100010,B01001001,B00000110,B00110011,B11001001,B00100000,
+    B00001111, B10001111,B00100010,B01000110,B00000011,B11100001,B10000110,B00100000,
+};
+
+const game_sprite GameoverSprite PROGMEM = {
+    64, 8, 8, GameoverSprite_lines
+};
+
+
 /* Функции отрисовки
  *
  * game_draw_pixel(x, y, color) - Красит точку (x, y) в цвет color
@@ -126,16 +142,18 @@ struct SpaceShipsData
     short int 
     ShipX,
     ShipY,
-    ObjY,
-    ObjX,
-    max_count,
-    count,
+    ObjY_1,
+    ObjX_1,
+    ObjY_2,
+    ObjX_2,
     lives,
     score,
     game_set;
     float 
-    Obj_spX
-    ,Obj_spY;
+    Obj_spX_1,
+    Obj_spY_1,
+    Obj_spX_2,
+    Obj_spY_2;
     
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
@@ -147,11 +165,15 @@ static void SpaceShips_prepare()
   
   data->ShipX = 5;
   data->ShipY = 32;
-  data->ObjY = (data->ShipY - 5) + rand() % (13 - data->ShipY);
-  data->ObjX = 61;
-  data->Obj_spX = 0.01;
-  data->Obj_spY = 0.01;
-  data->lives = 99;
+  data->ObjY_1 = (data->ShipY - 5) + rand() % 18;
+  data->ObjX_1 = 65;
+  data->ObjY_2 = (data->ShipY - 5) + rand() % 18;
+  data->ObjX_2 = 65;
+  data->Obj_spX_1 = 0.01;
+  data->Obj_spY_1 = 0.01;
+  data->Obj_spX_2 = 0.1;
+  data->Obj_spY_2 = 0.1;
+  data->lives = 3;
   data->score = 0;
   data->game_set = 0;
     /* Здесь код, который будет исполнятся один раз */
@@ -160,30 +182,44 @@ static void SpaceShips_prepare()
 
 static void SpaceShips_render()
 {
+    if (data->lives > 0)
+    {
     game_draw_sprite(&ShipSprite,data->ShipX,data->ShipY,PURPLE);
+    }
+    else
+    {
+      game_draw_sprite(&GameoverSprite,0,28,WHITE);
+    }
     
-    if ((data->ObjX > 0) && (data->lives > 0))
+    if ((data->ObjX_1 > 0) && (data->lives > 0))
     {   
-        game_draw_sprite(&BallSprite,data->ObjX,data->ObjY,WHITE);
+        game_draw_sprite(&BallSprite,data->ObjX_1,data->ObjY_1,WHITE);
     }
         game_draw_digits((uint16_t)data->lives,2, 1, 0, WHITE);
 
-        game_draw_digits((uint16_t)data->score,3, 52, 0, WHITE);
+        game_draw_digits((uint16_t)data->score,4, 48, 0, WHITE);
+
+    if ((data->lives > 0) && (data->game_set >= 1))
+    {
+       game_draw_sprite(&BallSprite,data->ObjX_2,data->ObjY_2,GREEN);
+    }
+
+    //Text
 
     if (data->game_set == 0)
-    game_draw_text((uint8_t*)"EASY", 20, 0, CYAN);
+    game_draw_text((uint8_t*)"EASY", 18, 0, CYAN);
     
     if (data->game_set == 1)
-    game_draw_text((uint8_t*)"NORM.", 20, 0, BLUE);
+    game_draw_text((uint8_t*)"NORM.", 18, 0, BLUE);
 
     if (data->game_set == 2)
-    game_draw_text((uint8_t*)"HARD", 20, 0, GREEN);
+    game_draw_text((uint8_t*)"HARD", 18, 0, GREEN);
 
     if (data->game_set == 3)
-    game_draw_text((uint8_t*)"EXTR.", 20, 0, YELLOW);
+    game_draw_text((uint8_t*)"EXTR.", 18, 0, YELLOW);
 
     if (data->game_set == 4)
-    game_draw_text((uint8_t*)"EXT.H", 20, 0, RED);
+    game_draw_text((uint8_t*)"EXT.H", 18, 0, RED);
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
 
@@ -192,27 +228,125 @@ static void SpaceShips_render()
 
 // Spawns
 
-void CoolSpawn()
+void CoolSpawn_1()
 {
+if (data->lives > 0)
+{
+  
+  if ((data->ObjX_1 > 0))
+          {
+           data->ObjX_1 = data->ObjX_1 - data->Obj_spX_1;
+          }
+if (data->ObjX_1 == 1)
+      {
+  
   if (data->ShipY <= 13)
           {
-            data->ObjY = 8 + rand() % 18;
-            data->ObjX = 61;
+            data->ObjY_1 = 8 + rand() % 18;
+            data->ObjX_1 = 65;
           ++data->score;
           }
           else
               if (data ->ShipY >= 48)
               {
-                data->ObjY = 48 + rand() % 13;
-                data->ObjX = 61;
+                data->ObjY_1 = 48 + rand() % 13;
+                data->ObjX_1 = 65;
               ++data->score;
               }
               else
             {
-              data->ObjY = (data->ShipY - 5) + rand() % 18;
-              data->ObjX = 61;
+              data->ObjY_1 = (data->ShipY - 5) + rand() % 18;
+              data->ObjX_1 = 65;
               ++data->score;
-            };
+            }
+      }
+  if ((data->ObjY_1 >= (data->ShipY - 2)) && ((data->ObjY_1 + 3) <= (data->ShipY + 10)) && ((data->ObjX_1 >= data->ShipX - 2) && (data->ObjX_1 + 3) <= (data->ShipX + 14)))
+      {
+        if (data->ShipY <= 13)
+          {
+            data->ObjY_1 = 8 + rand() % 18;
+            data->ObjX_1 = 65;
+          ++data->score;
+          }
+          else
+              if (data ->ShipY >= 48)
+              {
+                data->ObjY_1 = 48 + rand() % 13;
+                data->ObjX_1 = 65;
+              ++data->score;
+              }
+              else
+            {
+              data->ObjY_1 = (data->ShipY - 5) + rand() % 18;
+              data->ObjX_1 = 65;
+              ++data->score;
+            }
+        
+        data->lives = data->lives - 1;
+      }
+}
+}
+
+     
+void CoolSpawn_2()
+
+      
+{
+if (data->lives > 0)
+{
+  if ((data->ObjX_2 > 0))
+          {
+           data->ObjX_2 = data->ObjX_2 - data->Obj_spX_2;
+          }
+if (data->ObjX_2 == 1)
+      {
+  
+  if (data->ShipY <= 13)
+          {
+            data->ObjY_2 = 8 + rand() % 18;
+            data->ObjX_2 = 65;
+          ++data->score;
+          }
+          else
+              if (data ->ShipY >= 48)
+              {
+                data->ObjY_2 = 48 + rand() % 13;
+                data->ObjX_2 = 65;
+              ++data->score;
+              }
+              else
+            {
+              data->ObjY_2 = (data->ShipY - 5) + rand() % 18;
+              data->ObjX_2 = 65;
+              ++data->score;
+            }
+      }
+  if ((data->ObjY_2 >= (data->ShipY - 2)) && ((data->ObjY_2 + 3) <= (data->ShipY + 10)) && ((data->ObjX_2 >= data->ShipX - 2) && (data->ObjX_2 + 3) <= (data->ShipX + 14)))
+      {
+        if (data->ShipY <= 13)
+          {
+            data->ObjY_2 = 8 + rand() % 18;
+            data->ObjX_2 = 65;
+          ++data->score;
+          }
+          else
+              if (data ->ShipY >= 48)
+              {
+                data->ObjY_2 = 48 + rand() % 13;
+                data->ObjX_2 = 65;
+              ++data->score;
+              }
+              else
+            {
+              data->ObjY_2 = (data->ShipY - 5) + rand() % 18;
+              data->ObjX_2 = 65;
+              ++data->score;
+            }
+        
+        data->lives = data->lives - 1;
+      }
+            
+}
 }
 
 static void SpaceShips_update(unsigned long delta)
@@ -225,46 +359,50 @@ static void SpaceShips_update(unsigned long delta)
     {
       game_set_ups(25);
       data->game_set = 0;
-      data->Obj_spX = 0.01;
-      data->Obj_spY = 0.01;
+      data->Obj_spX_1 = 0.01;
+      data->Obj_spY_1 = 0.01;
       break;
     }
     case 25: //Normal
     {      
       game_set_ups(25);
       data->game_set = 1;
-      data->Obj_spX = 0.1;
-      data->Obj_spY = 0.1;
+      data->Obj_spX_1 = 0.01;
+      data->Obj_spY_1 = 0.01;
+      data->Obj_spX_2 = 0.1;
+      data->Obj_spY_2 = 0.1;
       break;
     }
-    case 50: //Hard
+    case 51: //Hard
     {
       game_set_ups(25);
       data->game_set = 2;
-      data->Obj_spX = 1;
-      data->Obj_spY = 1;
+      data->Obj_spX_1 = 0.1;
+      data->Obj_spY_1 = 0.1;
+      data->Obj_spX_2 = 1;
+      data->Obj_spY_2 = 1;
       break;
     }
     case 100: //Extremal
     {
       game_set_ups(50);
       data->game_set = 3;
-      data->Obj_spX = 1;
-      data->Obj_spY = 1;
+      data->Obj_spX_1 = 1;
+      data->Obj_spY_1 = 1;
       break;
     }
     case 200: //Extra Hard!!!
     {      
       game_set_ups(75);
       data->game_set = 4;
-      data->Obj_spX = 1;
-      data->Obj_spY = 1;
+      data->Obj_spX_1 = 1;
+      data->Obj_spY_1 = 1;
       break;
     }
   }
   
   // Ship Controls
-  if (game_is_button_pressed(BUTTON_RIGHT) && data->ShipX < 52 )
+  if (game_is_button_pressed(BUTTON_RIGHT) && data->ShipX < 49 )
       {
         ++data->ShipX;
       }
@@ -286,26 +424,23 @@ static void SpaceShips_update(unsigned long delta)
       
 
       //Easy
-  if (data->game_set >= 0)
+  if (data->game_set == 0)
   {
-      if (data->ObjX == 1)
-      {
-        CoolSpawn();
-      };
-      if ((data->ObjX > 0))
-          {
-           data->ObjX = data->ObjX - data->Obj_spX;
-          };
-
-      if ((data->ObjY >= (data->ShipY - 2)) && ((data->ObjY + 3) <= (data->ShipY + 10)) && ((data->ObjX >= data->ShipX - 2) && (data->ObjX + 3) <= (data->ShipX + 14)))
-      {
-        CoolSpawn();
-        data->lives = data->lives - 1;
-      }
+        CoolSpawn_1();
   }
 
       //Normal
- // if (data->game_set == 1)
+  if (data->game_set >= 1)
+  {
+        
+        
+        CoolSpawn_1();
+        
+        if ((data->ObjX_1 - 20) > data->ObjX_2 || (data->ObjX_2 - 20) > data->ObjX_1)
+        {
+        CoolSpawn_2();
+        }
+  }
 
 
       //Hard
