@@ -369,7 +369,7 @@ static void SpaceShips_update(unsigned long delta)
     }
     case 30: //Hard
     {
-      game_set_ups(40);
+      game_set_ups(25);
       data->game_set = 2;
       data->Obj_spX_1 = 1;
       data->Obj_spY_1 = 1;
@@ -381,7 +381,7 @@ static void SpaceShips_update(unsigned long delta)
     }
     case 100: //Extremal
     {
-      game_set_ups(50);
+      game_set_ups(25);
       data->game_set = 3;
       data->Obj_spX_1 = 2;
       data->Obj_spY_1 = 2;
