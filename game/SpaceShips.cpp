@@ -5,80 +5,6 @@
 #include "binary.h"
 #include "controls.h"
 
-/* Встроенные цвета:
- *
- *  BLACK - Чёрный
- *  BLUE - Синий
- *  GREEN - Зелёный
- *  RED - Красный
- *  CYAN - Циановый
- *  PURPLE - Фиолетовый
- *  BROWN - Коричневый
- *  WHITE - Белый
- *
- *  Для использования 64-х цветной палитры, укажите в game.ino COLOR_6BIT = 1
- *
- * */
-
-/* Кнопки:
- *
- * НА КОРПУСЕ:
- * BUTTON_SW, BUTTON_NW, BUTTON_SE, BUTTON_NE
- *
- * NW              NE
- *  SW            SE
- *
- *
- * НА ДЖОЙСТИКЕ:
- * BUTTON_UP, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_DOWN, BUTTON_SELECT, BUTTON_START, BUTTON_A, BUTTON_B
- *
- *      UP
- *  LEFT+RIGHT     SELECT  START      B  A
- *     DOWN
- *
- * */
-
-/* Спрайты
- * 
- * максимальная высота - 16 пикселей
-
- определение спрайта
-
-
-   x     x      
-    x   x       
-     x x        
-  xxxxxxxxx     
- xxxxxxxxxxx    
-xxx  xxx  xxx   
- xxxxxxxxxxx    
-  xxxxxxxxx     
-    x x x       
-   x     x      
-
-
- --------------------------------
- 
-const uint8_t YourSprite_lines[] PROGMEM = {
-    B00010000, B01000000,
-    B00001000, B10000000,
-    B00000101, B00000000,
-    B00111111, B11100000,
-    B01111111, B11110000,
-    B11100111, B00111000,
-    B01111111, B11110000,
-    B00111111, B11100000,
-    B00001010, B10000000,
-    B00010000, B01000000
-};
-
-const game_sprite YourSprite PROGMEM = {
-    // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    13, 10, 2, YourSprite_lines
-};
-
-*/
-
 const uint8_t ShipSprite_lines[] PROGMEM = {
     B01111111, B11000000,
     B11110000, B00000000,
@@ -120,23 +46,6 @@ const game_sprite GameoverSprite PROGMEM = {
     64, 8, 8, GameoverSprite_lines
 };
 
-
-/* Функции отрисовки
- *
- * game_draw_pixel(x, y, color) - Красит точку (x, y) в цвет color
- * game_draw_char(char, x, y, color) - Выводит символ char с левым верхним углом в точке (x, y) с цветом color
- * game_draw_text(string, x, y, color) - Выводит строку string с левым верхним углом в точке (x, y) с цветом color
- * game_draw_sprite(sprite, x, y, color) - Выводит спрайт sprite с левым верхним углом в точке (x, y) с цветом color
- *
- * */
-
-/* Функции ввода
- *
- * game_is_button_pressed(button) - Нажата ли кнопка? Например: game_is_button_pressed(BUTTON_START)
- * game_is_any_button_pressed(mask) - Нажата ли хотя бы одна кнопка? Например: game_is_any_button_pressed(BITMASK(BUTTON_SW) | BITMASK(BUTTON_DOWN))
- *
- * */
-
 struct SpaceShipsData
 {
     short int 
@@ -146,19 +55,20 @@ struct SpaceShipsData
     ObjX_1,
     ObjY_2,
     ObjX_2,
+    ObjY_3,
+    ObjX_3,
     lives,
     score,
-    game_set;
-    float 
+    game_set,
+    kek,
     Obj_spX_1,
     Obj_spY_1,
     Obj_spX_2,
-    Obj_spY_2;
-    
-    /* Объявляйте ваши переменные здесь */
-    /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
+    Obj_spY_2,
+    Obj_spX_3,
+    Obj_spY_3;
 };
-static SpaceShipsData* data; /* Эта переменная - указатель на структуру, которая содержит ваши переменные */
+static SpaceShipsData* data;
 
 static void SpaceShips_prepare()
 {
@@ -168,16 +78,18 @@ static void SpaceShips_prepare()
   data->ObjY_1 = (data->ShipY - 5) + rand() % 18;
   data->ObjX_1 = 65;
   data->ObjY_2 = (data->ShipY - 5) + rand() % 18;
-  data->ObjX_2 = 65;
-  data->Obj_spX_1 = 0.01;
-  data->Obj_spY_1 = 0.01;
-  data->Obj_spX_2 = 0.1;
-  data->Obj_spY_2 = 0.1;
+  data->ObjX_2 = 85;
+  data->ObjY_3 =  64 * (0 + rand() % 1);
+  data->ObjX_3 = 64;
+  data->Obj_spX_1 = 1;
+  data->Obj_spY_1 = 1;
+  data->Obj_spX_2 = 1;
+  data->Obj_spY_2 = 1;
+  data->Obj_spX_3 = 1;
+  data->Obj_spY_3 = 1;
   data->lives = 3;
   data->score = 0;
   data->game_set = 0;
-    /* Здесь код, который будет исполнятся один раз */
-    /* Здесь нужно инициализировать переменные */
 }
 
 static void SpaceShips_render()
@@ -203,6 +115,11 @@ static void SpaceShips_render()
     {
        game_draw_sprite(&BallSprite,data->ObjX_2,data->ObjY_2,GREEN);
     }
+    
+    if ((data->lives > 0) && (data->game_set >= 2))
+    {
+       game_draw_sprite(&BallSprite,data->ObjX_3,data->ObjY_3,RED);
+    }
 
     //Text
 
@@ -220,10 +137,6 @@ static void SpaceShips_render()
 
     if (data->game_set == 4)
     game_draw_text((uint8_t*)"EXT.H", 18, 0, RED);
-    /* Здесь код, который будет вывзваться для отрисовки кадра */
-    /* Он не должен менять состояние игры, для этого есть функция update */
-
-    /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
 }
 
 // Spawns
@@ -237,7 +150,7 @@ if (data->lives > 0)
           {
            data->ObjX_1 = data->ObjX_1 - data->Obj_spX_1;
           }
-if (data->ObjX_1 == 1)
+if (data->ObjX_1 <= 3)
       {
   
   if (data->ShipY <= 13)
@@ -298,7 +211,7 @@ if (data->lives > 0)
           {
            data->ObjX_2 = data->ObjX_2 - data->Obj_spX_2;
           }
-if (data->ObjX_2 == 1)
+if (data->ObjX_2 <= 3)
       {
   
   if (data->ShipY <= 13)
@@ -321,6 +234,8 @@ if (data->ObjX_2 == 1)
               ++data->score;
             }
       }
+
+  
   if ((data->ObjY_2 >= (data->ShipY - 2)) && ((data->ObjY_2 + 3) <= (data->ShipY + 10)) && ((data->ObjX_2 >= data->ShipX - 2) && (data->ObjX_2 + 3) <= (data->ShipX + 14)))
       {
         if (data->ShipY <= 13)
@@ -349,14 +264,85 @@ if (data->ObjX_2 == 1)
 }
 }
 
+void CoolSpawn_3()
+  {
+if (data->ObjY_3 == 64)
+         {
+          data->kek = 1;
+         }
+         else
+         if (data->ObjY_3 == 0)
+         {
+          data->kek = 0;
+         }
+    
+if (data->lives > 0)
+{
+  if (data->ObjX_3 > 0 && data->kek == 0)
+      {
+        data->ObjY_3 = data->ObjY_3 + data->Obj_spY_3;
+        data->ObjX_3 = data->ObjX_3 - data->Obj_spX_3;
+      }
+      else
+  if (data->ObjX_3 > 0 && data->kek == 1)
+  {
+     data->ObjY_3 = data->ObjY_3 - data->Obj_spY_3;
+     data->ObjX_3 = data->ObjX_3 - data->Obj_spX_3;
+  }
+  
+if (data->ObjX_3 <= 3)
+      {
+         data->ObjY_3 =  64 * (0 + rand() % 2);
+         data->ObjX_3 = 64;
+         ++data->score;
+
+         if (data->ObjY_3 == 64)
+         {
+          data->kek = 1;
+         }
+         else
+         if (data->ObjY_3 == 0)
+         {
+          data->kek = 0;
+         }
+      }
+  if ((data->ObjY_3 >= (data->ShipY - 2)) && ((data->ObjY_3 + 3) <= (data->ShipY + 10)) && ((data->ObjX_3 >= data->ShipX - 2) && (data->ObjX_3 + 3) <= (data->ShipX + 14)))
+      {
+           data->ObjY_3 =  64 * (0 + rand() % 2);
+           data->ObjX_3 = 64;
+           --data->lives;
+           
+           if (data->ObjY_3 == 64)
+         {
+          data->kek = 1;
+         }
+         else
+         if (data->ObjY_3 == 0)
+         {
+          data->kek = 0;
+         }
+      }
+            
+}
+}
+
+
 static void SpaceShips_update(unsigned long delta)
 {
   //GameOver
 
   if((data->lives <= 0) && (game_is_button_pressed(BUTTON_A)))
   {
+    data->ShipX = 5;
+    data->ShipY = 32;
     data->lives = 3;
     data->score = 0;
+    data->ObjY_1 = (data->ShipY - 5) + rand() % 18;
+    data->ObjX_1 = 65;
+    data->ObjY_2 = (data->ShipY - 5) + rand() % 18;
+    data->ObjX_2 = 85;
+    data->ObjY_3 =  64 * (0 + rand() % 1);
+    data->ObjX_3 = 64;
   }
   
   //Difficity
@@ -367,44 +353,54 @@ static void SpaceShips_update(unsigned long delta)
     {
       game_set_ups(25);
       data->game_set = 0;
-      data->Obj_spX_1 = 0.01;
-      data->Obj_spY_1 = 0.01;
+      data->Obj_spX_1 = 1;
+      data->Obj_spY_1 = 1;
       break;
     }
-    case 25: //Normal
+    case 10: //Normal
     {      
       game_set_ups(25);
       data->game_set = 1;
-      data->Obj_spX_1 = 0.01;
-      data->Obj_spY_1 = 0.01;
-      data->Obj_spX_2 = 0.1;
-      data->Obj_spY_2 = 0.1;
-      break;
-    }
-    case 50: //Hard
-    {
-      game_set_ups(25);
-      data->game_set = 2;
-      data->Obj_spX_1 = 0.1;
-      data->Obj_spY_1 = 0.1;
+      data->Obj_spX_1 = 1;
+      data->Obj_spY_1 = 1;
       data->Obj_spX_2 = 1;
       data->Obj_spY_2 = 1;
+      break;
+    }
+    case 30: //Hard
+    {
+      game_set_ups(40);
+      data->game_set = 2;
+      data->Obj_spX_1 = 1;
+      data->Obj_spY_1 = 1;
+      data->Obj_spX_2 = 1;
+      data->Obj_spY_2 = 1;
+      data->Obj_spX_3 = 1;
+      data->Obj_spY_3 = 1;
       break;
     }
     case 100: //Extremal
     {
       game_set_ups(50);
       data->game_set = 3;
-      data->Obj_spX_1 = 1;
-      data->Obj_spY_1 = 1;
+      data->Obj_spX_1 = 2;
+      data->Obj_spY_1 = 2;
+      data->Obj_spX_2 = 1;
+      data->Obj_spY_2 = 1;
+      data->Obj_spX_3 = 1;
+      data->Obj_spY_3 = 1;
       break;
     }
-    case 200: //Extra Hard!!!
+    case 666: //Extra Hard!!!
     {      
-      game_set_ups(75);
+      game_set_ups(50);
       data->game_set = 4;
-      data->Obj_spX_1 = 1;
-      data->Obj_spY_1 = 1;
+      data->Obj_spX_1 = 3;
+      data->Obj_spY_1 = 3;
+      data->Obj_spX_2 = 2;
+      data->Obj_spY_2 = 2;
+      data->Obj_spX_3 = 2;
+      data->Obj_spY_3 = 2;
       break;
     }
   }
@@ -438,47 +434,50 @@ static void SpaceShips_update(unsigned long delta)
   }
 
       //Normal
-  if (data->game_set >= 1)
+  if (data->game_set == 1)
   {
-        
-        
         CoolSpawn_1();
         
-        if ((data->ObjX_1 - 20) > data->ObjX_2 || (data->ObjX_2 - 20) > data->ObjX_1)
-        {
+        CoolSpawn_2();     
+  }
+      //Hard
+  if (data->game_set == 2)
+  {
+        CoolSpawn_1();
+        
         CoolSpawn_2();
-        }
+
+        CoolSpawn_3();
   }
 
 
-      //Hard
-
-
-
       //Extremal
+if (data->game_set == 3)
+  {
+        CoolSpawn_1();
+        
+        CoolSpawn_2();
 
+        CoolSpawn_3();
+  }
 
 
       //Extra Hard!!!
+if (data->game_set >= 4)
+  {
+        CoolSpawn_1();
+        
+        CoolSpawn_2();
 
-
-      
-      // Score
-      
-    /* Здесь код, который будет выполняться в цикле */
-    /* Переменная delta содержит количество миллисекунд с последнего вызова */
-
-    /* Здесь можно работать с кнопками и обновлять переменные */
+        CoolSpawn_3();
+  }
 }
 
 game_instance SpaceShips = {
-    "SpaceShips",         /* Имя, отображаемое в меню */
+    "SpaceShips",
     SpaceShips_prepare,
     SpaceShips_render,
     SpaceShips_update,
     sizeof(SpaceShipsData),
     (void**)(&data)
 };
-
-
-/* Не забудьте зарегистрировать игру в application.cpp */
