@@ -314,8 +314,11 @@ static void Mario_update(unsigned long delta)
     data->ButtonDown = 0;
   }
   data->Jamp= data->Jamp - ((delta / 10) );
-  if (data->Map[(((0-data->MapX)+data->MarioX+5) / 16 )][((data->MarioY+16)/16)]!=0){
+  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16)/16)]!=0)){
   data->Jamp=0;
+  }
+  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15)/16)]!=0)){
+  data->Jamp=1;
   }
 if((data->Jamp == 0)&&(data->ButtonUp == 1)&&(data->Map[(((0-data->MapX)+data->MarioX+5) / 16 )][((data->MarioY+16)/16)]!=0)){
   data->Jamp=7;
