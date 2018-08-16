@@ -268,9 +268,7 @@ static void Mario_render()
   /* Он не должен менять состояние игры, для этого есть функция update */
   //data->MarioX/16
   
-char s[5];
-    sprintf(s, "%d", data->Jamp);
-    game_draw_text((uint8_t*)s, 43, 7, RED);
+
 
   
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
@@ -285,7 +283,7 @@ char s[5];
     game_draw_sprite(&StoneGreen, data->MapX+(i*16), j*16, RED);
     game_draw_sprite(&StoneWhite, data->MapX+(i*16), j*16, WHITE);
     }
-  game_draw_text((uint8_t*)"Down & Up", 0, 0, BLUE);
+  game_draw_text((uint8_t*)"IT IS JAMP", 0, 0, BLUE);
   /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
   /*game_draw_sprite(YourSprite, 0, 0, RED);*/
 }
