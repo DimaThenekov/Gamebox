@@ -4,7 +4,7 @@
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
-
+#include "music.h"
 /* Встроенные цвета:
 
     BLACK - Чёрный
@@ -321,6 +321,7 @@ static void Mario_update(unsigned long delta)
   if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16)/16)]!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   data->Jamp=7;
+ Player_setup_random_melody();
   }
    data->MarioY = data->MarioY - data->Jamp;
 
