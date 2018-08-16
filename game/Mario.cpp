@@ -242,14 +242,14 @@ static void Mario_prepare()
   //data->Map[2][2]=1;
   int MapReal[10][4] = {
     { 1, 1, 1, 1 }, 
-    { 1, 1, 1, 1 }, 
     { 0, 0, 0, 1 }, 
     { 0, 0, 0, 1 }, 
-    { 0, 1, 0, 1 },
+    { 0, 0, 1, 1 }, 
+    { 0, 1, 1, 1 },
     { 0, 0, 0, 1 }, 
+    { 0, 1, 1, 1 }, 
+    { 0, 0, 1, 1 }, 
     { 0, 0, 0, 1 }, 
-    { 1, 1, 1, 1 }, 
-    { 1, 1, 1, 1 }, 
     { 1, 1, 1, 1 }};
   for (int i = 0; i <= 9; i++) 
     for (int j = 0; j <= 3; j++)
@@ -267,6 +267,9 @@ static void Mario_render()
   /* Он не должен менять состояние игры, для этого есть функция update */
   //data->MarioX/16
   
+char s[5];
+    sprintf(s, "%d", data->MarioY);
+    game_draw_text((uint8_t*)s, 43, 7, RED);
 
   
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
@@ -312,11 +315,11 @@ static void Mario_update(unsigned long delta)
   data->MapX = data->MapX + ((delta / 10) * data->ButtonLeft);
   data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
   if ((((0-data->MapX)+data->MarioX) / 16 )>-1)
-if ((data->Map[(((0-data->MapX)+data->MarioX) / 16 )][2-((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][2-((data->MarioY)/16)]!=0)){
+if ((data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY)/16)]!=0)){
   data->MapX = data->MapX - ((delta / 10) * data->ButtonLeft);
 }
 if ((((0-data->MapX)+data->MarioX+11) / 16 )>-1)
-if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][2-((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][2-((data->MarioY)/16)]!=0)){
+if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY)/16)]!=0)){
   data->MapX = data->MapX + ((delta / 10) * data->ButtonRight);
 }
 data->MarioY = data->MarioY - ((delta / 10) * data->ButtonUp);
