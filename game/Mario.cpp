@@ -266,8 +266,8 @@ static void Mario_render()
 {
   /* Здесь код, который будет вывзваться для отрисовки кадра */
   /* Он не должен менять состояние игры, для этого есть функция update */
-  //data->MarioX/16
   
+
 
 
   
@@ -277,13 +277,13 @@ static void Mario_render()
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
-  for (int i =0 ; i <= 9; i++) 
+  for (int i =((0-data->MapX)/16+1) ; i <= ((0-data->MapX)/16)+3; i++) 
     for (int j = 0; j <= 3; j++)
     if (data->Map[i][j] == 1){
     game_draw_sprite(&StoneGreen, data->MapX+(i*16), j*16, RED);
     game_draw_sprite(&StoneWhite, data->MapX+(i*16), j*16, WHITE);
     }
-  game_draw_text((uint8_t*)"IT IS JAMP", 0, 0, BLUE);
+  //game_draw_text((uint8_t*)"IT IS JAMP", 0, 0, BLUE);
   /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
   /*game_draw_sprite(YourSprite, 0, 0, RED);*/
 }
@@ -318,7 +318,8 @@ static void Mario_update(unsigned long delta)
   if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15)/16)]!=0)){
   data->Jamp=1;
   }
-if((data->Jamp == 0)&&(data->ButtonUp == 1)&&(data->Map[(((0-data->MapX)+data->MarioX+5) / 16 )][((data->MarioY+16)/16)]!=0)){
+  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16)/16)]!=0))
+if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   data->Jamp=7;
   }
    data->MarioY = data->MarioY - data->Jamp;
