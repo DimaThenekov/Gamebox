@@ -234,7 +234,7 @@ static MarioData* data; /* Эта переменная - указатель на
 
 
 static void Mario_prepare()
-{
+{game_set_ups(60);
   /* Здесь код, который будет исполнятся один раз */
   /* Здесь нужно инициализировать переменные */
   int MapX = 30;
@@ -348,9 +348,9 @@ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]
   /* Переменная delta содержит количество миллисекунд с последнего вызова */
 
   /* Здесь можно работать с кнопками и обновлять переменные */
-  if (data->MarioY <1){
-    data->MarioY = 0;
-    }
+//  if (data->MarioY <1){
+ //   data->MarioY = 0;
+  //  }
   //    if (data->MarioY >(64/4)*2){
   //  data->MarioY = (64/4)*2;
   //  }
