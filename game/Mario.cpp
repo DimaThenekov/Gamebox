@@ -221,6 +221,7 @@ struct MarioData
   int ButtonUp = 0;
   int MapX = 0;
   int i = 0;
+  int Jamp = 0;
   int j = 0;
   int Map[100][10];
   //int Map[5][5] = {{ 1, 1, 1, 1, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 }};
@@ -268,7 +269,7 @@ static void Mario_render()
   //data->MarioX/16
   
 char s[5];
-    sprintf(s, "%d", data->MarioY);
+    sprintf(s, "%d", data->Jamp);
     game_draw_text((uint8_t*)s, 43, 7, RED);
 
   
@@ -312,6 +313,22 @@ static void Mario_update(unsigned long delta)
   } else {
     data->ButtonDown = 0;
   }
+  data->Jamp= data->Jamp - ((delta / 10) );
+  if (data->Map[(((0-data->MapX)+data->MarioX+5) / 16 )][((data->MarioY+16)/16)]!=0){
+  data->Jamp=0;
+  }
+if((data->Jamp == 0)&&(data->ButtonUp == 1)&&(data->Map[(((0-data->MapX)+data->MarioX+5) / 16 )][((data->MarioY+16)/16)]!=0)){
+  data->Jamp=7;
+  }
+   data->MarioY = data->MarioY - data->Jamp;
+
+
+
+
+
+
+
+  
   data->MapX = data->MapX + ((delta / 10) * data->ButtonLeft);
   data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
   if ((((0-data->MapX)+data->MarioX) / 16 )>-1)
@@ -322,8 +339,8 @@ if ((((0-data->MapX)+data->MarioX+11) / 16 )>-1)
 if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY)/16)]!=0)){
   data->MapX = data->MapX + ((delta / 10) * data->ButtonRight);
 }
-data->MarioY = data->MarioY - ((delta / 10) * data->ButtonUp);
-data->MarioY = data->MarioY + ((delta / 10) * data->ButtonDown);
+//data->MarioY = data->MarioY - ((delta / 10) * data->ButtonUp);
+//data->MarioY = data->MarioY + ((delta / 10) * data->ButtonDown);
 
   //BUTTON_LEFT, BUTTON_RIGHT,
   /* Здесь код, который будет выполняться в цикле */
@@ -333,9 +350,9 @@ data->MarioY = data->MarioY + ((delta / 10) * data->ButtonDown);
   if (data->MarioY <1){
     data->MarioY = 0;
     }
-      if (data->MarioY >(64/4)*2){
-    data->MarioY = (64/4)*2;
-    }
+  //    if (data->MarioY >(64/4)*2){
+  //  data->MarioY = (64/4)*2;
+  //  }
 }
 
 game_instance Mario = {
