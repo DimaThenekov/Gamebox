@@ -247,7 +247,7 @@ static void Mario_prepare()
     { 0, 0, 0, 1 }, 
     { 0, 0, 1, 1 }, 
     { 0, 1, 1, 1 },
-    { 0, 0, 0, 1 }, 
+    { 0, 0, 0, 0 }, 
     { 0, 1, 1, 1 }, 
     { 0, 0, 1, 1 }, 
     { 0, 0, 0, 1 }, 
@@ -315,9 +315,7 @@ static void Mario_update(unsigned long delta)
   if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16)/16)]!=0)){
   data->Jamp=0;
   }
-  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15)/16)]!=0)){
-  data->Jamp=1;
-  }
+  
   if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16)/16)]!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   data->Jamp=7;
@@ -326,7 +324,9 @@ if((data->Jamp == 0)&&(data->ButtonUp == 1)){
    data->MarioY = data->MarioY - data->Jamp;
 
 
-
+while ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15)/16)]!=0)){
+  data->MarioY = data->MarioY -1;
+  }
 
 
 
@@ -353,9 +353,11 @@ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]
 //  if (data->MarioY <1){
  //   data->MarioY = 0;
   //  }
-  //    if (data->MarioY >(64/4)*2){
-  //  data->MarioY = (64/4)*2;
-  //  }
+      if (data->MarioY >64){
+  data->MapX = 0;
+  data->MarioX = 30;
+  data->MarioY = 32;
+    }
 }
 
 game_instance Mario = {
