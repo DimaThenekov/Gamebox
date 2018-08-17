@@ -220,6 +220,7 @@ struct MarioData
   int ButtonDown = 0;
   int ButtonUp = 0;
   int MapX = 0;
+  int MapY = 0;
   int i = 0;
   int Jamp = 0;
   int j = 0;
@@ -281,20 +282,25 @@ static void Mario_render()
 
 
 
-  
+  if (data->MarioY>0){
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
   game_draw_sprite(&MarioYellow, data->MarioX, data->MarioY, YELLOW);
   game_draw_sprite(&MarioGreen , data->MarioX, data->MarioY, GREEN);
+  }else{
+  game_draw_sprite(&MarioRed, data->MarioX, 0, RED);
+  game_draw_sprite(&MarioYellow, data->MarioX, 0, YELLOW);
+  game_draw_sprite(&MarioGreen , data->MarioX, 0, GREEN); 
+    }
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
   for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
     for (int j = 0; j <= 3; j++)
     if (data->Map[i][j] == 1){
-    game_draw_sprite(&StoneGreen, data->MapX+(i*16), j*16, RED);
-    game_draw_sprite(&StoneWhite, data->MapX+(i*16), j*16, WHITE);
+    game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), RED);
+    game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
     }
-  //game_draw_text((uint8_t*)"IT IS JAMP", 0, 0, BLUE);
+      
   /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
   /*game_draw_sprite(YourSprite, 0, 0, RED);*/
 }
@@ -323,19 +329,22 @@ static void Mario_update(unsigned long delta)
     data->ButtonDown = 0;
   }
   data->Jamp= data->Jamp - ((delta / 10) );
-  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16)/16)]!=0)){
+  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)){
   data->Jamp=0;
   }
   
-  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16)/16)]!=0))
+  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   data->Jamp=7;
  Player_setup_random_melody();
   }
+  
    data->MarioY = data->MarioY - data->Jamp;
+ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY-data->MapY)/16)]!=0)){
+  data->MarioY = data->MarioY + data->Jamp;
+  }
 
-
-while ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15)/16)]!=0)){
+while ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15-data->MapY)/16)]!=0)){
   data->MarioY = data->MarioY -1;
   }
 
@@ -346,11 +355,11 @@ while ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/1
   data->MapX = data->MapX + ((delta / 10) * data->ButtonLeft);
   data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
   if ((((0-data->MapX)+data->MarioX) / 16 )>-1)
-if ((data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY)/16)]!=0)){
+if ((data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY-data->MapY)/16)]!=0)){
   data->MapX = data->MapX - ((delta / 10) * data->ButtonLeft);
 }
 if ((((0-data->MapX)+data->MarioX+11) / 16 )>-1)
-if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY)/16)]!=0)){
+if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY-data->MapY)/16)]!=0)){
   data->MapX = data->MapX + ((delta / 10) * data->ButtonRight);
 }
 //data->MarioY = data->MarioY - ((delta / 10) * data->ButtonUp);
@@ -366,11 +375,24 @@ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]
   data->MarioX = 30;
   data->MarioY = 32;
    }
+    if (data->MarioY <0){
+  data->MarioY = data->MarioY+1;
+  data->MapY = data->MapY + 1;
+    }
+
+        if (data->MarioY >64-32){
+  data->MarioY = data->MarioY-1;
+  data->MapY = data->MapY -1;
+    }
       if (data->MarioY >64){
   data->MapX = 3;
   data->MarioX = 30;
   data->MarioY = 32;
     }
+    if (data->MapY <0){
+      
+      data->MapY=0;
+      }
 }
 
 game_instance Mario = {
