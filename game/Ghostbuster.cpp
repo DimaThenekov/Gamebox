@@ -209,12 +209,12 @@ struct GhostbusterData
 {
    int8_t pposy, ShootCounter, pyposy;
    int8_t sposy,ShootPosy[10];
-   bool flag, isShoot, isJump, loli, gameover;
+   bool flag, isShoot, loli, gameover;
    int8_t syposy;
    int8_t BlockPosy, BlockYPosy;
    bool isCanWalk;
-   bool isCanFall;
-   
+   int8_t BeginOfJump, EndOfJump;
+   bool isJump;
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
@@ -230,10 +230,12 @@ static void Ghostbuster_prepare()
     data->sposy = 50;
     data->pposy = 10;
     data->pyposy = 47;
-    data->isJump = false;
     data->syposy = 50;
     data->BlockPosy = 30;
     data->BlockYPosy = 56;
+    data->BeginOfJump = 47;
+    data->EndOfJump = 37;
+    data->isJump = false;
 }
 static void Ghostbuster_render()
 {
@@ -275,11 +277,16 @@ static void Ghostbuster_update(unsigned long delta)
     else
       data->isCanWalk = false;
 
-    if( (data->pyposy+13 != data->BlockYPosy) || (data->pyposy+13 != 47) ) 
-        data->isCanFall = true;
-      else 
-        data->isCanFall = false;
-
+    if( ( (data->pposy+2 >= data->BlockPosy) && (data->pposy+2 <= data->BlockPosy + 6) ) ||
+        ( (data->pposy+11 >= data->BlockPosy) && (data->pposy+11 <= data->BlockPosy + 6) ) ||
+        ( (data->pposy+6 >= data->BlockPosy) && (data->pposy+6 <= data->BlockPosy + 6) ) ) { 
+          data->BeginOfJump = data->BlockYPosy-15;
+          data->EndOfJump = data->BlockYPosy-23;
+        }
+   else {
+      data->BeginOfJump = 47;
+      data->EndOfJump = 37;
+   }
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
       data->loli = !data->loli;
@@ -307,18 +314,6 @@ static void Ghostbuster_update(unsigned long delta)
           }
       }
 
-      if(!data->isCanFall)
-        data->isJump = true;
-      if(data->pyposy >= 37)
-        data->isJump = false;
-
-      if(data->isJump) data->pyposy--;
-
-      if( (!data->isJump) && (data->pyposy<47) && (data->isCanFall) )
-        data->pyposy++;
-
-
-
       if( (game_is_button_pressed(BUTTON_A)) && (data->pyposy == 47) )
         data->isShoot = true;
       else
@@ -342,6 +337,17 @@ static void Ghostbuster_update(unsigned long delta)
             if(data->ShootPosy[i/10] == data->sposy)
               data->syposy = 100;
 
+
+      if( (data->pyposy == data->BeginOfJump) && (game_is_button_pressed(BUTTON_UP) ) ) 
+          data->isJump = true;
+      if(data->pyposy <= data->EndOfJump)
+          data->isJump = false;
+
+      if(data->isJump) 
+        data->pyposy--;
+
+      if( (!data->isJump) && (data->pyposy != data->BeginOfJump) )
+          data->pyposy++;
 
     /* Здесь можно работать с кнопками и обновлять переменные */
 }
