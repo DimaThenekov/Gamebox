@@ -221,6 +221,7 @@ struct MarioData
   int ButtonUp = 0;
   int MapX = 0;
   int MapY = 0;
+  int SetUpMapY = 0;
   int i = 0;
   int Jamp = 0;
   int j = 0;
@@ -240,36 +241,38 @@ static void Mario_prepare()
   /* Здесь код, который будет исполнятся один раз */
   /* Здесь нужно инициализировать переменные */
   data->MapX = 3;
+  data->MapY = -64;
   data->MarioX = 30;
   data->MarioY = 32;
   //data->Map[2][2]=1;
-  int MapReal[20][4] = {
-    { 1, 1, 1, 1 }, 
-    { 0, 0, 0, 1 }, 
-    { 0, 0, 0, 1 }, 
-    { 0, 0, 1, 1 }, 
-    { 0, 1, 1, 1 },
-    { 0, 0, 0, 0 }, 
-    { 0, 1, 1, 1 }, 
-    { 0, 0, 1, 1 }, 
-    { 0, 0, 0, 1 }, 
-    { 0, 0, 0, 1 },
-    { 0, 0, 0, 1 }, 
-    { 0, 1, 0, 1 }, 
-    { 0, 1, 0, 1 }, 
-    { 0, 1, 0, 1 }, 
-    { 0, 1, 0, 1 },
-    { 0, 0, 0, 0 }, 
-    { 0, 0, 0, 1 }, 
-    { 0, 0, 0, 1 }, 
-    { 1, 1, 1, 1 }, 
-    { 1, 1, 1, 1 }};
+  int MapReal[20][8] = {
+    {1, 1, 1, 1, 1, 1, 1, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 1, 1, }, 
+    {0, 0, 0, 0, 0, 1, 1, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 0, }, 
+    {0, 0, 0, 0, 0, 1, 1, 1, }, 
+    {0, 0, 0, 0, 0, 0, 1, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 1, 0, 1, }, 
+    {0, 0, 0, 0, 1, 1, 0, 1, }, 
+    {0, 0, 0, 1, 1, 1, 0, 1, }, 
+    {0, 0, 1, 1, 1, 1, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 0, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {1, 1, 1, 1, 1, 1, 1, 1, }, 
+    {1, 1, 1, 1, 1, 1, 1, 1, }};
   for (int i = 0; i <= 19; i++) 
-    for (int j = 0; j <= 3; j++)
+    for (int j = 0; j <= 7; j++)
     {
       data->Map[i][j]=MapReal[i][j];
       
       }
+      data->SetUpMapY=data->MapY;
 }
 
 
@@ -295,12 +298,12 @@ static void Mario_render()
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
   for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
-    for (int j = 0; j <= 3; j++)
+    for (int j = 0; j <= 8; j++)
     if (data->Map[i][j] == 1){
     game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), RED);
     game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
     }
-      
+          
   /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
   /*game_draw_sprite(YourSprite, 0, 0, RED);*/
 }
@@ -335,7 +338,7 @@ static void Mario_update(unsigned long delta)
   
   if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
-  data->Jamp=7;
+  data->Jamp=8;
  Player_setup_random_melody();
   }
   
@@ -377,21 +380,23 @@ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data-
    }
     if (data->MarioY <0){
   data->MarioY = data->MarioY+1;
-  data->MapY = data->MapY + 1;
+ data->MapY = data->MapY + 1;
     }
 
         if (data->MarioY >64-32){
   data->MarioY = data->MarioY-1;
   data->MapY = data->MapY -1;
     }
-      if (data->MarioY >64){
+      if (data->MarioY >128){
   data->MapX = 3;
   data->MarioX = 30;
   data->MarioY = 32;
     }
-    if (data->MapY <0){
-      
-      data->MapY=0;
+    if (data->MapY <data->SetUpMapY){
+     data->MapX = 3;
+  data->MarioX = 30;
+  data->MarioY = 32; 
+      data->MapY= data->SetUpMapY+1;
       }
 }
 
