@@ -277,7 +277,7 @@ static void Mario_render()
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
-  for (int i =((0-data->MapX)/16+1) ; i <= ((0-data->MapX)/16)+3; i++) 
+  for (int i =((0-data->MapX)/16) ; i <= ((0-data->MapX)/16)+4; i++) 
     for (int j = 0; j <= 3; j++)
     if (data->Map[i][j] == 1){
     game_draw_sprite(&StoneGreen, data->MapX+(i*16), j*16, RED);
