@@ -208,9 +208,9 @@ const game_sprite YourSprite PROGMEM = {
 struct GhostbusterData
 {
    int8_t pposy, ShootCounter, pyposy;
-   int8_t sposy,ShootPosy[10];
+   int8_t sposy[10],ShootPosy[10];
    bool flag, isShoot, loli, gameover;
-   int8_t syposy;
+   int8_t syposy[10];
    int8_t BlockPosy, BlockYPosy;
    bool isCanWalk;
    int8_t BeginOfJump, EndOfJump;
@@ -227,10 +227,12 @@ static void Ghostbuster_prepare()
     data->flag = true;
     data->isShoot = false;
     data->ShootCounter = 0;
-    data->sposy = 50;
+    data->sposy[0] = 50;
+    data->sposy[1] = 100;
     data->pposy = 10;
     data->pyposy = 47;
-    data->syposy = 50;
+    for(int i = 0; i < 2; i++)
+      data->syposy[i] = 50;
     data->BlockPosy = 30;
     data->BlockYPosy = 56;
     data->BeginOfJump = 47;
@@ -245,7 +247,8 @@ static void Ghostbuster_render()
   }
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
-    game_draw_color_sprite(&slimer, data->sposy, data->syposy);
+    for(int i = 0; i < 2; i++)
+      game_draw_color_sprite(&slimer, data->sposy[i], data->syposy[i]);
 
     for(int i = 0; i < 34; i++)
       game_draw_color_sprite(&place, 0+i*2, 62);
@@ -281,7 +284,6 @@ static void Ghostbuster_update(unsigned long delta)
         ( (data->pposy+11 >= data->BlockPosy) && (data->pposy+11 <= data->BlockPosy + 6) ) ||
         ( (data->pposy+6 >= data->BlockPosy) && (data->pposy+6 <= data->BlockPosy + 6) ) ) { 
           data->BeginOfJump = data->BlockYPosy-15;
-          data->EndOfJump = data->BlockYPosy-23;
         }
    else {
       data->BeginOfJump = 47;
@@ -290,11 +292,13 @@ static void Ghostbuster_update(unsigned long delta)
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
       data->loli = !data->loli;
-      if( data->sposy != data->pposy && data->loli )
-        data->sposy+=data->sposy>data->pposy?-1:1;
-      if( ((data->sposy == data->pposy) || (data->pposy + 13 == data->sposy)) && (data->syposy == 50)  )
-        data->gameover = true;
-
+      for(int i = 0; i < 2; i++) {
+          if( data->sposy[i] != data->pposy && data->loli )
+            data->sposy[i]+=data->sposy[i]>data->pposy?-1:1;
+          if( ((data->sposy[i] == data->pposy) || (data->pposy + 13 == data->sposy[i])) && (data->syposy[i] == 50)  )
+            data->gameover = true;
+      }
+      
         if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
               data->flag = false;
           }
@@ -305,11 +309,13 @@ static void Ghostbuster_update(unsigned long delta)
       if(data->isCanWalk) {
         
           if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
-              data->sposy++;
+            for(int i = 0; i < 2; i++)
+              data->sposy[i]++;
               data->BlockPosy++;
           }
           else if ( (game_is_button_pressed(BUTTON_RIGHT)) && (!data->isShoot) ) {
-            data->sposy--;
+            for(int i = 0; i < 2; i++)
+              data->sposy[i]--;
             data->BlockPosy--;
           }
       }
@@ -334,19 +340,22 @@ static void Ghostbuster_update(unsigned long delta)
         }
 
         for(int i = 0; i < data->ShootCounter; i+=10)
-            if(data->ShootPosy[i/10] == data->sposy)
-              data->syposy = 100;
+          for(int j = 0; j < 2; j++)
+            if(data->ShootPosy[i/10] == data->sposy[j])
+              data->syposy[j] = 100;
 
 
-      if( (data->pyposy == data->BeginOfJump) && (game_is_button_pressed(BUTTON_UP) ) ) 
+      if( (data->pyposy == data->BeginOfJump) && (game_is_button_pressed(BUTTON_UP) ) ) {
           data->isJump = true;
+          data->EndOfJump = data->BeginOfJump - 10;
+      }
       if(data->pyposy <= data->EndOfJump)
           data->isJump = false;
 
       if(data->isJump) 
         data->pyposy--;
 
-      if( (!data->isJump) && (data->pyposy != data->BeginOfJump) )
+      if( (!data->isJump) && (data->pyposy != data->BeginOfJump) && (data->pyposy <= 46) )
           data->pyposy++;
 
     /* Здесь можно работать с кнопками и обновлять переменные */
