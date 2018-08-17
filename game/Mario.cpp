@@ -269,6 +269,7 @@ static void Mario_prepare()
   for (int i = 0; i <= 19; i++) 
     for (int j = 0; j <= 7; j++)
     {
+      
       data->Map[i][j]=MapReal[i][j];
       
       }
