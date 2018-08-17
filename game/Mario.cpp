@@ -223,6 +223,7 @@ struct MarioData
   int i = 0;
   int Jamp = 0;
   int j = 0;
+  
   int Map[100][10];
   //int Map[5][5] = {{ 1, 1, 1, 1, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 }};
   /* Объявляйте ваши переменные здесь */
@@ -237,11 +238,11 @@ static void Mario_prepare()
 {game_set_ups(60);
   /* Здесь код, который будет исполнятся один раз */
   /* Здесь нужно инициализировать переменные */
-  int MapX = 30;
+  data->MapX = 3;
   data->MarioX = 30;
   data->MarioY = 32;
   //data->Map[2][2]=1;
-  int MapReal[10][4] = {
+  int MapReal[20][4] = {
     { 1, 1, 1, 1 }, 
     { 0, 0, 0, 1 }, 
     { 0, 0, 0, 1 }, 
@@ -251,8 +252,18 @@ static void Mario_prepare()
     { 0, 1, 1, 1 }, 
     { 0, 0, 1, 1 }, 
     { 0, 0, 0, 1 }, 
+    { 0, 0, 0, 1 },
+    { 0, 0, 0, 1 }, 
+    { 0, 1, 0, 1 }, 
+    { 0, 1, 0, 1 }, 
+    { 0, 1, 0, 1 }, 
+    { 0, 1, 0, 1 },
+    { 0, 0, 0, 0 }, 
+    { 0, 0, 0, 1 }, 
+    { 0, 0, 0, 1 }, 
+    { 1, 1, 1, 1 }, 
     { 1, 1, 1, 1 }};
-  for (int i = 0; i <= 9; i++) 
+  for (int i = 0; i <= 19; i++) 
     for (int j = 0; j <= 3; j++)
     {
       data->Map[i][j]=MapReal[i][j];
@@ -277,7 +288,7 @@ static void Mario_render()
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
-  for (int i =((0-data->MapX)/16) ; i <= ((0-data->MapX)/16)+4; i++) 
+  for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
     for (int j = 0; j <= 3; j++)
     if (data->Map[i][j] == 1){
     game_draw_sprite(&StoneGreen, data->MapX+(i*16), j*16, RED);
@@ -350,11 +361,13 @@ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15)/16)]
   /* Переменная delta содержит количество миллисекунд с последнего вызова */
 
   /* Здесь можно работать с кнопками и обновлять переменные */
-//  if (data->MarioY <1){
- //   data->MarioY = 0;
-  //  }
+  if (data->MapX >16){
+    data->MapX = 3;
+  data->MarioX = 30;
+  data->MarioY = 32;
+   }
       if (data->MarioY >64){
-  data->MapX = 0;
+  data->MapX = 3;
   data->MarioX = 30;
   data->MarioY = 32;
     }
