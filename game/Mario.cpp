@@ -300,8 +300,8 @@ static void Mario_update(unsigned long delta)
   } else {
     data->ButtonRight = 0;
   }
-  //BUTTON_UP, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_DOWN,
-    if (game_is_button_pressed (BUTTON_UP)) {
+  //BUTTON_UP, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_DOWN, BUTTON_SELECT, BUTTON_START, BUTTON_A, BUTTON_B
+    if (game_is_button_pressed (BUTTON_A)) {
     data->ButtonUp = 1;
   } else {
     data->ButtonUp = 0;
