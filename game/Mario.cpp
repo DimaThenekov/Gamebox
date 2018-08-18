@@ -393,7 +393,7 @@ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data-
   data->MarioX = 30;
   data->MarioY = 32;
     }
-    if (data->MapY <data->SetUpMapY){
+    if (data->MapY <data->SetUpMapY-10){
      data->MapX = 3;
   data->MarioX = 30;
   data->MarioY = 32; 
