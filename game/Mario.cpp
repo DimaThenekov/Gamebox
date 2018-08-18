@@ -341,7 +341,9 @@ static void Mario_update(unsigned long delta)
   if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   data->Jamp=8;
+#ifndef EMULATED
  Player_setup_random_melody();
+#endif
   }
   
    data->MarioY = data->MarioY - data->Jamp;
