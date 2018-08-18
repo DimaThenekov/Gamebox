@@ -5,6 +5,7 @@
 
 static const uint8_t *ram;
 static uint16_t ram_addr;
+static bool mute;
 
 static uint8_t peek(uint16_t addr)
 {
@@ -284,13 +285,16 @@ void fxm_init(const uint8_t *fxm)
   channels[1].address_in_pattern = pgm_read_byte(fxm + 8) + (pgm_read_byte(fxm + 9) << 8);
   channels[2].address_in_pattern = pgm_read_byte(fxm + 10) + (pgm_read_byte(fxm + 11) << 8);
 
+  for (int i = 13 ; i >= 0 ; --i)
+    ayregs[i] = 0;
+
   // init hardware YM
   music_setup();
 
   interrupts();
 }
 
-void fxm_loop()
+static void fxm_loop()
 {
   if (!ram)
     return;
@@ -304,7 +308,7 @@ void fxm_loop()
     music_send_data(i, ayregs[i]);
 }
 
-void fxm_enable_int()
+void fxm_enable()
 {
     // Set up Timer3 for interrupt:
     TCCR3A  = _BV(WGM31); // Mode 14 (fast PWM), OC3A off
@@ -314,15 +318,30 @@ void fxm_enable_int()
 }
 
 ISR(TIMER3_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
-  fxm_loop();              // Call refresh func
-  TIFR3 |= TOV3;                  // Clear Timer3 interrupt flag
-  ICR3      = 1250;        // Set interval for next interrupt
-  TCNT3     = 0;        // Restart interrupt timer
+    if (!mute)
+        fxm_loop();
+    TIFR3 |= TOV3;                  // Clear Timer3 interrupt flag
+    ICR3      = 1250;        // Set interval for next interrupt
+    TCNT3     = 0;        // Restart interrupt timer
+}
+
+static void ay_clear()
+{
+    for (int i = 13 ; i >= 0 ; --i)
+    {
+        music_send_data(i, 0);
+    }
 }
 
 void fxm_disable()
 {
-  TIMSK3 &= ~_BV(TOIE3); // Disable Timer3 interrupt
-  for (int i = 13 ; i >= 0 ; --i)
-    music_send_data(i, 0);
+    TIMSK3 &= ~_BV(TOIE3); // Disable Timer3 interrupt
+    ay_clear();
+}
+
+void fxm_mute()
+{
+    mute = !mute;
+    if (mute)
+        ay_clear();
 }

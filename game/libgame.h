@@ -12,7 +12,7 @@ typedef void(*game_function_update)(unsigned long);
 
 struct game_instance
 {
-    unsigned char name[10];
+    unsigned char name[13];
     game_function_prepare prepare;
     game_function_render render;
     game_function_update update;

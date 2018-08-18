@@ -35,5 +35,5 @@ target_link_libraries(VirtualGameBox Threads::Threads)
 target_link_libraries(VirtualGameBox Qt5::Widgets)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_DEBUG "-g3 -O0 -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
