@@ -15,6 +15,14 @@ void fxm_enable();
 void fxm_disable();
 void fxm_mute();
 
+// pt3 must point to the program memory
+void pt3_init(const uint8_t *pt3);
+// enables interrupt-driven playing
+void pt3_enable();
+// disables sound and interrupts
+void pt3_disable();
+void pt3_mute();
+
 // TODO: improve this interface
 void Player_setup_melody(int i);
 void Player_setup_random_melody();

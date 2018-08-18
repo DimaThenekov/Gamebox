@@ -236,7 +236,6 @@ static MarioData* data; /* Эта переменная - указатель на
 //int Map[5][4] = {{ 1, 1, 1, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 1, 1, 1, 1 }};
 /*Карта не может работать через data->*/
 
-
 static void Mario_prepare()
 {game_set_ups(60);
   /* Здесь код, который будет исполнятся один раз */
@@ -275,6 +274,12 @@ static void Mario_prepare()
       
       }
       data->SetUpMapY=data->MapY;
+
+#ifndef EMULATED
+extern const uint8_t mario[] PROGMEM;
+  pt3_init(mario);
+  pt3_enable();
+#endif
 }
 
 
@@ -341,9 +346,6 @@ static void Mario_update(unsigned long delta)
   if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   data->Jamp=8;
-#ifndef EMULATED
- Player_setup_random_melody();
-#endif
   }
   
    data->MarioY = data->MarioY - data->Jamp;

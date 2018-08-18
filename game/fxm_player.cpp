@@ -310,13 +310,15 @@ static void fxm_loop()
 
 void fxm_enable()
 {
+    /*
     // Set up Timer3 for interrupt:
     TCCR3A  = _BV(WGM31); // Mode 14 (fast PWM), OC3A off
     TCCR3B  = _BV(WGM33) | _BV(WGM32) | _BV(CS32); // Mode 14, div 256
     ICR3    = 0;
     TIMSK3 |= _BV(TOIE3); // Enable Timer3 interrupt
+    */
 }
-
+/*
 ISR(TIMER3_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
     if (!mute)
         fxm_loop();
@@ -324,7 +326,7 @@ ISR(TIMER3_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
     ICR3      = 1250;        // Set interval for next interrupt
     TCNT3     = 0;        // Restart interrupt timer
 }
-
+*/
 static void ay_clear()
 {
     for (int i = 13 ; i >= 0 ; --i)
