@@ -228,7 +228,7 @@ static void Ghostbuster_prepare()
     data->flag = true;
     data->isShoot = false;
     data->ShootCounter = 0;
-    data->sposy[0] = 30;
+    data->sposy[0] = 50;
     data->sposy[1] = 100;
     data->pposy = 10;
     data->pyposy = 47;
@@ -236,27 +236,37 @@ static void Ghostbuster_prepare()
       data->syposy[i] = 50;
     data->BlockPosy[0] = 36;
     data->BlockYPosy[0] = 56;
+    data->BlockPosy[1] = 61;
+    data->BlockYPosy[1] = 56;
+    data->BlockPosy[2] = 67;
+    data->BlockYPosy[2] = 56;
+    data->BlockPosy[3] = 67;
+    data->BlockYPosy[3] = 50;
+    data->BlockPosy[4] = 73;
+    data->BlockYPosy[4] = 56;
+    data->BlockPosy[5] = 73;
+    data->BlockYPosy[5] = 50;
+    data->BlockPosy[6] = 73;
+    data->BlockYPosy[6] = 44;
+    data->BlockPosy[7] = 91;
+    data->BlockYPosy[7] = 38;
+    data->BlockPosy[8] = 97;
+    data->BlockYPosy[8] = 38;
+    data->BlockPosy[9] = 115;
+    data->BlockYPosy[9] = 32;
+    data->BlockPosy[10] = 121;
+    data->BlockYPosy[10] = 32;
+    data->BlockPosy[11] = 127;
+    data->BlockYPosy[11] = 32;
+    data->BlockPosy[12] = 133;
+    data->BlockYPosy[12] = 32;
+    data->BlockPosy[13] = 139;
+    data->BlockYPosy[13] = 32;
+    data->BlockPosy[14] = 145;
+    data->BlockYPosy[14] = 32;
     data->BeginOfJump = 47;
     data->EndOfJump = 37;
     data->isJump = false;
-    data->BlockPosy[1] = 42;
-    data->BlockYPosy[1] = 56;
-    data->BlockPosy[2] = 42;
-    data->BlockYPosy[2] = 50;
-    data->BlockPosy[3] = 48;
-    data->BlockYPosy[3] = 56;
-    data->BlockPosy[4] = 48;
-    data->BlockYPosy[4] = 50;
-    data->BlockPosy[5] = 48;
-    data->BlockYPosy[5] = 44;
-    data->BlockPosy[6] = 54;
-    data->BlockYPosy[6] = 44;
-    data->BlockPosy[7] = 60;
-    data->BlockYPosy[7] = 56;
-    data->BlockPosy[8] = 60;
-    data->BlockYPosy[8] = 50;
-    data->BlockPosy[9] = 60;
-    data->BlockYPosy[9] = 44;
     data->kek = true;
 }
 static void Ghostbuster_render()
@@ -282,7 +292,7 @@ static void Ghostbuster_render()
         for(int i = 0; i < data->ShootCounter; i+=10) {
           game_draw_color_sprite(&shoot, data->ShootPosy[i/10], 57);
         }
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < 15; i++)
       game_draw_color_sprite(&block, data->BlockPosy[i], data->BlockYPosy[i]);
     /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
 }
@@ -293,9 +303,9 @@ static void Ghostbuster_update(unsigned long delta)
       return;
 
       
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 15; i++) {
 
-        if( (data->pposy+13 == data->BlockPosy[i] && data->flag || data->pposy == data->BlockPosy[i]+6 && !data->flag ) &&  data->pyposy+13 >= data->BlockYPosy[i] ) {
+        if( (data->pposy+13 == data->BlockPosy[i] && data->flag || data->pposy == data->BlockPosy[i]+6 && !data->flag ) &&  data->pyposy+13 >= data->BlockYPosy[i]  &&  data->pyposy+13 <= data->BlockYPosy[i]+6 ) {
           data->isCanWalk = false;
           break;
         }
@@ -306,7 +316,7 @@ static void Ghostbuster_update(unsigned long delta)
       
     }
     data->BeginOfJump = 47;
-    for(int i = 0; i<10; i++) {
+    for(int i = 0; i<15; i++) {
 
         if ( ( (data->pposy+2 >= data->BlockPosy[i]) && (data->pposy+2 <= data->BlockPosy[i] + 6) ) ||
         ( (data->pposy+11 >= data->BlockPosy[i]) && (data->pposy+11 <= data->BlockPosy[i] + 6) ) ||
@@ -326,7 +336,7 @@ static void Ghostbuster_update(unsigned long delta)
             data->sposy[i]+=data->sposy[i]>data->pposy?-1:1;
 
             
-          if( ((data->sposy[i] == data->pposy) || (data->pposy + 13 == data->sposy[i])) && (data->syposy[i] == 50) )
+          if( ((data->sposy[i] == data->pposy) || (data->pposy + 13 == data->sposy[i])) && (data->syposy[i] != 100) )
             data->gameover = true;
       }
       
@@ -342,13 +352,13 @@ static void Ghostbuster_update(unsigned long delta)
           if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
             for(int i = 0; i < 2; i++)
               data->sposy[i]++;
-            for(int i = 0; i < 10; i++)
+            for(int i = 0; i < 15; i++)
               data->BlockPosy[i]++;
           }
           else if ( (game_is_button_pressed(BUTTON_RIGHT)) && (!data->isShoot) ) {
             for(int i = 0; i < 2; i++)
               data->sposy[i]--;
-            for(int i = 0; i < 10; i++)
+            for(int i = 0; i < 15; i++)
             data->BlockPosy[i]--;
           }
       }
