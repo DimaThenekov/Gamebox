@@ -163,8 +163,6 @@ struct Channel_Parameters
     uint8_t current_envelope_sliding;
 };
 
-static const uint8_t *ram;
-static bool mute;
 static Channel_Parameters channels[3];
 
 static uint16_t env_base;
@@ -181,64 +179,27 @@ static uint8_t current_position;
 static int8_t add_to_env;
 static uint8_t temp_mixer;
 
-static uint8_t peek(uint16_t addr)
-{
-    return pgm_read_byte(ram + addr);
-}
-
-static uint16_t peek2(uint16_t addr)
-{
-    return peek(addr) + (peek(addr + 1) << 8);
-}
-
-static uint8_t ayregs[14];
-static void z80_write_ay_reg(uint8_t reg, uint8_t val)
-{
-    ayregs[reg] = val;
-}
-
-#define AY_TONA  0
-#define AY_TONB  2
-#define AY_TONC  4
-#define AY_NOISE 6
-#define AY_MIXER 7
-#define AY_AMPA  8
-#define AY_AMPB  9
-#define AY_AMPC  10
-#define AY_ENV   11
-#define AY_ENVT  13
-
-static void ay_clear()
-{
-    for (int i = 13 ; i >= 0 ; --i)
-    {
-        ayregs[i] = 0;
-        music_send_data(i, 0);
-    }
-}
-
-
 static uint8_t pt3_get_version()
 {
-    return peek(13) - '0';
+    return music_peek(13) - '0';
 }
 
 static uint16_t pt3_patterns_offset()
 {
-    return peek2(103);
+    return music_peek2(103);
 }
 
 static uint16_t pt3_get_ornament_ptr(uint8_t i)
 {
-    return peek2(ORNAMENTS_OFFSET + i * 2);
+    return music_peek2(ORNAMENTS_OFFSET + i * 2);
 }
 
 static uint16_t pt3_get_sample_ptr(uint8_t i)
 {
-    return peek2(SAMPLES_OFFSET + i * 2);
+    return music_peek2(SAMPLES_OFFSET + i * 2);
 }
 
-void pt3_init(const uint8_t *pt3)
+bool pt3_init(const uint8_t *pt3)
 {
     if (pgm_read_byte(pt3) != 'P'
         || pgm_read_byte(pt3 + 1) != 'r'
@@ -247,43 +208,39 @@ void pt3_init(const uint8_t *pt3)
         /* Skipped some letters */
         || pgm_read_byte(pt3 + 11) != '3')
     {
-        return;
+        return false;
     }
 
-    noInterrupts();
-
-    ram = pt3;
+    music_set_ram(pt3, 0);
 
     delay_counter = 1;
-    delay_value = peek(100);
+    delay_value = music_peek(100);
 
     for (int i = 0 ; i < 3 ; ++i)
     {
-        uint8_t pos = peek(POSITIONS_OFFSET);
+        uint8_t pos = music_peek(POSITIONS_OFFSET);
         channels[i].address_in_pattern =
-            peek2(pt3_patterns_offset() + pos * 2);
+            music_peek2(pt3_patterns_offset() + pos * 2);
 
         channels[i].ornament_pointer = pt3_get_ornament_ptr(0);
-        channels[i].loop_ornament_position = peek(channels[i].ornament_pointer++);
-        channels[i].ornament_length = peek(channels[i].ornament_pointer++);
+        channels[i].loop_ornament_position = music_peek(channels[i].ornament_pointer++);
+        channels[i].ornament_length = music_peek(channels[i].ornament_pointer++);
         channels[i].sample_pointer = pt3_get_sample_ptr(1);
-        channels[i].loop_sample_position = peek(channels[i].sample_pointer++);
-        channels[i].sample_length = peek(channels[i].sample_pointer++);
+        channels[i].loop_sample_position = music_peek(channels[i].sample_pointer++);
+        channels[i].sample_length = music_peek(channels[i].sample_pointer++);
 
         channels[i].volume = 15;
         channels[i].note_skip_counter = 1;
     }
 
-    ay_clear();
+    music_clear_ay();
 
-    music_setup();
-
-    interrupts();
+    return true;
 }
 
 static uint16_t get_note_freq(uint8_t note)
 {
-    switch (peek(TON_TABLE_ID))
+    switch (music_peek(TON_TABLE_ID))
     {
     case 0:
         if (pt3_get_version() <= 3)
@@ -316,24 +273,24 @@ static void pt3_play_channel(Channel_Parameters *ch)
 
     do
     {
-        uint8_t val = peek(ch->address_in_pattern);
+        uint8_t val = music_peek(ch->address_in_pattern);
         switch (val)
         {
         case 0xf0 ... 0xff:
             ch->ornament_pointer = pt3_get_ornament_ptr(val - 0xf0);
-            ch->loop_ornament_position = peek(ch->ornament_pointer++);
-            ch->ornament_length = peek(ch->ornament_pointer++);
+            ch->loop_ornament_position = music_peek(ch->ornament_pointer++);
+            ch->ornament_length = music_peek(ch->ornament_pointer++);
             ++ch->address_in_pattern;
-            ch->sample_pointer = pt3_get_sample_ptr(peek(ch->address_in_pattern) / 2);
-            ch->loop_sample_position = peek(ch->sample_pointer++);
-            ch->sample_length = peek(ch->sample_pointer++);
+            ch->sample_pointer = pt3_get_sample_ptr(music_peek(ch->address_in_pattern) / 2);
+            ch->loop_sample_position = music_peek(ch->sample_pointer++);
+            ch->sample_length = music_peek(ch->sample_pointer++);
             ch->envelope_enabled = false;
             ch->position_in_ornament = 0;
             break;
         case 0xd1 ... 0xef:
             ch->sample_pointer = pt3_get_sample_ptr(val - 0xd0);
-            ch->loop_sample_position = peek(ch->sample_pointer++);
-            ch->sample_length = peek(ch->sample_pointer++);
+            ch->loop_sample_position = music_peek(ch->sample_pointer++);
+            ch->sample_length = music_peek(ch->sample_pointer++);
             break;
         case 0xd0:
             quit = true;
@@ -356,15 +313,15 @@ static void pt3_play_channel(Channel_Parameters *ch)
             break;
         case 0xb2 ... 0xbf:
             ch->envelope_enabled = true;
-            z80_write_ay_reg(AY_ENVT, val - 0xb1);
-            env_base = peek(++ch->address_in_pattern);
-            env_base = (env_base << 8) + peek(++ch->address_in_pattern);
+            music_set_ay_reg(AY_ENVT, val - 0xb1);
+            env_base = music_peek(++ch->address_in_pattern);
+            env_base = (env_base << 8) + music_peek(++ch->address_in_pattern);
             ch->position_in_ornament = 0;
             cur_env_slide = 0;
             cur_env_delay = 0;
             break;
         case 0xb1:
-            ch->number_of_notes_to_skip = peek(++ch->address_in_pattern);
+            ch->number_of_notes_to_skip = music_peek(++ch->address_in_pattern);
             break;
         case 0xb0:
             ch->envelope_enabled = false;
@@ -386,8 +343,8 @@ static void pt3_play_channel(Channel_Parameters *ch)
             break;
         case 0x40 ... 0x4f:
             ch->ornament_pointer = pt3_get_ornament_ptr(val - 0x40);
-            ch->loop_sample_position = peek(ch->ornament_pointer++);
-            ch->ornament_length = peek(ch->ornament_pointer++);
+            ch->loop_sample_position = music_peek(ch->ornament_pointer++);
+            ch->ornament_length = music_peek(ch->ornament_pointer++);
             ch->position_in_ornament = 0;
             break;
         case 0x20 ... 0x3f:
@@ -400,16 +357,16 @@ static void pt3_play_channel(Channel_Parameters *ch)
             }
             else
             {
-                z80_write_ay_reg(AY_ENVT, val - 0x10);
-                env_base = peek(++ch->address_in_pattern);
-                env_base = (env_base << 8) + peek(++ch->address_in_pattern);
+                music_set_ay_reg(AY_ENVT, val - 0x10);
+                env_base = music_peek(++ch->address_in_pattern);
+                env_base = (env_base << 8) + music_peek(++ch->address_in_pattern);
                 ch->envelope_enabled = true;
                 cur_env_slide = 0;
                 cur_env_delay = 0;
             }
-            ch->sample_pointer = pt3_get_sample_ptr(peek(ch->address_in_pattern) / 2);
-            ch->loop_sample_position = peek(ch->sample_pointer++);
-            ch->sample_length = peek(ch->sample_pointer++);
+            ch->sample_pointer = pt3_get_sample_ptr(music_peek(ch->address_in_pattern) / 2);
+            ch->loop_sample_position = music_peek(ch->sample_pointer++);
+            ch->sample_length = music_peek(ch->sample_pointer++);
             ch->position_in_ornament = 0;
             break;
         case 0x9:
@@ -442,9 +399,9 @@ static void pt3_play_channel(Channel_Parameters *ch)
     {
         if (counter == flag1)
         {
-            ch->ton_slide_delay = peek(ch->address_in_pattern++);
+            ch->ton_slide_delay = music_peek(ch->address_in_pattern++);
             ch->ton_slide_count = ch->ton_slide_delay;
-            ch->ton_slide_step = peek2(ch->address_in_pattern);
+            ch->ton_slide_step = music_peek2(ch->address_in_pattern);
             ch->address_in_pattern += 2;
             ch->simple_gliss = true;
             ch->current_on_off = 0;
@@ -455,10 +412,10 @@ static void pt3_play_channel(Channel_Parameters *ch)
         {
             ch->simple_gliss = false;
             ch->current_on_off = 0;
-            ch->ton_slide_delay = peek(ch->address_in_pattern);
+            ch->ton_slide_delay = music_peek(ch->address_in_pattern);
             ch->ton_slide_count = ch->ton_slide_delay;
             ch->address_in_pattern += 3;
-            ch->ton_slide_step = peek2(ch->address_in_pattern);
+            ch->ton_slide_step = music_peek2(ch->address_in_pattern);
             if (ch->ton_slide_step < 0)
                 ch->ton_slide_step = -ch->ton_slide_step;
             ch->address_in_pattern += 2;
@@ -472,30 +429,30 @@ static void pt3_play_channel(Channel_Parameters *ch)
         }
         else if (counter == flag3)
         {
-            ch->position_in_sample = peek(ch->address_in_pattern++);
+            ch->position_in_sample = music_peek(ch->address_in_pattern++);
         }
         else if (counter == flag4)
         {
-            ch->position_in_ornament = peek(ch->address_in_pattern++);
+            ch->position_in_ornament = music_peek(ch->address_in_pattern++);
         }
         else if (counter == flag5)
         {
-            ch->on_off_delay = peek(ch->address_in_pattern++);
-            ch->off_on_delay = peek(ch->address_in_pattern++);
+            ch->on_off_delay = music_peek(ch->address_in_pattern++);
+            ch->off_on_delay = music_peek(ch->address_in_pattern++);
             ch->current_on_off = ch->on_off_delay;
             ch->ton_slide_count = 0;
             ch->current_ton_sliding = 0;
         }
         else if (counter == flag8)
         {
-            env_delay = peek(ch->address_in_pattern++);
+            env_delay = music_peek(ch->address_in_pattern++);
             cur_env_delay = env_delay;
-            env_slide_add = peek2(ch->address_in_pattern);
+            env_slide_add = music_peek2(ch->address_in_pattern);
             ch->address_in_pattern += 2;
         }
         else if (counter == flag9)
         {
-            uint8_t b = peek(ch->address_in_pattern++);
+            uint8_t b = music_peek(ch->address_in_pattern++);
             delay_value = b;
             delay_counter = b;
         }
@@ -510,13 +467,13 @@ static void pt3_change_registers(Channel_Parameters *ch)
     uint16_t w;
     if (ch->enabled)
     {
-        ch->ton = peek2(ch->sample_pointer + ch->position_in_sample * 4 + 2);
+        ch->ton = music_peek2(ch->sample_pointer + ch->position_in_sample * 4 + 2);
         ch->ton += ch->ton_accumulator;
-        b0 = peek(ch->sample_pointer + ch->position_in_sample * 4);
-        b1 = peek(ch->sample_pointer + ch->position_in_sample * 4 + 1);
+        b0 = music_peek(ch->sample_pointer + ch->position_in_sample * 4);
+        b1 = music_peek(ch->sample_pointer + ch->position_in_sample * 4 + 1);
         if (b1 & 0x40)
             ch->ton_accumulator = ch->ton;
-        j = ch->note + peek(ch->ornament_pointer + ch->position_in_ornament);
+        j = ch->note + music_peek(ch->ornament_pointer + ch->position_in_ornament);
         if ((int8_t)j < 0)
             j = 0;
         else if (j > 95)
@@ -620,30 +577,27 @@ static void pt3_change_registers(Channel_Parameters *ch)
     }
 }
 
-static void pt3_loop()
+void pt3_loop()
 {
-    if (!ram)
-        return;
-
     if (!--delay_counter)
     {
         if (!--channels[0].note_skip_counter)
         {
-            if (!peek(channels[0].address_in_pattern))
+            if (!music_peek(channels[0].address_in_pattern))
             {
                 ++current_position;
-                uint8_t pos = peek(POSITIONS_OFFSET + current_position);
+                uint8_t pos = music_peek(POSITIONS_OFFSET + current_position);
                 if (pos == 0xff)
                 {
                     current_position = 0;
-                    pos = peek(POSITIONS_OFFSET);
+                    pos = music_peek(POSITIONS_OFFSET);
                 }
                 channels[0].address_in_pattern =
-                    peek2(pt3_patterns_offset() + pos * 2);
+                    music_peek2(pt3_patterns_offset() + pos * 2);
                 channels[1].address_in_pattern =
-                    peek2(pt3_patterns_offset() + pos * 2 + 2);
+                    music_peek2(pt3_patterns_offset() + pos * 2 + 2);
                 channels[2].address_in_pattern =
-                    peek2(pt3_patterns_offset() + pos * 2 + 4);
+                    music_peek2(pt3_patterns_offset() + pos * 2 + 4);
                 noise_base = 0;
             }
             pt3_play_channel(&channels[0]);
@@ -666,19 +620,19 @@ static void pt3_loop()
     pt3_change_registers(&channels[1]);
     pt3_change_registers(&channels[2]);
 
-    z80_write_ay_reg(AY_MIXER, temp_mixer);
+    music_set_ay_reg(AY_MIXER, temp_mixer);
 
     for (int i = 0 ; i < 3 ; ++i)
     {
-        z80_write_ay_reg(AY_TONA + 2 * i, channels[i].ton);
-        z80_write_ay_reg(AY_TONA + 2 * i + 1, channels[i].ton >> 8);
-        z80_write_ay_reg(AY_AMPA + i, channels[i].amplitude);
+        music_set_ay_reg(AY_TONA + 2 * i, channels[i].ton);
+        music_set_ay_reg(AY_TONA + 2 * i + 1, channels[i].ton >> 8);
+        music_set_ay_reg(AY_AMPA + i, channels[i].amplitude);
     }
 
-    z80_write_ay_reg(AY_NOISE, (noise_base + add_to_noise) & 31);
+    music_set_ay_reg(AY_NOISE, (noise_base + add_to_noise) & 31);
     uint16_t env = env_base + add_to_env + cur_env_slide;
-    z80_write_ay_reg(AY_ENV, env);
-    z80_write_ay_reg(AY_ENV, env >> 8);
+    music_set_ay_reg(AY_ENV, env);
+    music_set_ay_reg(AY_ENV, env >> 8);
 
     if (cur_env_delay > 0)
     {
@@ -689,29 +643,5 @@ static void pt3_loop()
         }
     }
 
-    for (int i = 13 ; i >= 0 ; --i)
-        music_send_data(i, ayregs[i]);
-}
-
-void pt3_enable()
-{
-    // Set up Timer3 for interrupt:
-    TCCR3A  = _BV(WGM31); // Mode 14 (fast PWM), OC3A off
-    TCCR3B  = _BV(WGM33) | _BV(WGM32) | _BV(CS32); // Mode 14, div 256
-    ICR3    = 0;
-    TIMSK3 |= _BV(TOIE3); // Enable Timer3 interrupt
-}
-
-void pt3_disable()
-{
-    TIMSK3 &= ~_BV(TOIE3); // Disable Timer3 interrupt
-    ay_clear();
-}
-
-ISR(TIMER3_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
-    if (!mute)
-        pt3_loop();
-    TIFR3 |= TOV3;                  // Clear Timer3 interrupt flag
-    ICR3      = 1250;        // Set interval for next interrupt
-    TCNT3     = 0;        // Restart interrupt timer
+    music_send_ay();
 }

@@ -82,7 +82,7 @@ void pause_continue()
 void pause_mute()
 {
 #ifndef EMULATED
-    fxm_mute();
+    music_mute();
     pause_continue();
 #endif
 }
@@ -117,7 +117,7 @@ void update(unsigned long delta)
     if (!ptr)
     {
         ptr = (game_instance*)menu_update(menu, delta);
-        if (ptr)
+        if (ptr && ptr->data_size <= AVAIL_SPACE)
         {
             menu_finish(menu);
             menu = NULL;
@@ -125,6 +125,10 @@ void update(unsigned long delta)
             // run game
             *(ptr->data) = memory;
             ptr->prepare();
+        }
+        else
+        {
+            ptr = NULL;
         }
     }
     else

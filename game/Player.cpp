@@ -7,7 +7,7 @@
 #include "controls.h"
 #include "music.h"
 #include "menu.h"
-#include "fxm_tunes.h"
+#include "tunes.h"
 #include "random.h"
 
 struct PlayerData
@@ -41,6 +41,7 @@ static const MenuItem tunes[] PROGMEM = {
   {"Land Of Con"/*fusion"*/, land_of_confusion},
   {"Magnetic Fi"/*elds IV"*/, magnetic_fields_iv},
   {"Magnetic Fi"/*elds V"*/, magnetic_fields_v},
+  {"Mario", mario},
   {"Master of M"/*agic"*/, master_of_magic},
   {"Monty On Th"/*e Run"*/, monty_on_the_run},
 
@@ -69,9 +70,9 @@ void Player_prepare()
 
 void Player_setup_melody(int i)
 {
-  fxm_disable();
-  fxm_init((const uint8_t*)pgm_read_pointer(&tunes[i].opaque));
-  fxm_enable();
+    tune_disable();
+    tune_init((const uint8_t*)pgm_read_pointer(&tunes[i].opaque));
+    tune_enable();
 }
 
 void Player_setup_random_melody()
@@ -86,13 +87,13 @@ static void Player_render()
 
 static void Player_update(unsigned long delta)
 {
-  const uint8_t *p = (const uint8_t *)menu_update(data->menu, delta);
-  if (p)
-  {
-    fxm_disable();
-    fxm_init(p);
-    fxm_enable();
-  }
+    const uint8_t *p = (const uint8_t *)menu_update(data->menu, delta);
+    if (p)
+    {
+        tune_disable();
+        tune_init(p);
+        tune_enable();
+    }
 }
 
 game_instance Player = {

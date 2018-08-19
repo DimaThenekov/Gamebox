@@ -5,6 +5,7 @@
 #include "binary.h"
 #include "controls.h"
 #include "music.h"
+#include "tunes.h"
 
 /* Встроенные цвета:
 
@@ -276,9 +277,8 @@ static void Mario_prepare()
       data->SetUpMapY=data->MapY;
 
 #ifndef EMULATED
-extern const uint8_t mario[] PROGMEM;
-  pt3_init(mario);
-  pt3_enable();
+    tune_init(mario);
+    tune_enable();
 #endif
 }
 
