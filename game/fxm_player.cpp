@@ -3,25 +3,6 @@
 #include <avr/pgmspace.h>
 #include "music.h"
 
-static const uint8_t *ram;
-static uint16_t ram_addr;
-
-static uint8_t peek(uint16_t addr)
-{
-    return pgm_read_byte(ram + addr - ram_addr);
-}
-
-static uint16_t peek2(uint16_t addr)
-{
-  return peek(addr) + (peek(addr + 1) << 8);
-}
-
-static uint8_t ayregs[14];
-static void z80_write_ay_reg(uint8_t reg, uint8_t val)
-{
-  ayregs[reg] = val;
-}
-
 static const uint16_t FXM_Table[] PROGMEM = {
   0xfbf, 0xedc, 0xe07, 0xd3d, 0xc7f, 0xbcc, 0xb22, 0xa82, 0x9eb, 0x95d, 0x8d6, 0x857, 0x7df, 0x76e, 0x703,
   0x69f, 0x640, 0x5e6, 0x591, 0x541, 0x4f6, 0x4ae, 0x46b, 0x42c, 0x3f0, 0x3b7, 0x382, 0x34f, 0x320, 0x2f3,
@@ -62,21 +43,21 @@ static void fxm_play_channel(struct FXMChannel *ch)
   {
     while (true)
     {
-      uint8_t v = peek(ch->address_in_pattern++);
+      uint8_t v = music_peek(ch->address_in_pattern++);
       switch (v)
       {
       case 0x80:
         // jump
-        ch->address_in_pattern = peek2(ch->address_in_pattern);
+        ch->address_in_pattern = music_peek2(ch->address_in_pattern);
         break;
       case 0x81:
         // call
         ch->stack[ch->sp++] = ch->address_in_pattern + 2;
-        ch->address_in_pattern = peek2(ch->address_in_pattern);
+        ch->address_in_pattern = music_peek2(ch->address_in_pattern);
         break;
       case 0x82:
         // loop begin
-        ch->stack[ch->sp++] = peek(ch->address_in_pattern++);
+        ch->stack[ch->sp++] = music_peek(ch->address_in_pattern++);
         ch->stack[ch->sp++] = ch->address_in_pattern;
         break;
       case 0x83:
@@ -88,25 +69,25 @@ static void fxm_play_channel(struct FXMChannel *ch)
         break;
       case 0x84:
         // set noise
-        noise = peek(ch->address_in_pattern++);
+        noise = music_peek(ch->address_in_pattern++);
         break;
       case 0x85:
         // set mixer
-        ch->mixer = peek(ch->address_in_pattern++);
+        ch->mixer = music_peek(ch->address_in_pattern++);
         break;
       case 0x86:
         // set ornament
-        ch->ornament_pointer = peek2(ch->address_in_pattern);
+        ch->ornament_pointer = music_peek2(ch->address_in_pattern);
         ch->address_in_pattern += 2;
         break;
       case 0x87:
         // set sample
-        ch->sample_pointer = peek2(ch->address_in_pattern);
+        ch->sample_pointer = music_peek2(ch->address_in_pattern);
         ch->address_in_pattern += 2;
         break;
       case 0x88:
         // transposition
-        ch->transposit = peek(ch->address_in_pattern++);
+        ch->transposit = music_peek(ch->address_in_pattern++);
         break;
       case 0x89:
         // return
@@ -128,11 +109,11 @@ static void fxm_play_channel(struct FXMChannel *ch)
         break;
       case 0x8d:
         // add to noise
-        noise = (noise + peek(ch->address_in_pattern++)) & 0x1f;
+        noise = (noise + music_peek(ch->address_in_pattern++)) & 0x1f;
         break;
       case 0x8e:
         // add transposition
-        ch->transposit += peek(ch->address_in_pattern++);
+        ch->transposit += music_peek(ch->address_in_pattern++);
         break;
       case 0x8f:
         // push transposition
@@ -156,15 +137,15 @@ static void fxm_play_channel(struct FXMChannel *ch)
           {
             ch->tone = 0;
           }
-          ch->note_skip_counter = peek(ch->address_in_pattern++);
+          ch->note_skip_counter = music_peek(ch->address_in_pattern++);
           ch->point_in_ornament = ch->ornament_pointer;
           ch->b2e = true;
           if (!ch->b1e)
           {
             ch->b1e = ch->b0e;
             ch->point_in_sample = ch->sample_pointer;
-            ch->volume = peek(ch->point_in_sample++);
-            ch->sample_tick_counter = peek(ch->point_in_sample++);
+            ch->volume = music_peek(ch->point_in_sample++);
+            ch->sample_tick_counter = music_peek(ch->point_in_sample++);
             goto ret;
           }
           else
@@ -182,16 +163,16 @@ decode_sample:
   {
     while (true)
     {
-      uint8_t s = peek(ch->point_in_sample++);
+      uint8_t s = music_peek(ch->point_in_sample++);
       if (s == 0x80)
       {
-        ch->point_in_sample = peek2(ch->point_in_sample);
+        ch->point_in_sample = music_peek2(ch->point_in_sample);
         continue;
       }
       else if (s < 0x1e)
       {
         ch->volume = s;
-        ch->sample_tick_counter = peek(ch->point_in_sample++);
+        ch->sample_tick_counter = music_peek(ch->point_in_sample++);
       }
       else
       {
@@ -207,11 +188,11 @@ decode_sample:
   {
     while (true)
     {
-      uint8_t s = peek(ch->point_in_ornament++);
+      uint8_t s = music_peek(ch->point_in_ornament++);
       switch (s)
       {
       case 0x80:
-        ch->point_in_ornament = peek2(ch->point_in_ornament);
+        ch->point_in_ornament = music_peek2(ch->point_in_ornament);
         break;
       case 0x82:
         ch->b3e = true;
@@ -237,26 +218,23 @@ decode_sample:
     }
   }
 ret:
-  z80_write_ay_reg(6, noise);
+  music_set_ay_reg(6, noise);
   ch->b2e = 0;
   
-  z80_write_ay_reg(ch->id + 8, ch->tone ? ch->volume & 0xf : 0);
-  z80_write_ay_reg(2 * ch->id, ch->tone);
-  z80_write_ay_reg(2 * ch->id + 1, ch->tone >> 8);
+  music_set_ay_reg(ch->id + 8, ch->tone ? ch->volume & 0xf : 0);
+  music_set_ay_reg(2 * ch->id, ch->tone);
+  music_set_ay_reg(2 * ch->id + 1, ch->tone >> 8);
 }
 
-void fxm_init(const uint8_t *fxm)
+bool fxm_init(const uint8_t *fxm)
 {
-  if (pgm_read_byte(fxm) != 'F'
-    || pgm_read_byte(fxm + 1) != 'X'
-    || pgm_read_byte(fxm + 2) != 'S'
-    || pgm_read_byte(fxm + 3) != 'M')
-    return;
+    if (pgm_read_byte(fxm) != 'F'
+        || pgm_read_byte(fxm + 1) != 'X'
+        || pgm_read_byte(fxm + 2) != 'S'
+        || pgm_read_byte(fxm + 3) != 'M')
+        return false;
 
-  noInterrupts();
-
-  ram = fxm + 6;
-  ram_addr = pgm_read_byte(fxm + 4) + (pgm_read_byte(fxm + 5) << 8);
+    music_set_ram(fxm + 6, pgm_read_byte(fxm + 4) + (pgm_read_byte(fxm + 5) << 8));
   
   for (int i = 0 ; i < 3 ; ++i)
   {
@@ -284,45 +262,17 @@ void fxm_init(const uint8_t *fxm)
   channels[1].address_in_pattern = pgm_read_byte(fxm + 8) + (pgm_read_byte(fxm + 9) << 8);
   channels[2].address_in_pattern = pgm_read_byte(fxm + 10) + (pgm_read_byte(fxm + 11) << 8);
 
-  // init hardware YM
-  music_setup();
+  music_clear_ay();
 
-  interrupts();
+  return true;
 }
 
 void fxm_loop()
 {
-  if (!ram)
-    return;
-
   fxm_play_channel(&channels[0]);
   fxm_play_channel(&channels[1]);
   fxm_play_channel(&channels[2]);
 
-  z80_write_ay_reg(7, (channels[2].mixer << 2) | (channels[1].mixer << 1) | channels[0].mixer);
-  for (int i = 13 ; i >= 0 ; --i)
-    music_send_data(i, ayregs[i]);
-}
-
-void fxm_enable_int()
-{
-    // Set up Timer3 for interrupt:
-    TCCR3A  = _BV(WGM31); // Mode 14 (fast PWM), OC3A off
-    TCCR3B  = _BV(WGM33) | _BV(WGM32) | _BV(CS32); // Mode 14, div 256
-    ICR3    = 0;
-    TIMSK3 |= _BV(TOIE3); // Enable Timer3 interrupt
-}
-
-ISR(TIMER3_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important
-  fxm_loop();              // Call refresh func
-  TIFR3 |= TOV3;                  // Clear Timer3 interrupt flag
-  ICR3      = 1250;        // Set interval for next interrupt
-  TCNT3     = 0;        // Restart interrupt timer
-}
-
-void fxm_disable()
-{
-  TIMSK3 &= ~_BV(TOIE3); // Disable Timer3 interrupt
-  for (int i = 13 ; i >= 0 ; --i)
-    music_send_data(i, 0);
+  music_set_ay_reg(7, (channels[2].mixer << 2) | (channels[1].mixer << 1) | channels[0].mixer);
+  music_send_ay();
 }

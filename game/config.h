@@ -93,8 +93,9 @@ unsigned long millis();
 
 // Whether to use 6-bit color palette
 // TODO: is not supported in FRAME BUFFER mode
-#define COLOR_6BIT 0
-
+#ifdef GFX_PORT2
+#define COLOR_6BIT 1
+#endif
 
 #if defined(ARDUINO_AVR_MEGA2560) || defined(EMULATED)
 // defined if frame buffer is supported

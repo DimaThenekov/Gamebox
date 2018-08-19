@@ -173,13 +173,13 @@ void AVR::decode5d5r(uint16_t opcode, AVRRegister &Rd, AVRRegister &Rr) {
 }
 
 void AVR::decode4d4r(uint16_t opcode, AVRRegister &Rd, AVRRegister &Rr) {
-    Rd = static_cast<AVRRegister>((opcode >> 4) & 0x0f);
-    Rr = static_cast<AVRRegister>(opcode & 0x0f);
+    Rd = static_cast<AVRRegister>(0x10 | ((opcode >> 4) & 0x0f));
+    Rr = static_cast<AVRRegister>(0x10 | (opcode & 0x0f));
 }
 
 void AVR::decode3d3r(uint16_t opcode, AVRRegister &Rd, AVRRegister &Rr) {
-    Rd = static_cast<AVRRegister>(16 + ((opcode >> 4) & 0x07));
-    Rr = static_cast<AVRRegister>(16 + (opcode & 0x07));
+    Rd = static_cast<AVRRegister>(0x10 | ((opcode >> 4) & 0x07));
+    Rr = static_cast<AVRRegister>(0x10 | (opcode & 0x07));
 }
 
 void AVR::decodew4d4r(uint16_t opcode, AVRRegister &Rd, AVRRegister &Rr) {
@@ -218,8 +218,11 @@ unsigned int AVR::popStack24() {
     return res;
 }
 
-AVR::AVR(Display &display) : rbank(), io(rbank, display), display(display) {
+AVR::AVR(Display &display, QObject *parent)
+    : QThread(parent), rbank(), io(rbank, display), display(display)
+{
     do_log = false;
+    exit = false;
     reset();
 }
 
@@ -276,7 +279,7 @@ unsigned int AVR::tick() {
                             decode4d4r(opcode, Rd, Rr);
                             int16_t vRd = static_cast<int8_t>(rbank.get(Rd));
                             int16_t vRr = static_cast<int8_t>(rbank.get(Rr));
-                            int16_t res = vRd * vRr;
+                            uint16_t res = vRd * vRr;
                             rbank.set(AVRRegister::R0, res & 0xff);
                             rbank.set(AVRRegister::R1, res >> 8);
                             rbank.setSREG(SREG_C, (res >> 15) & 1);
@@ -294,8 +297,8 @@ unsigned int AVR::tick() {
 
                                     decode3d3r(opcode, Rd, Rr);
                                     int16_t vRd = static_cast<int8_t>(rbank.get(Rd));
-                                    uint16_t vRr = rbank.get(Rr);
-                                    int16_t res = vRd * vRr;
+                                    int16_t vRr = rbank.get(Rr);
+                                    uint16_t res = vRd * vRr;
                                     rbank.set(AVRRegister::R0, res & 0xff);
                                     rbank.set(AVRRegister::R1, res >> 8);
                                     rbank.setSREG(SREG_C, (res >> 15) & 1);
@@ -329,7 +332,7 @@ unsigned int AVR::tick() {
                                     decode3d3r(opcode, Rd, Rr);
                                     int16_t vRd = static_cast<int8_t>(rbank.get(Rd));
                                     int16_t vRr = static_cast<int8_t>(rbank.get(Rr));
-                                    int16_t res = (vRd * vRr) << 1;
+                                    uint16_t res = (uint16_t)(vRd * vRr) << 1;
                                     rbank.set(AVRRegister::R0, res & 0xff);
                                     rbank.set(AVRRegister::R1, res >> 8);
                                     rbank.setSREG(SREG_C, (res >> 15) & 1);
@@ -346,7 +349,7 @@ unsigned int AVR::tick() {
                                     decode3d3r(opcode, Rd, Rr);
                                     int16_t vRd = static_cast<int8_t>(rbank.get(Rd));
                                     uint16_t vRr = rbank.get(Rr);
-                                    int16_t res = (vRd * vRr) << 1;
+                                    uint16_t res = (uint16_t)(vRd * vRr) << 1;
                                     rbank.set(AVRRegister::R0, res & 0xff);
                                     rbank.set(AVRRegister::R1, res >> 8);
                                     rbank.setSREG(SREG_C, (res >> 15) & 1);
@@ -1370,7 +1373,7 @@ void AVR::run() {
     clock_t start = clock();
     unsigned long long last_burst = 0;
 
-    while (true) {
+    while (!exit) {
         tick();
         if (rbank.getCycles() - last_burst >= FREQ / BURSTS_PER_SECOND) {
             clock_t end = clock();
@@ -1383,4 +1386,9 @@ void AVR::run() {
             start = clock();
         }
     }
+}
+
+void AVR::stop()
+{
+    exit = true;
 }

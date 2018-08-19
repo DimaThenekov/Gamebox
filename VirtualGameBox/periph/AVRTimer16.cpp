@@ -14,6 +14,7 @@ void AVRTimer16::reset() {
     cnt = icr = 0;
     irq = mask = 0;
     ctrl0 = ctrl1 = ctrl2 = 0;
+    ticks = 0;
 }
 
 void AVRTimer16::tick(unsigned int cycles) {

@@ -11,7 +11,7 @@
 
 class AVRGPIO {
 protected:
-    uint8_t data, direction;
+    uint8_t data = 0, direction = 0;
 
 protected:
     virtual bool getPinValue(int pin);

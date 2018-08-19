@@ -6,6 +6,7 @@
 #include "controls.h"
 #include "random.h"
 #include "menu.h"
+#include "music.h"
 
 /* List of all games */
 
@@ -13,6 +14,7 @@ extern game_instance BackspaceInvaders;
 extern game_instance Snake;
 #ifdef FRAME_BUFFER
 extern game_instance Snake2;
+extern game_instance Snail;
 #endif
 extern game_instance Flappy;
 extern game_instance SpaceShips;
@@ -20,6 +22,7 @@ extern game_instance Tester;
 extern game_instance Raycaster;
 extern game_instance BreakOut;
 extern game_instance Saper;
+extern game_instance Mario;
 #ifndef EMULATED /* for use only on real hardware */
 extern game_instance Dump;
 extern game_instance Player;
@@ -34,22 +37,25 @@ static const MenuItem main_menu[] PROGMEM = {
     { "Snake", &Snake },
 #ifdef FRAME_BUFFER
     { "Snake2", &Snake2 },
+    { "Snail", &Snail },
 #endif
     { "Flappy", &Flappy },
     { "SpaceShips", &SpaceShips },
     { "BreakOut", &BreakOut },
     { "Saper", &Saper },
+    { "Mario", &Mario},
     { "3D", &Raycaster },
-    { "Font", &Tester },
 #ifndef EMULATED /* for use only on real hardware */
+    { "Font", &Tester },
     { "EEPROM", &Dump },
     { "Music", &Player },
+    
 #endif
     /* Register your game like so:
      * 
      * { "YOUR_GAME_NAME", &YOUR_GAME_NAME },
      */
-    { NULL, NULL }
+    { "", NULL }
 };
 
 #define UP BITMASK(BUTTON_NE) | BITMASK(BUTTON_UP)
@@ -75,6 +81,14 @@ void pause_continue()
     btn_timeout = BUTTON_DELAY;
 }
 
+void pause_mute()
+{
+#ifndef EMULATED
+    music_mute();
+    pause_continue();
+#endif
+}
+
 void pause_exit()
 {
 #ifdef EMULATED
@@ -85,12 +99,14 @@ void pause_exit()
 }
 
 #define CONTINUE ((void*)0xC0)
+#define MUTE     ((void*)0x50)
 #define EXIT     ((void*)0xE)
 
 static const MenuItem pause_menu[] PROGMEM = {
     { "Continue", CONTINUE },
+    { "Mute/Unmute", MUTE },
     { "Exit game", EXIT },
-    { NULL, NULL }
+    { "", NULL }
 };
 
 void application_setup()
@@ -103,7 +119,7 @@ void update(unsigned long delta)
     if (!ptr)
     {
         ptr = (game_instance*)menu_update(menu, delta);
-        if (ptr)
+        if (ptr && ptr->data_size <= AVAIL_SPACE)
         {
             menu_finish(menu);
             menu = NULL;
@@ -111,6 +127,10 @@ void update(unsigned long delta)
             // run game
             *(ptr->data) = memory;
             ptr->prepare();
+        }
+        else
+        {
+            ptr = NULL;
         }
     }
     else
@@ -123,7 +143,7 @@ void update(unsigned long delta)
         if (!is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
         {
             is_paused = true;
-            menu = menu_setup(pause_menu, 5, 20, BLUE);
+            menu = menu_setup(pause_menu, 0, 20, BLUE);
             btn_timeout = BUTTON_DELAY;
         }
         else if (is_paused && !btn_timeout && game_is_any_button_pressed(PAUSE))
@@ -138,10 +158,14 @@ void update(unsigned long delta)
         }
         else
         {
-            void *r = menu_update(menu, delta);
+            const void *r = menu_update(menu, delta);
             if (r == CONTINUE)
             {
                 pause_continue();
+            }
+            else if (r == MUTE)
+            {
+                pause_mute();
             }
             else if (r == EXIT)
             {
