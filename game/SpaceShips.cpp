@@ -113,7 +113,7 @@ static void SpaceShips_render()
     game_draw_sprite(&GameoverSprite,0,28,WHITE);
     }
     
-    if ((data->ObjX_1 > 0) && (data->lives > 0))
+    if ((data->ObjX_1 > 0) && (data->lives > 0) && (data->game_set < 5))
     {   
         game_draw_sprite(&BallSprite,data->ObjX_1,data->ObjY_1,WHITE);
     }
@@ -121,18 +121,18 @@ static void SpaceShips_render()
 
         game_draw_digits((uint16_t)data->score,3, 48, 0, WHITE);
 
-    if ((data->lives > 0) && (data->game_set >= 1))
+    if ((data->lives > 0) && (data->game_set >= 1) && (data->game_set < 5))
     {
        game_draw_sprite(&BallSprite,data->ObjX_2,data->ObjY_2,GREEN);
     }
 
-    if ((data->lives > 0) && (data->game_set >= 2))
+    if ((data->lives > 0) && (data->game_set >= 2) && (data->game_set < 5))
     {
        game_draw_sprite(&BallSprite,data->ObjX_4,data->ObjY_4,CYAN);
     }
 
     
-    if ((data->lives > 0) && (data->game_set >= 3))
+    if ((data->lives > 0) && (data->game_set >= 3) && (data->game_set < 5))
     {
        game_draw_sprite(&BallSprite,data->ObjX_3,data->ObjY_3,RED);
     }
@@ -153,7 +153,7 @@ static void SpaceShips_render()
     game_draw_text((uint8_t*)"EXTR.", 18, 0, YELLOW);
 
     if (data->game_set == 4)
-    game_draw_text((uint8_t*)"EXT.H", 18, 0, RED);
+    game_draw_text((uint8_t*)"HELL", 18, 0, RED);
 }
 
 // Spawns
@@ -420,18 +420,15 @@ static void SpaceShips_update(unsigned long delta)
   
   //Difficity
 
-switch(data->score)
-{
-    case 0: //Easy
+    if (data->score <= 9)  //Easy
     {
       game_set_ups(25);
       data->game_set = 0;
       data->Obj_spX_1 = 1;
       data->Obj_spY_1 = 1;
-      break;
     }
     
-    case 10: //Normal
+    if (data->score <= 29 && data->score >= 10) //Normal
     {      
       game_set_ups(25);
       data->game_set = 1;
@@ -439,10 +436,9 @@ switch(data->score)
       data->Obj_spY_1 = 1;
       data->Obj_spX_2 = 1;
       data->Obj_spY_2 = 1;
-      break;
     }
     
-    case 30: //Hard
+    if (data->score <= 79 && data->score >=30) //Hard
     {
       game_set_ups(25);
       data->game_set = 2;
@@ -454,10 +450,9 @@ switch(data->score)
       data->Obj_spY_3 = 1;
       data->Obj_spX_4 = 1;
       data->Obj_spY_4 = 1;
-      break;
     }
     
-    case 80: //Extremal
+    if (data->score <= 665 && data ->score >= 80) //Extremal
     {
       game_set_ups(25);
       data->game_set = 3;
@@ -469,10 +464,9 @@ switch(data->score)
       data->Obj_spY_3 = 1;
       data->Obj_spX_4 = 2;
       data->Obj_spY_4 = 2;
-      break;
     }
     
-    case 666: //Extra Hard!!!
+    if (data->score >= 666 && data->score <= 998) //Extra Hard!!!
     {      
       game_set_ups(50);
       data->game_set = 4;
@@ -484,23 +478,20 @@ switch(data->score)
       data->Obj_spY_3 = 2;
       data->Obj_spX_4 = 3;
       data->Obj_spY_4 = 3;
-      break;
     }
-    case 999: //You Win!!!
+    if (data->score >= 999) //You Win!!!
     {      
       game_set_ups(50);
-      data->game_set = 4;
-      data->Obj_spX_1 = 3;
-      data->Obj_spY_1 = 3;
-      data->Obj_spX_2 = 2;
-      data->Obj_spY_2 = 2;
-      data->Obj_spX_3 = 2;
-      data->Obj_spY_3 = 2;
-      data->Obj_spX_4 = 3;
-      data->Obj_spY_4 = 3;
-      break;
+      data->game_set = 5;
+      data->Obj_spX_1 = 0;
+      data->Obj_spY_1 = 0;
+      data->Obj_spX_2 = 0;
+      data->Obj_spY_2 = 0;
+      data->Obj_spX_3 = 0;
+      data->Obj_spY_3 = 0;
+      data->Obj_spX_4 = 0;
+      data->Obj_spY_4 = 0;
     }
-}
 
   
   // Ship Controls
