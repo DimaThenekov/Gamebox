@@ -4,7 +4,7 @@
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
-#include "music.h"
+
 
 /* Встроенные цвета:
 
@@ -196,6 +196,53 @@ const game_sprite StoneWhite PROGMEM = {
   // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
   16, 16, 2, StoneWhite_lines
 };
+const uint8_t BlockYELLOW_lines[] PROGMEM = {
+  B00000000, B00000000,
+  B01111111, B11111110,
+  B01011111, B11111010,
+  B01111000, B00001110,
+  B01110000, B00001110,
+  B01110001, B10001110,
+  B01110001, B10001110,
+  B01111001, B00001110,
+  B01111110, B00001110,
+  B01111110, B00111110,
+  B01111111, B00111110,
+  B01111110, B01111110,
+  B01111110, B00111110,
+  B01011111, B00111010,
+  B01111111, B11111110,
+  B00000000, B00000000
+};
+
+const game_sprite BlockYELLOW PROGMEM = {
+  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
+  16, 16, 2, BlockYELLOW_lines
+};
+
+const uint8_t BlockOrange_lines[] PROGMEM = {
+  B01111111, B11111110,
+  B10000000, B00000000,
+  B10000000, B00000000,
+  B10000111, B11000000,
+  B10001100, B01100000,
+  B10001100, B01100000,
+  B10001100, B01100000,
+  B10000000, B11100000,
+  B10000001, B10000000,
+  B10000001, B10000000,
+  B10000000, B00000000,
+  B10000001, B10000000,
+  B10000001, B10000000,
+  B10000000, B00000000,
+  B10000000, B00000000,
+  B00000000, B00000000
+};
+
+const game_sprite BlockOrange PROGMEM = {
+  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
+  16, 16, 2, BlockOrange_lines
+};
 /* Функции отрисовки
 
    game_draw_pixel(x, y, color) - Красит точку (x, y) в цвет color
@@ -214,14 +261,14 @@ const game_sprite StoneWhite PROGMEM = {
 
 struct MarioData
 {
-  int MarioX = 0;
-  int MarioY = 0;
+  long int MarioX = 0;
+  long int MarioY = 0;
   int ButtonLeft = 0;
   int ButtonRight = 0;
   int ButtonDown = 0;
   int ButtonUp = 0;
-  int MapX = 0;
-  int MapY = 0;
+  long int MapX = 0;
+  long int MapY = 0;
   int SetUpMapY = 0;
   int i = 0;
   int Jamp = 0;
@@ -241,33 +288,54 @@ static void Mario_prepare()
 {game_set_ups(60);
   /* Здесь код, который будет исполнятся один раз */
   /* Здесь нужно инициализировать переменные */
-  data->MapX = 3;
+  data->MapX = 6;
   data->MapY = -64;
   data->MarioX = 30;
   data->MarioY = 32;
   //data->Map[2][2]=1;
-  int MapReal[20][8] = {
+  int MapReal[40][8] = {
     {1, 1, 1, 1, 1, 1, 1, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
     {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 1, 1, }, 
-    {0, 0, 0, 0, 0, 1, 1, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 0, }, 
-    {0, 0, 0, 0, 0, 1, 1, 1, }, 
-    {0, 0, 0, 0, 0, 0, 1, 1, }, 
     {0, 0, 0, 0, 0, 0, 0, 1, }, 
     {0, 0, 0, 0, 0, 0, 0, 1, },
     {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 1, 0, 1, }, 
-    {0, 0, 0, 0, 1, 1, 0, 1, }, 
-    {0, 0, 0, 1, 1, 1, 0, 1, }, 
-    {0, 0, 1, 1, 1, 1, 0, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 0, }, 
+    {0, 0, 0, 0, 2, 0, 0, 1, }, 
     {0, 0, 0, 0, 0, 0, 0, 1, }, 
     {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {1, 1, 1, 1, 1, 1, 1, 1, }, 
-    {1, 1, 1, 1, 1, 1, 1, 1, }};
-  for (int i = 0; i <= 19; i++) 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 1, 0, 0, 1, }, 
+    {0, 0, 0, 0, 2, 0, 0, 1, }, 
+    {0, 2, 0, 0, 1, 0, 0, 1, }, 
+    {0, 0, 0, 0, 2, 0, 0, 1, }, 
+    {0, 0, 0, 0, 1, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {1, 1, 1, 1, 1, 1, 1, 1, }
+    };
+  for (int i = 0; i <= 39; i++) 
     for (int j = 0; j <= 7; j++)
     {
       
@@ -300,12 +368,16 @@ static void Mario_render()
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
   for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
-    for (int j = 0; j <= 8; j++)
+    for (int j = 0; j <= 8; j++){
     if (data->Map[i][j] == 1){
-    game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), RED);
+     game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), RED);
     game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
+   }
+if (data->Map[i][j] == 2){
+ game_draw_sprite(&BlockYELLOW, data->MapX+(i*16), data->MapY+(j*16), YELLOW);
+ game_draw_sprite(&BlockOrange, data->MapX+(i*16), data->MapY+(j*16), (RED + 0x02));
+}
     }
-          
   /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
   /*game_draw_sprite(YourSprite, 0, 0, RED);*/
 }
@@ -340,8 +412,8 @@ static void Mario_update(unsigned long delta)
   
   if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
-  data->Jamp=8;
- Player_setup_random_melody();
+  data->Jamp=10;
+ //Player_setup_random_melody();
   }
   
    data->MarioY = data->MarioY - data->Jamp;
@@ -376,11 +448,11 @@ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data-
 
   /* Здесь можно работать с кнопками и обновлять переменные */
   if (data->MapX >16){
-    data->MapX = 3;
-  data->MarioX = 30;
-  data->MarioY = 32;
+ //   data->MapX = 3;
+//  data->MarioX = 30;
+//  data->MarioY = 32;
    }
-    if (data->MarioY <0){
+    if (data->MarioY <32){
   data->MarioY = data->MarioY+1;
  data->MapY = data->MapY + 1;
     }
@@ -389,12 +461,12 @@ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data-
   data->MarioY = data->MarioY-1;
   data->MapY = data->MapY -1;
     }
-      if (data->MarioY >128){
-  data->MapX = 3;
-  data->MarioX = 30;
-  data->MarioY = 32;
+      if (data->MarioY >129){
+ // data->MapX = 3;
+//  data->MarioX = 30;
+ // data->MarioY = 32;
     }
-    if (data->MapY <data->SetUpMapY-10){
+    if (data->MapY <data->SetUpMapY-3){
      data->MapX = 3;
   data->MarioX = 30;
   data->MarioY = 32; 
