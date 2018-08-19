@@ -88,7 +88,7 @@ static void SpaceShips_prepare()
   data->ObjY_3 =  64 * (0 + rand() % 2);
   data->ObjX_3 = 64;
   data->ObjX_4 = (data->ShipX - 5) + rand() % 22;
-  data->ObjY_4 = 64 * (0 + rand() % 2);
+  data->ObjY_4 = 64;
   data->Obj_spX_1 = 1;
   data->Obj_spY_1 = 1;
   data->Obj_spX_2 = 1;
@@ -117,9 +117,9 @@ static void SpaceShips_render()
     {   
         game_draw_sprite(&BallSprite,data->ObjX_1,data->ObjY_1,WHITE);
     }
-        game_draw_digits((uint16_t)data->kek_2,2, 1, 0, WHITE);
+        game_draw_digits((uint16_t)data->lives,2, 1, 0, WHITE);
 
-        game_draw_digits((uint16_t)data->ObjY_4,4, 48, 0, WHITE);
+        game_draw_digits((uint16_t)data->score,3, 48, 0, WHITE);
 
     if ((data->lives > 0) && (data->game_set >= 1))
     {
@@ -345,47 +345,54 @@ if (data->ObjX_3 <= 3)
 void CoolSpawn_4()
 {
 
-if (data->ObjY_4 == 64)
-         {
-          data->kek_2 = 1;
-         }
-         else
-         if (data->ObjY_4 == 0)
-         {
-          data->kek_2 = 0;
-         }
-  
 if (data->lives > 0)
 {
   
-  if ((data->ObjY_4 >= 0) && (data->kek_2 == 0))
+  if (data->ObjY_4 >= -2)
           {
-           data->ObjY_4 = data->ObjY_4 + data->Obj_spY_4;
+           data->ObjY_4 = data->ObjY_4 - data->Obj_spY_4;
+          }
+  
+  if (data->ObjY_4 <= -3)
+      {
+         if (data->ShipX <= 17)
+          {
+          data->ObjY_4 = 64;
+            data->ObjX_4 = 0 + rand() % 17;
+              ++data->score;
           }
           else
-  if((data->ObjY_4 < 65) && (data->kek_2 == 1))
-  {
-    data->ObjY_4 = data->ObjY_4 - data->Obj_spY_4;
-  }
-  
-  if (data->ObjY_4 < 0)
-      {
-         data->ObjY_4 =  64 * (0 + rand() % 2);
-          data->ObjX_4 = (data->ShipX - 5) + rand() % 22;
-           ++data->score;
-      }
-      else
-  if (data->ObjY_4 > 64)
-      {
-        data->ObjY_4 =  64 * (0 + rand() % 2);
-         data->ObjX_4 = (data->ShipX - 5) + rand() % 22;
-         ++data->score;
+              if (data ->ShipY >= 48)
+              {
+              data->ObjY_4 = 64;
+                data->ObjX_4 = (data->ShipX - 5) + rand() % 17;
+                  ++data->score;
+              }
+              else
+            {
+            data->ObjY_4 = 64;
+              data->ObjX_4 = (data->ShipX - 5) + rand() % 22;
+                ++data->score;
+            }
       }
   if ((data->ObjY_4 >= (data->ShipY - 2)) && ((data->ObjY_4 + 3) <= (data->ShipY + 10)) && ((data->ObjX_4 >= data->ShipX - 2) && (data->ObjX_4 + 3) <= (data->ShipX + 14)))
       {
-           data->ObjY_3 =  64 * (0 + rand() % 2);
-           data->ObjX_3 = (data->ShipX - 5) + rand() % 22;
-           --data->lives;
+        if (data->ShipX <= 17)
+          {
+          data->ObjY_4 = 64;
+            data->ObjX_4 = 0 + rand() % 17;
+          }
+          else
+              if (data ->ShipY >= 48)
+              {
+              data->ObjY_4 = 64;
+                data->ObjX_4 = (data->ShipX - 5) + rand() % 17;
+              }
+              else
+            {
+            data->ObjY_4 = 64;
+              data->ObjX_4 = (data->ShipX - 5) + rand() % 22;
+            }
       }
 }
 }
@@ -407,7 +414,7 @@ static void SpaceShips_update(unsigned long delta)
     data->ObjY_3 =  64 * (0 + rand() % 1);
     data->ObjX_3 = 64;
     data->ObjX_4 = (data->ShipX - 5) + rand() % 22;
-    data->ObjY_4 = 64 * (0 + rand() % 1);
+    data->ObjY_4 = 64;
   }
   
   //Difficity
@@ -434,7 +441,7 @@ switch(data->score)
       break;
     }
     
-    case 1: //Hard
+    case 30: //Hard
     {
       game_set_ups(25);
       data->game_set = 2;
@@ -444,10 +451,12 @@ switch(data->score)
       data->Obj_spY_2 = 1;
       data->Obj_spX_3 = 1;
       data->Obj_spY_3 = 1;
+      data->Obj_spX_4 = 1;
+      data->Obj_spY_4 = 1;
       break;
     }
     
-    case 100: //Extremal
+    case 80: //Extremal
     {
       game_set_ups(25);
       data->game_set = 3;
@@ -457,6 +466,8 @@ switch(data->score)
       data->Obj_spY_2 = 1;
       data->Obj_spX_3 = 1;
       data->Obj_spY_3 = 1;
+      data->Obj_spX_4 = 2;
+      data->Obj_spY_4 = 2;
       break;
     }
     
@@ -470,6 +481,22 @@ switch(data->score)
       data->Obj_spY_2 = 2;
       data->Obj_spX_3 = 2;
       data->Obj_spY_3 = 2;
+      data->Obj_spX_4 = 3;
+      data->Obj_spY_4 = 3;
+      break;
+    }
+    case 999: //You Win!!!
+    {      
+      game_set_ups(50);
+      data->game_set = 4;
+      data->Obj_spX_1 = 3;
+      data->Obj_spY_1 = 3;
+      data->Obj_spX_2 = 2;
+      data->Obj_spY_2 = 2;
+      data->Obj_spX_3 = 2;
+      data->Obj_spY_3 = 2;
+      data->Obj_spX_4 = 3;
+      data->Obj_spY_4 = 3;
       break;
     }
 }
