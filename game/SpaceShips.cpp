@@ -234,14 +234,14 @@ if (data->ObjX_2 <= 2)
   
    if (data->ShipY <= 17)
           {
-            data->ObjY_2 = 12 + rand() % 18;
+            data->ObjY_2 = 16 + rand() % 22;
             data->ObjX_2 = 65;
           ++data->score;
           }
           else
               if (data ->ShipY >= 48)
               {
-                data->ObjY_2 = 44 + rand() % 17;
+                data->ObjY_2 = 40 + rand() % 21;
                 data->ObjX_2 = 65;
               ++data->score;
               }
@@ -393,6 +393,7 @@ if (data->lives > 0)
             data->ObjY_4 = 64;
               data->ObjX_4 = (data->ShipX - 5) + rand() % 22;
             }
+            --data->lives;
       }
 }
 }
