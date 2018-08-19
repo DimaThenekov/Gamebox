@@ -274,7 +274,8 @@ struct MarioData
   int Jamp = 0;
   int j = 0;
   
-  int Map[100][10];
+  int Map[40][10];
+  int MONEY[100][2];
   //int Map[5][5] = {{ 1, 1, 1, 1, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 }};
   /* Объявляйте ваши переменные здесь */
   /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
@@ -352,7 +353,20 @@ static void Mario_render()
   /* Здесь код, который будет вывзваться для отрисовки кадра */
   /* Он не должен менять состояние игры, для этого есть функция update */
   
-
+  for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
+    for (int j = 0; j <= 8; j++){
+          if (data->Map[i][j] == 0){
+     game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLUE);
+   }
+    if (data->Map[i][j] == 1){
+     game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), RED);
+    game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
+   }
+if (data->Map[i][j] == 2){
+ game_draw_sprite(&BlockYELLOW, data->MapX+(i*16), data->MapY+(j*16), YELLOW);
+ game_draw_sprite(&BlockOrange, data->MapX+(i*16), data->MapY+(j*16), (RED + 0x02));
+}
+    }
 
 
   if (data->MarioY>0){
@@ -367,17 +381,7 @@ static void Mario_render()
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
-  for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
-    for (int j = 0; j <= 8; j++){
-    if (data->Map[i][j] == 1){
-     game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), RED);
-    game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
-   }
-if (data->Map[i][j] == 2){
- game_draw_sprite(&BlockYELLOW, data->MapX+(i*16), data->MapY+(j*16), YELLOW);
- game_draw_sprite(&BlockOrange, data->MapX+(i*16), data->MapY+(j*16), (RED + 0x02));
-}
-    }
+ 
   /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
   /*game_draw_sprite(YourSprite, 0, 0, RED);*/
 }
@@ -452,6 +456,16 @@ if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data-
 //  data->MarioX = 30;
 //  data->MarioY = 32;
    }
+
+   while (data->MarioY <0){
+  data->MarioY = data->MarioY+1;
+ data->MapY = data->MapY + 1;
+    }
+
+   while (data->MarioY >64-16){
+  data->MarioY = data->MarioY-1;
+  data->MapY = data->MapY -1;
+    }
     if (data->MarioY <32){
   data->MarioY = data->MarioY+1;
  data->MapY = data->MapY + 1;
