@@ -216,6 +216,8 @@ struct GhostbusterData
    int8_t BeginOfJump, EndOfJump;
    bool isJump;
    bool kek;
+   int8_t snposy[10];
+   bool lol[10];
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
@@ -225,15 +227,19 @@ static void Ghostbuster_prepare()
 {
     /* Здесь код, который будет исполнятся один раз */
     /* Здесь нужно инициализировать переменные */
+    for(int i = 0; i<2; i++)
+      data->lol[i] = true;
     data->flag = true;
     data->isShoot = false;
     data->ShootCounter = 0;
     data->sposy[0] = 50;
-    data->sposy[1] = 100;
+    data->sposy[1] = 144;
+    data->snposy[0] = 50;
+    data->snposy[1] = 144;
+    data->syposy[0] = 50;
+    data->syposy[1] = 20;
     data->pposy = 10;
     data->pyposy = 47;
-    for(int i = 0; i < 2; i++)
-      data->syposy[i] = 50;
     data->BlockPosy[0] = 36;
     data->BlockYPosy[0] = 56;
     data->BlockPosy[1] = 61;
@@ -333,10 +339,19 @@ static void Ghostbuster_update(unsigned long delta)
       data->loli = !data->loli;
       for(int i = 0; i < 2; i++) {
           if( data->sposy[i] != data->pposy && data->loli )
-            data->sposy[i]+=data->sposy[i]>data->pposy?-1:1;
+              if(data->lol[i]) {
+                if(data->sposy[i] <= data->snposy[i] - 30)
+                    data->lol[i] = false;
+                data->sposy[i]--;
+              }
+              else {
+                if(data->sposy[i] == data->snposy[i])
+                  data->lol[i] = true;
+                data->sposy[i]++;
+              }
 
             
-          if( ((data->sposy[i] == data->pposy) || (data->pposy + 13 == data->sposy[i])) && (data->syposy[i] != 100) )
+          if( ((data->sposy[i] == data->pposy) || (data->pposy + 13 == data->sposy[i])) && (data->syposy[i] != 100) && data->pyposy+7 >= data->syposy[i] && data->pyposy+7 <= data->syposy[i]+12)
             data->gameover = true;
       }
       
@@ -350,20 +365,25 @@ static void Ghostbuster_update(unsigned long delta)
       if(data->isCanWalk) {
         
           if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
-            for(int i = 0; i < 2; i++)
+            for(int i = 0; i < 2; i++) {
               data->sposy[i]++;
+              data->snposy[i]++;
+            }
             for(int i = 0; i < 15; i++)
               data->BlockPosy[i]++;
+              
           }
           else if ( (game_is_button_pressed(BUTTON_RIGHT)) && (!data->isShoot) ) {
-            for(int i = 0; i < 2; i++)
+            for(int i = 0; i < 2; i++) {
               data->sposy[i]--;
+              data->snposy[i]--;
+            }
             for(int i = 0; i < 15; i++)
             data->BlockPosy[i]--;
           }
       }
 
-      if( (game_is_button_pressed(BUTTON_A)) && (data->pyposy == 47) )
+      if( (game_is_button_pressed(BUTTON_A)) && (data->pyposy == data->BeginOfJump) )
         data->isShoot = true;
       else
         data->isShoot = false;
