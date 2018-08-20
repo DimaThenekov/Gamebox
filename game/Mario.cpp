@@ -324,6 +324,30 @@ const game_sprite BlockOrange PROGMEM = {
   // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
   16, 16, 2, BlockOrange_lines
 };
+//MONEY
+const uint8_t Money_lines[] PROGMEM = {
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000001, B10000000,
+  B00000011, B11000000,
+  B00000011, B11000000,
+  B00000011, B11000000,
+  B00000001, B10000000
+};
+
+const game_sprite Money PROGMEM = {
+  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
+  16, 16, 2, Money_lines
+};
 /* Функции отрисовки
 
    game_draw_pixel(x, y, color) - Красит точку (x, y) в цвет color
@@ -356,7 +380,7 @@ struct MarioData
   int j;
   int i1;
   //int Map[40][8];
-  int MONEY[10][2];
+  int MONEY[20][2];
   int flag;
   //int Map[5][5] = {{ 1, 1, 1, 1, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 }};
   /* Объявляйте ваши переменные здесь */
@@ -384,6 +408,7 @@ static void Mario_prepare()
 
 static void Mario_render()
 {
+  
   /* Здесь код, который будет вывзваться для отрисовки кадра */
   /* Он не должен менять состояние игры, для этого есть функция update */
   //pgm_read_byte(&Map[][])
@@ -402,7 +427,15 @@ if (pgm_read_byte(&Map[i][j]) == 2){
 }
     }
 
-
+for(data->i=0;data->i<19;data->i++){
+if (0-data->MapX<data->MONEY[data->i][0]*16)
+if (0-data->MapX+(64)>data->MONEY[data->i][0]*16)
+ game_draw_sprite(&Money , data->MapX+(data->MONEY[data->i][0]*16),data->MapY+(data->MONEY[data->i][1]*16)-16, YELLOW);
+//Money
+//game_draw_text((uint8_t*)"lol", data->MapX+(data->MONEY[data->i][0]*16), data->MapY+(data->MONEY[data->i][1]*16)-16, RED);
+  
+  //data->i1=data->i1+1;
+  }
   if (data->MarioY>0){
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
   game_draw_sprite(&MarioYellow, data->MarioX, data->MarioY, YELLOW);
@@ -412,17 +445,13 @@ if (pgm_read_byte(&Map[i][j]) == 2){
   game_draw_sprite(&MarioYellow, data->MarioX, 0, YELLOW);
   game_draw_sprite(&MarioGreen , data->MarioX, 0, GREEN); 
     }
+  
+
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
     
 
-for(data->i=0;data->i<9;data->i++){
-
-game_draw_text((uint8_t*)"lol", data->MapX+(data->MONEY[data->i][0]*16), data->MapY+(data->MONEY[data->i][1]*16)-16, RED);
-  
-  //data->i1=data->i1+1;
-  }
   
   /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
   /*game_draw_sprite(YourSprite, 0, 0, RED);*/
@@ -431,7 +460,7 @@ game_draw_text((uint8_t*)"lol", data->MapX+(data->MONEY[data->i][0]*16), data->M
 static void Mario_update(unsigned long delta)
 {
 data->i1=0;
-while(((data->MONEY[data->i1][0]!=0)||(data->MONEY[data->i1][1]!=0))&&(data->i1<9)){
+while(((data->MONEY[data->i1][0]!=0)||(data->MONEY[data->i1][1]!=0))&&(data->i1<19)){
   data->i1=data->i1+1;
   }
   
@@ -473,7 +502,7 @@ if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   }
  if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+3) / 16 )][((data->MarioY-1-data->MapY)/16)])==2)&&(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+9) / 16 )][((data->MarioY-1-data->MapY)/16)])==2)){
   data->flag=0;
-  for(data->i=0;data->i<9;data->i++){
+  for(data->i=0;data->i<19;data->i++){
     if (data->MONEY[data->i][0]==((0-data->MapX)+data->MarioX+4)/16){
       if (data->MONEY[data->i][1]==(data->MarioY-15-data->MapY)/16){
       data->flag=1;
