@@ -239,7 +239,88 @@ const uint8_t BlockOrange_lines[] PROGMEM = {
   B10000000, B00000000,
   B00000000, B00000000
 };
-
+static const uint8_t Map[80][8] PROGMEM = {
+    {1, 1, 1, 1, 1, 1, 1, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 2, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 1, 0, 0, 1, }, 
+    {0, 0, 0, 0, 2, 0, 0, 1, }, 
+    {0, 2, 0, 0, 1, 0, 0, 1, }, 
+    {0, 0, 0, 0, 2, 0, 0, 1, }, 
+    {0, 0, 0, 0, 1, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 0, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 1, 0, 0, 1, },
+    {0, 0, 0, 0, 2, 0, 0, 1, }, 
+    {0, 0, 0, 0, 1, 0, 0, 1, }, 
+    {0, 1, 0, 0, 0, 0, 0, 1, }, 
+    {0, 1, 0, 0, 0, 0, 0, 1, }, 
+    {0, 1, 0, 0, 0, 0, 0, 0, },
+    {0, 1, 0, 0, 0, 0, 0, 0, }, 
+    {0, 1, 0, 0, 0, 0, 0, 0, }, 
+    {0, 1, 0, 0, 0, 0, 0, 0, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 1, 0, 0, 0, 0, 0, 1, }, 
+    {0, 1, 0, 0, 0, 0, 0, 1, }, 
+    {0, 1, 0, 0, 0, 0, 0, 1, }, 
+    {0, 2, 0, 0, 1, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 1, 0, 0, 1, }, 
+    {0, 0, 0, 0, 1, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 2, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 2, 0, 0, 2, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 2, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 1, 0, 0, 1, },
+    {0, 1, 0, 0, 0, 0, 0, 1, }, 
+    {0, 1, 0, 0, 0, 0, 0, 1, }, 
+    {0, 1, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 2, 0, 0, 1, 0, 0, 0, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 1, 1, }, 
+    {0, 0, 0, 0, 0, 1, 1, 1, }, 
+    {0, 0, 0, 0, 1, 1, 1, 1, },
+    {0, 0, 0, 1, 1, 1, 1, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 0, }, 
+    {0, 0, 0, 1, 1, 1, 1, 1, }, 
+    {0, 0, 0, 0, 1, 1, 1, 1, }, 
+    {0, 0, 0, 0, 0, 1, 1, 1, },
+    {0, 0, 0, 0, 0, 0, 1, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, },
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {0, 0, 0, 0, 0, 0, 0, 1, }, 
+    {1, 1, 1, 1, 1, 1, 1, 1, }
+    };
 const game_sprite BlockOrange PROGMEM = {
   // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
   16, 16, 2, BlockOrange_lines
@@ -262,21 +343,22 @@ const game_sprite BlockOrange PROGMEM = {
 
 struct MarioData
 {
-  long int MarioX = 0;
-  long int MarioY = 0;
-  int ButtonLeft = 0;
-  int ButtonRight = 0;
-  int ButtonDown = 0;
-  int ButtonUp = 0;
-  long int MapX = 0;
-  long int MapY = 0;
-  int SetUpMapY = 0;
-  int i = 0;
-  int Jamp = 0;
-  int j = 0;
-  
-  int Map[40][10];
-  int MONEY[100][2];
+  int MarioX;
+  int MarioY;
+  int ButtonLeft;
+  int ButtonRight;
+  int ButtonDown;
+  int ButtonUp;
+  int MapX;
+  int MapY;
+  int SetUpMapY;
+  int i;
+  int Jamp;
+  int j;
+  int i1;
+  //int Map[40][8];
+  int MONEY[10][2];
+  int flag;
   //int Map[5][5] = {{ 1, 1, 1, 1, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 }};
   /* Объявляйте ваши переменные здесь */
   /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
@@ -284,6 +366,7 @@ struct MarioData
 static MarioData* data; /* Эта переменная - указатель на структуру, которая содержит ваши переменные */
 //int Map[5][4] = {{ 1, 1, 1, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 1, 1, 1, 1 }};
 /*Карта не может работать через data->*/
+
 
 static void Mario_prepare()
 {game_set_ups(60);
@@ -294,55 +377,7 @@ static void Mario_prepare()
   data->MarioX = 30;
   data->MarioY = 32;
   //data->Map[2][2]=1;
-  int MapReal[40][8] = {
-    {1, 1, 1, 1, 1, 1, 1, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 2, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, },
-    {0, 0, 0, 0, 1, 0, 0, 1, }, 
-    {0, 0, 0, 0, 2, 0, 0, 1, }, 
-    {0, 2, 0, 0, 1, 0, 0, 1, }, 
-    {0, 0, 0, 0, 2, 0, 0, 1, }, 
-    {0, 0, 0, 0, 1, 0, 0, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, },
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {0, 0, 0, 0, 0, 0, 0, 1, }, 
-    {1, 1, 1, 1, 1, 1, 1, 1, }
-    };
-  for (int i = 0; i <= 39; i++) 
-    for (int j = 0; j <= 7; j++)
-    {
-      
-      data->Map[i][j]=MapReal[i][j];
-      
-      }
+
       data->SetUpMapY=data->MapY;
 
 #ifndef EMULATED
@@ -357,17 +392,17 @@ static void Mario_render()
 {
   /* Здесь код, который будет вывзваться для отрисовки кадра */
   /* Он не должен менять состояние игры, для этого есть функция update */
-  
+  //pgm_read_byte(&Map[][])
   for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
     for (int j = 0; j <= 8; j++){
-          if (data->Map[i][j] == 0){
+          if (pgm_read_byte(&Map[i][j]) == 0){
      game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLUE);
    }
-    if (data->Map[i][j] == 1){
-     game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), RED);
+    if (pgm_read_byte(&Map[i][j]) == 1){
+     game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), 0x31/*(RED + 0x02 )*/);
     game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
    }
-if (data->Map[i][j] == 2){
+if (pgm_read_byte(&Map[i][j]) == 2){
  game_draw_sprite(&BlockYELLOW, data->MapX+(i*16), data->MapY+(j*16), YELLOW);
  game_draw_sprite(&BlockOrange, data->MapX+(i*16), data->MapY+(j*16), (RED + 0x02));
 }
@@ -386,13 +421,26 @@ if (data->Map[i][j] == 2){
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
- 
+    
+
+for(data->i=0;data->i<9;data->i++){
+
+game_draw_text((uint8_t*)"lol", data->MapX+(data->MONEY[data->i][0]*16), data->MapY+(data->MONEY[data->i][1]*16)-16, RED);
+  
+  //data->i1=data->i1+1;
+  }
+  
   /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
   /*game_draw_sprite(YourSprite, 0, 0, RED);*/
 }
 
 static void Mario_update(unsigned long delta)
 {
+data->i1=0;
+while(((data->MONEY[data->i1][0]!=0)||(data->MONEY[data->i1][1]!=0))&&(data->i1<9)){
+  data->i1=data->i1+1;
+  }
+  
   if (game_is_button_pressed (BUTTON_LEFT)) {
     data->ButtonLeft = 1;
   } else {
@@ -415,21 +463,35 @@ static void Mario_update(unsigned long delta)
     data->ButtonDown = 0;
   }
   data->Jamp= data->Jamp - ((delta / 10) );
-  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)){
+  if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)){
   data->Jamp=0;
   }
   
-  if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)]!=0))
+  if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   data->Jamp=10;
   }
   
    data->MarioY = data->MarioY - data->Jamp;
- if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY-data->MapY)/16)]!=0)){
+ if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY-data->MapY)/16)])!=0)){
   data->MarioY = data->MarioY + data->Jamp;
   }
-
-while ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15-data->MapY)/16)]!=0)){
+ if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+3) / 16 )][((data->MarioY-1-data->MapY)/16)])==2)&&(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+9) / 16 )][((data->MarioY-1-data->MapY)/16)])==2)){
+  data->flag=0;
+  for(data->i=0;data->i<9;data->i++){
+    if (data->MONEY[data->i][0]==((0-data->MapX)+data->MarioX+4)/16){
+      if (data->MONEY[data->i][1]==(data->MarioY-15-data->MapY)/16){
+      data->flag=1;
+      
+      }
+    }
+  }
+    if (data->flag==0){
+  data->MONEY[data->i1][0]=((0-data->MapX)+data->MarioX+4)/16;
+  data->MONEY[data->i1][1]=(data->MarioY-15-data->MapY)/16;
+    }
+  }
+while ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15-data->MapY)/16)])!=0)){
   data->MarioY = data->MarioY -1;
   }
 
@@ -440,11 +502,11 @@ while ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-da
   data->MapX = data->MapX + ((delta / 10) * data->ButtonLeft);
   data->MapX = data->MapX - ((delta / 10) * data->ButtonRight);
   if ((((0-data->MapX)+data->MarioX) / 16 )>-1)
-if ((data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY-data->MapY)/16)]!=0)){
+if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+15-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY-data->MapY)/16)])!=0)){
   data->MapX = data->MapX - ((delta / 10) * data->ButtonLeft);
 }
 if ((((0-data->MapX)+data->MarioX+11) / 16 )>-1)
-if ((data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data->MapY)/16)]!=0)||(data->Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY-data->MapY)/16)]!=0)){
+if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+15-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY-data->MapY)/16)])!=0)){
   data->MapX = data->MapX + ((delta / 10) * data->ButtonRight);
 }
 //data->MarioY = data->MarioY - ((delta / 10) * data->ButtonUp);
