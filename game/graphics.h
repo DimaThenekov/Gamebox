@@ -3,12 +3,9 @@
 
 // COLORS
 // 
-// are defined as 6-bit integer: RRGGBB
+// are defined as 6-bit integer: xBGRxbgr
 
 #define BLACK 0
-/*#define BLUE 3
-#define GREEN 12
-#define RED 48*/
 #define BLUE 0x44
 #define GREEN 0x22
 #define RED 0x11
@@ -18,12 +15,16 @@
 #define WHITE (RED + GREEN + BLUE)
 /* for 6-bit colored games */
 /* brigthness of the msb is higher */
-#define BLUE_DARK 4
 #define RED_DARK 1
 #define RED_MIDDLE 0x10
+#define GREEN_DARK 2
+#define GREEN_MIDDLE 0x20
+#define BLUE_DARK 4
+#define BLUE_MIDDLE 0x40
 #define YELLOW_DARK 3
 #define YELLOW_MIDDLE 0x30
 #define WHITE_DARK 0x7
+#define WHITE_MIDDLE 0x70
 #define TRANSPARENT 0xff
 
 // SPRITE
@@ -67,6 +68,7 @@ void game_draw_digits(uint16_t num, int8_t len, int8_t x, int8_t y, uint8_t colo
 void game_draw_color_sprite(const struct game_color_sprite *s, int8_t x, int8_t y);
 /* Clear screen in frame buffer mode */
 void game_clear_screen();
+void game_set_background(uint8_t color);
 
 bool game_is_drawing_lines(int8_t y, int8_t height);
 
