@@ -32,18 +32,34 @@ const game_sprite BallSprite PROGMEM = {
 };
 
 const uint8_t GameoverSprite_lines[] PROGMEM = {
-    B00001111, B10000000,B00000000,B00000000,B00000011,B11100000,B00000000,B00000000,
-    B00011000, B10000000,B00000000,B00000000,B00000110,B00110000,B00000000,B00000000,
-    B00010000, B00001110,B00011011,B00001100,B00000100,B00010100,B00100110,B00101100,
-    B00010000, B00000001,B00100100,B10010010,B00000100,B00010110,B01101001,B00110000,
-    B00010011, B10001111,B00100100,B10011110,B00000100,B00010010,B01001111,B00100000,
-    B00010000, B10010001,B00100100,B10010000,B00000100,B00010010,B01001000,B00100000,
-    B00011000, B10010001,B00100100,B10010010,B00000110,B00110011,B11001001,B00100000,
-    B00001111, B10001111,B00100100,B10001100,B00000011,B11100001,B10000110,B00100000,
+    B00001111,B10000000,B00000000,B00000000,B00000011,B11100000,B00000000,B00000000,
+    B00011000,B10000000,B00000000,B00000000,B00000110,B00110000,B00000000,B00000000,
+    B00010000,B00001110,B00011011,B00001100,B00000100,B00010100,B00100110,B00101100,
+    B00010000,B00000001,B00100100,B10010010,B00000100,B00010110,B01101001,B00110000,
+    B00010011,B10001111,B00100100,B10011110,B00000100,B00010010,B01001111,B00100000,
+    B00010000,B10010001,B00100100,B10010000,B00000100,B00010010,B01001000,B00100000,
+    B00011000,B10010001,B00100100,B10010010,B00000110,B00110011,B11001001,B00100000,
+    B00001111,B10001111,B00100100,B10001100,B00000011,B11100001,B10000110,B00100000,
 };
 
 const game_sprite GameoverSprite PROGMEM = {
     64, 8, 8, GameoverSprite_lines
+};
+
+const uint8_t YouwinSprite_lines[] PROGMEM = {
+    B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,
+    B00000000,B00100010,B00000000,B00001000,B10001010,B00000001,B00100100,B00000000,
+    B00000000,B00100010,B00000000,B00000100,B10010000,B00000001,B00100100,B00000000,
+    B00000000,B00010100,B11100100,B10000101,B11010010,B01110001,B00100100,B00000000,
+    B00000000,B00001001,B00010100,B10000101,B01010010,B01001001,B00100100,B00000000,
+    B00000000,B00001001,B00010100,B10000011,B01100010,B01001001,B00100100,B00000000,
+    B00000000,B00001001,B00010100,B10000010,B00100010,B01001000,B00000000,B00000000,
+    B00000000,B00001000,B11100111,B10000010,B00100010,B01001001,B00100100,B00000000,
+    B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,
+};
+
+const game_sprite YouwinSprite PROGMEM = {
+    64, 8, 8, YouwinSprite_lines
 };
 
 struct SpaceShipsData
@@ -72,7 +88,8 @@ struct SpaceShipsData
     Obj_spX_3,
     Obj_spY_3,
     Obj_spX_4,
-    Obj_spY_4;
+    Obj_spY_4,
+    hiscore;
 };
 static SpaceShipsData* data;
 
@@ -100,6 +117,8 @@ static void SpaceShips_prepare()
   data->lives = 3;
   data->score = 0;
   data->game_set = 0;
+  data->hiscore = 0;
+  game_load(&data->hiscore, sizeof(data->hiscore));
 }
 
 static void SpaceShips_render()
@@ -119,7 +138,9 @@ static void SpaceShips_render()
     }
         game_draw_digits((uint16_t)data->lives,2, 1, 0, WHITE);
 
-        game_draw_digits((uint16_t)data->score,3, 48, 0, WHITE);
+        game_draw_digits((uint16_t)data->score,3, 52, 0, WHITE);
+
+        game_draw_digits((uint16_t)data->hiscore,3, 34, 0, PURPLE);
 
     if ((data->lives > 0) && (data->game_set >= 1) && (data->game_set < 5))
     {
@@ -136,24 +157,31 @@ static void SpaceShips_render()
     {
        game_draw_sprite(&BallSprite,data->ObjX_3,data->ObjY_3,RED);
     }
+    if (data->game_set == 5)
+    {
+       game_draw_sprite(&YouwinSprite,0,28,WHITE);
+    }
 
     
     //Text
 
     if (data->game_set == 0)
-    game_draw_text((uint8_t*)"EASY", 18, 0, CYAN);
+    game_draw_text((uint8_t*)"EASY", 10, 0, CYAN);
     
     if (data->game_set == 1)
-    game_draw_text((uint8_t*)"NORM.", 18, 0, BLUE);
+    game_draw_text((uint8_t*)"NORM", 10, 0, BLUE);
 
     if (data->game_set == 2)
-    game_draw_text((uint8_t*)"HARD", 18, 0, GREEN);
+    game_draw_text((uint8_t*)"HARD", 10, 0, GREEN);
 
     if (data->game_set == 3)
-    game_draw_text((uint8_t*)"EXTR.", 18, 0, YELLOW);
+    game_draw_text((uint8_t*)"EXTR", 10, 0, YELLOW);
 
     if (data->game_set == 4)
-    game_draw_text((uint8_t*)"HELL", 18, 0, RED);
+    game_draw_text((uint8_t*)"HELL", 10, 0, RED);
+
+    if (data->game_set == 5)
+    game_draw_text((uint8_t*)"WIN", 10, 0, WHITE);
 }
 
 // Spawns
@@ -417,10 +445,16 @@ static void SpaceShips_update(unsigned long delta)
     data->ObjX_4 = (data->ShipX - 5) + rand() % 22;
     data->ObjY_4 = 64;
   }
+
+if (data->score > data->hiscore)
+            {
+                data->hiscore = data->score;
+                game_save(&data->hiscore, sizeof(data->hiscore));
+            }
   
   //Difficity
 
-    if (data->score <= 9)  //Easy
+    if (data->score <= 5)  //Easy
     {
       game_set_ups(25);
       data->game_set = 0;
@@ -428,7 +462,7 @@ static void SpaceShips_update(unsigned long delta)
       data->Obj_spY_1 = 1;
     }
     
-    if (data->score <= 29 && data->score >= 10) //Normal
+    if (data->score <= 29 && data->score >= 6) //Normal
     {      
       game_set_ups(25);
       data->game_set = 1;
