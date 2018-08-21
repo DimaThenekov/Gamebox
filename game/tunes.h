@@ -8,6 +8,7 @@ extern const uint8_t atomix[] PROGMEM;
 extern const uint8_t axel_f_theme[] PROGMEM;
 extern const uint8_t aztec[] PROGMEM;
 extern const uint8_t belegost[] PROGMEM;
+extern const uint8_t cantina[] PROGMEM;
 extern const uint8_t chimera[] PROGMEM;
 extern const uint8_t commando[] PROGMEM;
 extern const uint8_t crazy_comets_and_penetrator[] PROGMEM;

@@ -22,6 +22,7 @@ static const MenuItem tunes[] PROGMEM = {
   {"Axel F. The"/*me"*/, axel_f_theme},
   {"Aztec", aztec},
   {"Belegost", belegost},
+  {"Cantina", cantina},
   {"Chimera", chimera},
   {"Commando", commando},
   {"Crazy Comet"/*s and Penetrator"*/, crazy_comets_and_penetrator},
