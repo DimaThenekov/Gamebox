@@ -449,7 +449,8 @@ static void SpaceShips_update(unsigned long delta)
 if (data->score > data->hiscore)
             {
                 data->hiscore = data->score;
-                game_save(&data->hiscore, sizeof(data->hiscore));
+                if (data->lives <= 0)
+                    game_save(&data->hiscore, sizeof(data->hiscore));
             }
   
   //Difficity
@@ -515,6 +516,8 @@ if (data->score > data->hiscore)
     }
     if (data->score >= 999) //You Win!!!
     {      
+      if (data->game_set != 5)
+          game_save(&data->hiscore, sizeof(data->hiscore));
       game_set_ups(50);
       data->game_set = 5;
       data->Obj_spX_1 = 0;
