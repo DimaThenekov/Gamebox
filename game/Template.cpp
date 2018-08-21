@@ -73,8 +73,8 @@ const uint8_t YourSprite_lines[] PROGMEM = {
 };
 
 const game_sprite YourSprite PROGMEM = {
-    // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    13, 10, 2, YourSprite_lines
+    // ШИРИНА, ВЫСОТА, ДАННЫЕ
+    13, 10, YourSprite_lines
 };
 
 */
@@ -135,3 +135,4 @@ game_instance Template = {
 
 
 /* Не забудьте зарегистрировать игру в application.cpp */
+/* Также нужно добавить файл с игрой в qt_emulator/CMakeLists.txt */

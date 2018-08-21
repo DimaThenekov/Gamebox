@@ -86,7 +86,8 @@ uint8_t game_color_sprite_height(const struct game_color_sprite *s)
 
 const uint8_t *game_sprite_line(const struct game_sprite *s, uint8_t line)
 {
-    return pgm_read_byte(&s->lineSize) * line + (const uint8_t*)pgm_read_pointer(&s->lines);
+    return (pgm_read_byte(&s->width) + 7) / 8 * line
+        + (const uint8_t*)pgm_read_pointer(&s->lines);
 }
 
 const uint8_t *game_color_sprite_line(const struct game_color_sprite *s, uint8_t line)

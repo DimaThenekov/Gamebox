@@ -19,7 +19,7 @@ const uint8_t lines_player[] PROGMEM = {
 };
 
 const game_sprite sprite_player PROGMEM = {
-    16, 9, 2, lines_player
+    16, 9, lines_player
 };
 
 #define PLAYER_X 12

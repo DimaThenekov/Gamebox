@@ -1,6 +1,8 @@
 #ifndef FXM_TUNES_H
 #define FXM_TUNES_H
 
+#ifndef EMULATED
+
 #include <Arduino.h>
 
 extern const uint8_t alla_turca[] PROGMEM;
@@ -42,5 +44,7 @@ extern const uint8_t the_last_v8[] PROGMEM;
 extern const uint8_t view_to_a_kill[] PROGMEM;
 extern const uint8_t where_time_dropped_dead[] PROGMEM;
 extern const PROGMEM uint8_t zub[];
+
+#endif
 
 #endif

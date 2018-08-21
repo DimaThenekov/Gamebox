@@ -104,8 +104,8 @@ const uint8_t MarioRedL_lines[] PROGMEM = {
 };
 
 const game_sprite MarioRedL PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, MarioRedL_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, MarioRedL_lines
 };
 
 const uint8_t MarioYellowL_lines[] PROGMEM = {
@@ -128,8 +128,8 @@ const uint8_t MarioYellowL_lines[] PROGMEM = {
 };
 
 const game_sprite MarioYellowL PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, MarioYellowL_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, MarioYellowL_lines
 };
 
 const uint8_t MarioGreenL_lines[] PROGMEM = {
@@ -152,8 +152,8 @@ const uint8_t MarioGreenL_lines[] PROGMEM = {
 };
 
 const game_sprite MarioGreenL PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, MarioGreenL_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, MarioGreenL_lines
 };
 
 
@@ -190,8 +190,8 @@ const uint8_t MarioRed_lines[] PROGMEM = {
 };
 
 const game_sprite MarioRed PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, MarioRed_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, MarioRed_lines
 };
 
 const uint8_t MarioYellow_lines[] PROGMEM = {
@@ -214,8 +214,8 @@ const uint8_t MarioYellow_lines[] PROGMEM = {
 };
 
 const game_sprite MarioYellow PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, MarioYellow_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, MarioYellow_lines
 };
 
 const uint8_t MarioGreen_lines[] PROGMEM = {
@@ -238,8 +238,8 @@ const uint8_t MarioGreen_lines[] PROGMEM = {
 };
 
 const game_sprite MarioGreen PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, MarioGreen_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, MarioGreen_lines
 };
 const uint8_t StoneGreen_lines[] PROGMEM = {
   B10000000, B00100001,
@@ -261,8 +261,8 @@ const uint8_t StoneGreen_lines[] PROGMEM = {
 };
 
 const game_sprite StoneGreen PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, StoneGreen_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, StoneGreen_lines
 };
 const uint8_t StoneWhite_lines[] PROGMEM = {
   B01111111, B10011110,
@@ -284,8 +284,8 @@ const uint8_t StoneWhite_lines[] PROGMEM = {
 };
 
 const game_sprite StoneWhite PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, StoneWhite_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, StoneWhite_lines
 };
 const uint8_t BlockYELLOW_lines[] PROGMEM = {
   B00000000, B00000000,
@@ -307,8 +307,8 @@ const uint8_t BlockYELLOW_lines[] PROGMEM = {
 };
 
 const game_sprite BlockYELLOW PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, BlockYELLOW_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, BlockYELLOW_lines
 };
 
 const uint8_t BlockOrange_lines[] PROGMEM = {
@@ -412,8 +412,8 @@ static const uint8_t Map[80][8] PROGMEM = {
     {1, 1, 1, 1, 1, 1, 1, 1, }
     };
 const game_sprite BlockOrange PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, BlockOrange_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, BlockOrange_lines
 };
 //MONEY
 const uint8_t Money_lines[] PROGMEM = {
@@ -436,8 +436,8 @@ const uint8_t Money_lines[] PROGMEM = {
 };
 
 const game_sprite Money PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, Money_lines
+  // ШИРИНА, ВЫСОТА, ДАННЫЕ
+  16, 16, Money_lines
 };
 /* Функции отрисовки
 

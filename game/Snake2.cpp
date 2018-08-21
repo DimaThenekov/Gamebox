@@ -44,7 +44,7 @@ static const uint8_t gameOverLines[] PROGMEM = {
 };
 
 static const game_sprite gameOver PROGMEM = {
-    31, 15, 4, gameOverLines
+    31, 15, gameOverLines
 };
 
 enum Phases

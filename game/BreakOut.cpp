@@ -20,7 +20,7 @@ const uint8_t pauseLines[] PROGMEM = {
 };
 
 const game_sprite pausef PROGMEM = {
-    36, 5, 5, pauseLines
+    36, 5, pauseLines
 };
 
 const uint8_t BoardData[] PROGMEM = {
@@ -39,7 +39,7 @@ const uint8_t BoardData[] PROGMEM = {
 };
 
 const game_sprite Board PROGMEM = {
-    3, 12, 1, BoardData
+    3, 12, BoardData
 };
 
 const uint8_t BallData[] PROGMEM = {
@@ -50,11 +50,11 @@ const uint8_t BallData[] PROGMEM = {
 };
 
 const game_sprite Ball PROGMEM = {
-    4, 4, 1, BallData
+    4, 4, BallData
 };
 
 const game_sprite Bonus PROGMEM = {
-    2, 2, 1, BallData
+    2, 2, BallData
 };
 
 

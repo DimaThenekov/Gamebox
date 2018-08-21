@@ -33,16 +33,10 @@ struct game_sprite
 {
     uint8_t width;
     uint8_t height;
-    uint8_t lineSize;
     const uint8_t *lines;
 };
 
-struct game_color_sprite
-{
-    uint8_t width;
-    uint8_t height;
-    const uint8_t *lines;
-};
+#define game_color_sprite game_sprite
 
 // Setup functions
 
@@ -52,8 +46,6 @@ void game_enable_frame_buffer();
 
 uint8_t game_sprite_width(const struct game_sprite *s);
 uint8_t game_sprite_height(const struct game_sprite *s);
-uint8_t game_color_sprite_width(const struct game_color_sprite *s);
-uint8_t game_color_sprite_height(const struct game_color_sprite *s);
 
 // DRAWING FUNCTIONS
 
