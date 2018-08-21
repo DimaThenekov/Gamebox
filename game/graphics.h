@@ -3,12 +3,9 @@
 
 // COLORS
 // 
-// are defined as 6-bit integer: RRGGBB
+// are defined as 6-bit integer: xBGRxbgr
 
 #define BLACK 0
-/*#define BLUE 3
-#define GREEN 12
-#define RED 48*/
 #define BLUE 0x44
 #define GREEN 0x22
 #define RED 0x11
@@ -18,12 +15,16 @@
 #define WHITE (RED + GREEN + BLUE)
 /* for 6-bit colored games */
 /* brigthness of the msb is higher */
-#define BLUE_DARK 4
 #define RED_DARK 1
 #define RED_MIDDLE 0x10
+#define GREEN_DARK 2
+#define GREEN_MIDDLE 0x20
+#define BLUE_DARK 4
+#define BLUE_MIDDLE 0x40
 #define YELLOW_DARK 3
 #define YELLOW_MIDDLE 0x30
 #define WHITE_DARK 0x7
+#define WHITE_MIDDLE 0x70
 #define TRANSPARENT 0xff
 
 // SPRITE

@@ -25,6 +25,7 @@ extern const uint8_t jet_story[] PROGMEM;
 extern const uint8_t land_of_confusion[] PROGMEM;
 extern const uint8_t magnetic_fields_iv[] PROGMEM;
 extern const uint8_t magnetic_fields_v[] PROGMEM;
+extern const uint8_t mario[] PROGMEM;
 extern const uint8_t master_of_magic[] PROGMEM;
 extern const uint8_t monty_on_the_run[] PROGMEM;
 extern const uint8_t piskworks_topgun[] PROGMEM;

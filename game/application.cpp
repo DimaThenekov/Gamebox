@@ -18,10 +18,12 @@ extern game_instance Snail;
 extern game_instance Ghostbuster;
 #endif
 extern game_instance Flappy;
+extern game_instance SpaceShips;
 extern game_instance Tester;
 extern game_instance Raycaster;
 extern game_instance BreakOut;
 extern game_instance Saper;
+extern game_instance Mario;
 #ifndef EMULATED /* for use only on real hardware */
 extern game_instance Dump;
 extern game_instance Player;
@@ -40,13 +42,16 @@ static const MenuItem main_menu[] PROGMEM = {
     { "GhostBuster", &Ghostbuster },
 #endif
     { "Flappy", &Flappy },
+    { "SpaceShips", &SpaceShips },
     { "BreakOut", &BreakOut },
     { "Saper", &Saper },
+    { "Mario", &Mario},
     { "3D", &Raycaster },
-    { "Font", &Tester },
 #ifndef EMULATED /* for use only on real hardware */
+    { "Font", &Tester },
     { "EEPROM", &Dump },
     { "Music", &Player },
+    
 #endif
     /* Register your game like so:
      *
@@ -81,7 +86,7 @@ void pause_continue()
 void pause_mute()
 {
 #ifndef EMULATED
-    fxm_mute();
+    music_mute();
     pause_continue();
 #endif
 }
@@ -116,7 +121,7 @@ void update(unsigned long delta)
     if (!ptr)
     {
         ptr = (game_instance*)menu_update(menu, delta);
-        if (ptr)
+        if (ptr && ptr->data_size <= AVAIL_SPACE)
         {
             menu_finish(menu);
             menu = NULL;
@@ -124,6 +129,10 @@ void update(unsigned long delta)
             // run game
             *(ptr->data) = memory;
             ptr->prepare();
+        }
+        else
+        {
+            ptr = NULL;
         }
     }
     else

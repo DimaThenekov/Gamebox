@@ -24,7 +24,7 @@ void game_set_ups(int ups)
 
 void setup()
 {
-    fxm_disable();
+    tune_disable();
     graphics_setup();
     controls_setup();
     storage_init();
