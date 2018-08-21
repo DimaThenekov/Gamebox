@@ -48,6 +48,7 @@ void render(); // render sprites
 static uint8_t frame[HEIGHT][WIDTH];
 static bool use_frame_buffer;
 #endif
+static uint8_t background;
 
 //////////////////////////
 // Colors
@@ -439,7 +440,7 @@ void game_render_line(uint8_t *buf, int8_t line)
                 buf[i] = frame[line + y * (ADDR_LOW + 1)][x];
             else
 #endif
-                buf[i] = 0;
+                buf[i] = background;
         }
 
     game_render_buf = buf;
@@ -464,12 +465,17 @@ void game_enable_frame_buffer()
 #endif
 }
 
+void game_set_background(uint8_t color)
+{
+    background = color;
+}
+
 void game_clear_screen()
 {
 #ifdef FRAME_BUFFER
     if (use_frame_buffer)
     {
-        memset(frame, 0, sizeof(frame));
+        memset(frame, background, sizeof(frame));
     }
 #endif
 }

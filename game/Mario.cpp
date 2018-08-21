@@ -5,7 +5,9 @@
 #include "binary.h"
 #include "controls.h"
 #include "music.h"
+#ifndef EMULATED
 #include "tunes.h"
+#endif
 
 /* Встроенные цвета:
 
@@ -410,6 +412,8 @@ static void Mario_prepare()
     tune_init(mario);
     tune_enable();
 #endif
+
+    game_set_background(BLUE);
 }
 
 
@@ -422,9 +426,6 @@ static void Mario_render()
   //pgm_read_byte(&Map[][])
   for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
     for (int j = max(8-(((64)+data->MapY)/16)-4,0); j <= min(8-(((64)+data->MapY)/16),8); j++){
-          if (pgm_read_byte(&Map[i][j]) == 0){
-     game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLUE);
-   }
     if (pgm_read_byte(&Map[i][j]) == 1){
      game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), 0x31/*(RED + 0x02 )*/);
     game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
