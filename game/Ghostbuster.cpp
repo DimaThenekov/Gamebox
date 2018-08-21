@@ -439,12 +439,12 @@ static void Ghostbuster_update(unsigned long delta)
       for(int i = 0; i < 3; i++) {
           if( data->sposy[i] != data->pposy && data->loli )
               if(data->lol[i]) {
-                if(data->sposy[i] <= data->snposy[i] - 30)
+                if(data->sposy[i] <= data->snposy[i] - 15)
                     data->lol[i] = false;
                 data->sposy[i]--;
               }
               else {
-                if(data->sposy[i] == data->snposy[i])
+                if(data->sposy[i] >= data->snposy[i])
                   data->lol[i] = true;
                 data->sposy[i]++;
               }
