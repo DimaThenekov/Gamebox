@@ -18,6 +18,7 @@
 #define ANIM_INTERVAL 100
 #define MOVE_INTERVAL 50
 
+// character states
 #define LAND 0
 #define LADDER 1
 #define ROPE 2
@@ -230,7 +231,7 @@ static LodeRunnerData* data;
 
 inline static uint8_t get(int8_t x, int8_t y) {
     if (x < 0 || x >= data->level_width || y < 0 || y >= data->level_height) return 'S';
-    return data->level_ptr[x + y * 10];
+    return pgm_read_byte(&data->level_ptr[x + y * 10]);
 }
 
 inline static void draw_map()
@@ -338,7 +339,9 @@ static void init_level()
 }
 
 static bool can_move() {
-    return (collide(data->player_x, data->player_y + 1) || ladder_at(data->player_x, data->player_y + BLOCK_HEIGHT));
+    return (data->player_state == ROPE ||
+            collide(data->player_x, data->player_y + 1) ||
+            ladder_at(data->player_x, data->player_y + BLOCK_HEIGHT));
 }
 
 static void LodeRunner_prepare()
@@ -385,8 +388,10 @@ static void LodeRunner_update(unsigned long delta)
     }
 
     if (do_move) {
-        if (!collide(data->player_x, data->player_y + 1) && !ladder_at(data->player_x, data->player_y + BLOCK_HEIGHT)) {
-            data->player_y++;
+        if (data->player_state != ROPE) {
+            if (!collide(data->player_x, data->player_y + 1) && !ladder_at(data->player_x, data->player_y + BLOCK_HEIGHT)) {
+                data->player_y++;
+            }
         }
 
         if (can_move() && (up ^ down)) {
@@ -408,6 +413,7 @@ static void LodeRunner_update(unsigned long delta)
                 if (data->player_state != LADDER) {
                     nearest_ladder(data->player_x, data->player_y + BLOCK_HEIGHT);
                 }
+
                 if (data->player_state == LADDER) {
                     if (data->player_anim == CLIMBING0) data->player_anim = CLIMBING1;
                     else if (data->player_anim == CLIMBING1) data->player_anim = CLIMBING0;
@@ -415,6 +421,14 @@ static void LodeRunner_update(unsigned long delta)
                         data->player_state = LAND;
                         data->player_anim = STANDING;
                     } else {
+                        data->player_y++;
+                    }
+                }
+
+                if (data->player_state == ROPE) {
+                    data->player_state = LAND;
+                    data->player_anim = STANDING;
+                    if (!collide(data->player_x, data->player_y + 1) && !ladder_at(data->player_x, data->player_y + BLOCK_HEIGHT)) {
                         data->player_y++;
                     }
                 }
@@ -460,9 +474,48 @@ static void LodeRunner_update(unsigned long delta)
                 }
             }
         }
+
+        if (data->player_state == ROPE) {
+            if (do_anim) {
+                if (data->player_anim == ROPECLIMBING0) data->player_anim = ROPECLIMBING1;
+                else if (data->player_anim == ROPECLIMBING1) data->player_anim = ROPECLIMBING0;
+            }
+
+            if (do_move) {
+                if (data->player_anim == HANGING) {
+                    data->player_anim = ROPECLIMBING0;
+                }
+                if (left) {
+                    if (!collide(data->player_x - 1, data->player_y)) {
+                        data->player_x--;
+                    }
+                } else {
+                    if (!collide(data->player_x + 1, data->player_y)) {
+                        data->player_x++;
+                    }
+                }
+            }
+        }
     }
+
     if (data->player_state == LAND && !(left ^ right)) {
         data->player_anim = STANDING;
+    }
+    
+    if (data->player_state != ROPE) {
+        int8_t bx = data->player_x / BLOCK_WIDTH;
+        int8_t by = data->player_y / BLOCK_HEIGHT;
+        if ((bx * BLOCK_WIDTH == data->player_x) && (by * BLOCK_HEIGHT == data->player_y) && get(bx, by) == 'R') {
+            data->player_state = ROPE;
+            data->player_anim = HANGING;
+        }
+    } else {
+        int8_t bx = data->player_x / BLOCK_WIDTH;
+        int8_t by = data->player_y / BLOCK_HEIGHT;
+        if ((bx * BLOCK_WIDTH == data->player_x) && (by * BLOCK_HEIGHT == data->player_y) && get(bx, by) != 'R') {
+            data->player_state = LAND;
+            data->player_anim = STANDING;
+        }
     }
 }
 
