@@ -504,15 +504,17 @@ static void LodeRunner_update(unsigned long delta)
     
     if (data->player_state != ROPE) {
         int8_t bx = data->player_x / BLOCK_WIDTH;
+        int8_t bx2 = (data->player_x + BLOCK_WIDTH - 1) / BLOCK_WIDTH;
         int8_t by = data->player_y / BLOCK_HEIGHT;
-        if ((bx * BLOCK_WIDTH == data->player_x) && (by * BLOCK_HEIGHT == data->player_y) && get(bx, by) == 'R') {
+        if (by * BLOCK_HEIGHT == data->player_y && get(bx, by) == 'R' && get(bx2, by) == 'R') {
             data->player_state = ROPE;
             data->player_anim = HANGING;
         }
     } else {
         int8_t bx = data->player_x / BLOCK_WIDTH;
+        int8_t bx2 = (data->player_x + BLOCK_WIDTH - 1) / BLOCK_WIDTH;
         int8_t by = data->player_y / BLOCK_HEIGHT;
-        if ((bx * BLOCK_WIDTH == data->player_x) && (by * BLOCK_HEIGHT == data->player_y) && get(bx, by) != 'R') {
+        if (by * BLOCK_HEIGHT == data->player_y && (get(bx, by) != 'R' || get(bx2, by) != 'R')) {
             data->player_state = LAND;
             data->player_anim = STANDING;
         }
