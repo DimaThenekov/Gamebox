@@ -220,7 +220,7 @@ bool pt3_init(const uint8_t *pt3)
     {
         uint8_t pos = music_peek(POSITIONS_OFFSET);
         channels[i].address_in_pattern =
-            music_peek2(pt3_patterns_offset() + pos * 2);
+            music_peek2(pt3_patterns_offset() + pos * 2 + i * 2);
 
         channels[i].ornament_pointer = pt3_get_ornament_ptr(0);
         channels[i].loop_ornament_position = music_peek(channels[i].ornament_pointer++);
@@ -364,7 +364,7 @@ static void pt3_play_channel(Channel_Parameters *ch)
                 cur_env_slide = 0;
                 cur_env_delay = 0;
             }
-            ch->sample_pointer = pt3_get_sample_ptr(music_peek(ch->address_in_pattern) / 2);
+            ch->sample_pointer = pt3_get_sample_ptr(music_peek(++ch->address_in_pattern) / 2);
             ch->loop_sample_position = music_peek(ch->sample_pointer++);
             ch->sample_length = music_peek(ch->sample_pointer++);
             ch->position_in_ornament = 0;
@@ -454,7 +454,7 @@ static void pt3_play_channel(Channel_Parameters *ch)
         {
             uint8_t b = music_peek(ch->address_in_pattern++);
             delay_value = b;
-            delay_counter = b;
+            //delay_counter = b;
         }
         --counter;
     }
@@ -538,10 +538,10 @@ static void pt3_change_registers(Channel_Parameters *ch)
             else
             {
                 j = ((b0 >> 1) & 0xf) + ch->current_envelope_sliding;
-                if (b1 & 0x20)
-                    ch->current_envelope_sliding = j;
-                add_to_env += j;
             }
+            if (b1 & 0x20)
+                ch->current_envelope_sliding = j;
+            add_to_env += j;
         }
         else
         {
@@ -632,7 +632,7 @@ void pt3_loop()
     music_set_ay_reg(AY_NOISE, (noise_base + add_to_noise) & 31);
     uint16_t env = env_base + add_to_env + cur_env_slide;
     music_set_ay_reg(AY_ENV, env);
-    music_set_ay_reg(AY_ENV, env >> 8);
+    music_set_ay_reg(AY_ENV + 1, env >> 8);
 
     if (cur_env_delay > 0)
     {
