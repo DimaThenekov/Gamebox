@@ -347,7 +347,7 @@ static void Ghostbuster_prepare()
     data->BossPosY = -16;
     data->isBossFall = true;
     data->BossLifes = 15;
-    data->isDamage = 19;
+    data->isDamage = 4;
     data->phase = 0;
     data->Win = false;
 }
@@ -507,7 +507,7 @@ static void Ghostbuster_update(unsigned long delta)
               data->syposy[j] = 100;
 
 
-      if( (data->pyposy == data->BeginOfJump) && (game_is_button_pressed(BUTTON_UP) ) ) {
+      if( (data->pyposy == data->BeginOfJump) && (game_is_button_pressed(BUTTON_B) ) ) {
           data->isJump = true;
           data->EndOfJump = data->BeginOfJump - 10;
       }
@@ -589,9 +589,12 @@ static void Ghostbuster_update(unsigned long delta)
 
       
       for(int i = 0; i < data->ShootCounter; i+=10)
-            if(data->ShootPosy[i/10] >= data->BossPosX && data->isDamage == 20) {
-              data->BossLifes--;
-              data->isDamage = 0;
+            if(data->ShootPosy[i/10] >= data->BossPosX) {
+              data->isDamage++;
+              if(data->isDamage == 5) {
+                data->BossLifes--;
+                data->isDamage = 0;
+              }
             }
       }
       
