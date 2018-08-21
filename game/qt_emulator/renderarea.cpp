@@ -12,6 +12,7 @@
 static QColor frame[HEIGHT][WIDTH];
 static QColor screen[HEIGHT][WIDTH];
 static bool use_frame_buffer;
+static int background;
 
 static int color_map[4] = {0, 128, 192, 255};
 
@@ -29,10 +30,8 @@ static int rev_color_map(int c)
     return 0;
 }
 
-void game_draw_pixel(int8_t x, int8_t y, uint8_t c)
+static QColor map_color(uint8_t c)
 {
-    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
-        return;
     int r = c & RED;
     r = (r & 0xf) + ((r & 0xf0) >> 3);
     int g = c & GREEN;
@@ -40,6 +39,14 @@ void game_draw_pixel(int8_t x, int8_t y, uint8_t c)
     int b = c & BLUE;
     b = ((b & 0xf) >> 2) + ((b & 0xf0) >> 5);
     QColor color(color_map[r], color_map[g], color_map[b]);
+    return color;
+}
+
+void game_draw_pixel(int8_t x, int8_t y, uint8_t c)
+{
+    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+        return;
+    QColor color = map_color(c);
     if (use_frame_buffer)
         frame[y][x] = color;
     else
@@ -169,11 +176,16 @@ void game_clear_screen()
         for (int x = 0 ; x < WIDTH ; ++x)
         {
             if (use_frame_buffer)
-                frame[y][x] = QColor(0, 0, 0);
+                frame[y][x] = map_color(background);
             else
-                screen[y][x] = QColor(0, 0, 0, 0);
+                screen[y][x] = background ? map_color(background) : QColor(0, 0, 0, 0);
         }
     }
+}
+
+void game_set_background(uint8_t color)
+{
+    background = color;
 }
 
 void game_enable_frame_buffer()

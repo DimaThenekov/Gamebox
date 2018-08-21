@@ -68,6 +68,7 @@ void game_draw_digits(uint16_t num, int8_t len, int8_t x, int8_t y, uint8_t colo
 void game_draw_color_sprite(const struct game_color_sprite *s, int8_t x, int8_t y);
 /* Clear screen in frame buffer mode */
 void game_clear_screen();
+void game_set_background(uint8_t color);
 
 bool game_is_drawing_lines(int8_t y, int8_t height);
 

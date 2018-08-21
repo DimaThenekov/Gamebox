@@ -17,7 +17,7 @@ target_sources(gamebox PUBLIC ../BackspaceInvaders.cpp ../BreakOut.cpp ../Flappy
 target_sources(gamebox PUBLIC ../application.cpp ../avrfix.cpp ../Ghostbuster.cpp ../menu.cpp ../random.cpp)
 =======
                ../Raycaster.cpp ../Saper.cpp ../Snake.cpp ../SpaceShips.cpp ../Snake2.cpp
-		../Tester.cpp ../Snail.cpp.. /Mario.cpp)
+		../Tester.cpp ../Snail.cpp ../Mario.cpp)
 target_sources(gamebox PUBLIC ../application.cpp ../avrfix.cpp ../menu.cpp
                ../random.cpp)
 >>>>>>> 96fe9745c6be9613cdcb8bf4a65dbce635196a75

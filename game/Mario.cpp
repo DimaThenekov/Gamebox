@@ -5,7 +5,9 @@
 #include "binary.h"
 #include "controls.h"
 #include "music.h"
+#ifndef EMULATED
 #include "tunes.h"
+#endif
 
 /* Встроенные цвета:
 
@@ -80,6 +82,94 @@
   };
 
 */
+
+
+const uint8_t MarioRedL_lines[] PROGMEM = {
+  B00001111, B10000000,
+  B01111111, B11000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000001, B00000000,
+  B00001001, B00000000,
+  B00001111, B00000000,
+  B00010110, B10000000,
+  B00011111, B10000000,
+  B00111111, B11000000,
+  B00111001, B11000000,
+  B00000000, B00000000,
+  B00000000, B00000000
+};
+
+const game_sprite MarioRedL PROGMEM = {
+  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
+  16, 16, 2, MarioRedL_lines
+};
+
+const uint8_t MarioYellowL_lines[] PROGMEM = {
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00010110, B00000000,
+  B01110111, B01000000,
+  B11101110, B01000000,
+  B00000111, B10000000,
+  B00111111, B10000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B11001001, B00110000,
+  B11100000, B01110000,
+  B11000000, B00110000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000
+};
+
+const game_sprite MarioYellowL PROGMEM = {
+  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
+  16, 16, 2, MarioYellowL_lines
+};
+
+const uint8_t MarioGreenL_lines[] PROGMEM = {
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00001001, B11000000,
+  B00001000, B10100000,
+  B00010001, B10100000,
+  B01111000, B01100000,
+  B00000000, B00000000,
+  B00001110, B11000000,
+  B01110110, B11100000,
+  B11110000, B11110000,
+  B00100000, B01000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00111000, B11100000,
+  B01111000, B11110000
+};
+
+const game_sprite MarioGreenL PROGMEM = {
+  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
+  16, 16, 2, MarioGreenL_lines
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const uint8_t MarioRed_lines[] PROGMEM = {
   B00011111, B00000000,
   B00111111, B11100000,
@@ -368,6 +458,7 @@ const game_sprite Money PROGMEM = {
 struct MarioData
 {
   int MarioX;
+  int L;
   int MarioY;
   int ButtonLeft;
   int ButtonRight;
@@ -383,6 +474,7 @@ struct MarioData
   //int Map[40][8];
   int MONEY[20][2];
   int flag;
+  int MoneyN;
   //int Map[5][5] = {{ 1, 1, 1, 1, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 }};
   /* Объявляйте ваши переменные здесь */
   /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
@@ -396,10 +488,12 @@ static void Mario_prepare()
 {game_set_ups(60);
   /* Здесь код, который будет исполнятся один раз */
   /* Здесь нужно инициализировать переменные */
+  data->L=1;
   data->MapX = 6;
   data->MapY = -64;
   data->MarioX = 30;
   data->MarioY = 32;
+  data->MoneyN = 0 ;
   //data->Map[2][2]=1;
 
       data->SetUpMapY=data->MapY;
@@ -408,6 +502,8 @@ static void Mario_prepare()
     tune_init(mario);
     tune_enable();
 #endif
+
+    game_set_background(BLUE);
 }
 
 
@@ -419,10 +515,7 @@ static void Mario_render()
   /* Он не должен менять состояние игры, для этого есть функция update */
   //pgm_read_byte(&Map[][])
   for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
-    for (int j = 0; j <= 8; j++){
-          if (pgm_read_byte(&Map[i][j]) == 0){
-     game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLUE);
-   }
+    for (int j = max(8-(((64)+data->MapY)/16)-4,0); j <= min(8-(((64)+data->MapY)/16),8); j++){
     if (pgm_read_byte(&Map[i][j]) == 1){
      game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), 0x31/*(RED + 0x02 )*/);
     game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
@@ -443,16 +536,27 @@ if (0-data->MapX+(64)>data->MONEY[data->i][0]*16)
   //data->i1=data->i1+1;
   }
   if (data->MarioY>0){
+    if (data->L==1){
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
   game_draw_sprite(&MarioYellow, data->MarioX, data->MarioY, YELLOW);
   game_draw_sprite(&MarioGreen , data->MarioX, data->MarioY, GREEN);
+    }else{
+    game_draw_sprite(&MarioRedL, data->MarioX, data->MarioY, RED);
+  game_draw_sprite(&MarioYellowL, data->MarioX, data->MarioY, YELLOW);
+  game_draw_sprite(&MarioGreenL , data->MarioX, data->MarioY, GREEN);    
+      }
   }else{
   game_draw_sprite(&MarioRed, data->MarioX, 0, RED);
   game_draw_sprite(&MarioYellow, data->MarioX, 0, YELLOW);
   game_draw_sprite(&MarioGreen , data->MarioX, 0, GREEN); 
     }
-  
-
+  //data->MarioY
+      char s[5];
+    sprintf(s, "%d",data->MoneyN);
+    game_draw_text((uint8_t*)s, 43, 7, RED);
+//char s[5];
+   
+   
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
@@ -471,11 +575,13 @@ while(((data->MONEY[data->i1][0]!=0)||(data->MONEY[data->i1][1]!=0))&&(data->i1<
   }
   
   if (game_is_button_pressed (BUTTON_LEFT)) {
+    data->L=0;
     data->ButtonLeft = 1;
   } else {
     data->ButtonLeft = 0;
   }
   if (game_is_button_pressed (BUTTON_RIGHT)) {
+    data->L=1;
     data->ButtonRight = 1;
   } else {
     data->ButtonRight = 0;
@@ -495,7 +601,9 @@ while(((data->MONEY[data->i1][0]!=0)||(data->MONEY[data->i1][1]!=0))&&(data->i1<
   if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)){
   data->Jamp=0;
   }
-  
+  if (data->MapY>32){
+    data->Jamp=-1;
+  }
   if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   data->Jamp=10;
@@ -510,6 +618,12 @@ if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   for(data->i=0;data->i<19;data->i++){
     if (data->MONEY[data->i][0]==((0-data->MapX)+data->MarioX+4)/16){
       if (data->MONEY[data->i][1]==(data->MarioY-15-data->MapY)/16){
+      data->flag=1;
+      
+      }
+    }
+    if (-data->MONEY[data->i][0]==((0-data->MapX)+data->MarioX+4)/16){
+      if (-data->MONEY[data->i][1]==(data->MarioY-15-data->MapY)/16){
       data->flag=1;
       
       }
@@ -581,6 +695,17 @@ if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY
   data->MarioY = 32; 
       data->MapY= data->SetUpMapY+1;
       }
+//((0-data->MapX)+data->MarioX+4)/16;
+ // data->MONEY[data->i1][1]=(data->MarioY-15-data->MapY)/16;
+      
+      for(data->i=0;data->i<data->i1;data->i++){
+if ((data->MarioY+5-data->MapY)/16==data->MONEY[data->i][1]-1)
+if (((0-data->MapX)+data->MarioX+5)/16==data->MONEY[data->i][0])
+{
+data->MONEY[data->i][0]=0-data->MONEY[data->i][0];
+data->MONEY[data->i][1]=0-data->MONEY[data->i][1];
+data->MoneyN =data->MoneyN +1;
+}}
 }
 
 game_instance Mario = {
