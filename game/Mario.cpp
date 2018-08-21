@@ -548,8 +548,7 @@ if (0-data->MapX+(64)>data->MONEY[data->i][0]*16)
     sprintf(s, "%d",data->MoneyN);
     game_draw_text((uint8_t*)s, 43, 7, RED);
 //char s[5];
-   sprintf(s, "%d",8-(((64)+data->MapY)/16));
-    game_draw_text((uint8_t*)s, 4, 7, RED);
+   
    
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
