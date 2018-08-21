@@ -502,8 +502,6 @@ static void Mario_prepare()
     tune_init(mario);
     tune_enable();
 #endif
-
-    game_set_background(BLUE);
 }
 
 
@@ -517,10 +515,12 @@ static void Mario_render()
   for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
     for (int j = max(8-(((64)+data->MapY)/16)-4,0); j <= min(8-(((64)+data->MapY)/16),8); j++){
     if (pgm_read_byte(&Map[i][j]) == 1){
+       game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLACK);
      game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), 0x31/*(RED + 0x02 )*/);
     game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
    }
 if (pgm_read_byte(&Map[i][j]) == 2){
+   game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLACK);
  game_draw_sprite(&BlockYELLOW, data->MapX+(i*16), data->MapY+(j*16), YELLOW);
  game_draw_sprite(&BlockOrange, data->MapX+(i*16), data->MapY+(j*16), (RED + 0x02));
 }
