@@ -15,7 +15,7 @@ MONITOR_CMD = picocom -b 9600
 # ARDUINO_PORT = /dev/ttyACM0
 # ARDUINO_PORT = /dev/ttyUSB0
 
-OPTIMIZATION_LEVEL=0
+OPTIMIZATION_LEVEL=3
 
 CXXFLAGS += -DARDUINO_AVR_MEGA2560 -fexec-charset=windows-1251 -g3
 include /usr/share/arduino/Arduino.mk
