@@ -4,6 +4,8 @@
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
+#include "music.h"
+#include "tunes.h"
 
 const uint8_t ShipSprite_lines[] PROGMEM = {
     B01111111, B11000000,
@@ -119,6 +121,11 @@ static void SpaceShips_prepare()
   data->game_set = 0;
   data->hiscore = 0;
   game_load(&data->hiscore, sizeof(data->hiscore));
+
+#ifndef EMULATED
+    tune_init(commando);
+    tune_enable();
+#endif
 }
 
 static void SpaceShips_render()

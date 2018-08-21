@@ -4,6 +4,9 @@
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
+#include "music.h"
+#include "tunes.h"
+
 #define B BLUE
 #define G GREEN
 #define R RED
@@ -350,6 +353,11 @@ static void Ghostbuster_prepare()
     data->isDamage = 4;
     data->phase = 0;
     data->Win = false;
+
+#ifndef EMULATED
+    tune_init(ghostbusters);
+    tune_enable();
+#endif
 }
 static void Ghostbuster_render()
 {
