@@ -44,6 +44,7 @@ static const MenuItem tunes[] PROGMEM = {
   {"Golden Tria"/*ngle Anthem"*/, golden_triangle_anthem},
   {"Indiana Jon"/*es 3"*/, indiana_jones_3},
   {"Jet Story", jet_story},
+  {"Kino/Sun", kino_sun},
   {"Kukushka", kukushka},
 //  {"Land Of Con"/*fusion"*/, land_of_confusion},
   {"Magnetic Fi"/*elds IV"*/, magnetic_fields_iv},

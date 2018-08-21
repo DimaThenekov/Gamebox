@@ -50,6 +50,7 @@ extern const uint8_t dizzy6[] PROGMEM;
 extern const uint8_t dizzy_sack[] PROGMEM;
 extern const uint8_t kukushka[] PROGMEM;
 extern const uint8_t b2_silver[] PROGMEM;
+extern const uint8_t kino_sun[] PROGMEM;
 
 #endif
 
