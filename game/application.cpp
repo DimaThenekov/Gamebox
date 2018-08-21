@@ -17,6 +17,7 @@ extern game_instance Snake2;
 extern game_instance Snail;
 #endif
 extern game_instance Flappy;
+extern game_instance LodeRunner;
 extern game_instance SpaceShips;
 extern game_instance Tester;
 extern game_instance Raycaster;
@@ -38,6 +39,7 @@ static const MenuItem main_menu[] PROGMEM = {
 #ifdef FRAME_BUFFER
     { "Snake2", &Snake2 },
     { "Snail", &Snail },
+    { "LodeRunner", &LodeRunner },
 #endif
     { "Flappy", &Flappy },
     { "SpaceShips", &SpaceShips },
