@@ -82,6 +82,94 @@
   };
 
 */
+
+
+const uint8_t MarioRedL_lines[] PROGMEM = {
+  B00001111, B10000000,
+  B01111111, B11000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000001, B00000000,
+  B00001001, B00000000,
+  B00001111, B00000000,
+  B00010110, B10000000,
+  B00011111, B10000000,
+  B00111111, B11000000,
+  B00111001, B11000000,
+  B00000000, B00000000,
+  B00000000, B00000000
+};
+
+const game_sprite MarioRedL PROGMEM = {
+  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
+  16, 16, 2, MarioRedL_lines
+};
+
+const uint8_t MarioYellowL_lines[] PROGMEM = {
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00010110, B00000000,
+  B01110111, B01000000,
+  B11101110, B01000000,
+  B00000111, B10000000,
+  B00111111, B10000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B11001001, B00110000,
+  B11100000, B01110000,
+  B11000000, B00110000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000
+};
+
+const game_sprite MarioYellowL PROGMEM = {
+  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
+  16, 16, 2, MarioYellowL_lines
+};
+
+const uint8_t MarioGreenL_lines[] PROGMEM = {
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00001001, B11000000,
+  B00001000, B10100000,
+  B00010001, B10100000,
+  B01111000, B01100000,
+  B00000000, B00000000,
+  B00001110, B11000000,
+  B01110110, B11100000,
+  B11110000, B11110000,
+  B00100000, B01000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00000000, B00000000,
+  B00111000, B11100000,
+  B01111000, B11110000
+};
+
+const game_sprite MarioGreenL PROGMEM = {
+  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
+  16, 16, 2, MarioGreenL_lines
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const uint8_t MarioRed_lines[] PROGMEM = {
   B00011111, B00000000,
   B00111111, B11100000,
@@ -370,6 +458,7 @@ const game_sprite Money PROGMEM = {
 struct MarioData
 {
   int MarioX;
+  int L;
   int MarioY;
   int ButtonLeft;
   int ButtonRight;
@@ -399,6 +488,7 @@ static void Mario_prepare()
 {game_set_ups(60);
   /* Здесь код, который будет исполнятся один раз */
   /* Здесь нужно инициализировать переменные */
+  data->L=1;
   data->MapX = 6;
   data->MapY = -64;
   data->MarioX = 30;
@@ -446,9 +536,15 @@ if (0-data->MapX+(64)>data->MONEY[data->i][0]*16)
   //data->i1=data->i1+1;
   }
   if (data->MarioY>0){
+    if (data->L==1){
   game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
   game_draw_sprite(&MarioYellow, data->MarioX, data->MarioY, YELLOW);
   game_draw_sprite(&MarioGreen , data->MarioX, data->MarioY, GREEN);
+    }else{
+    game_draw_sprite(&MarioRedL, data->MarioX, data->MarioY, RED);
+  game_draw_sprite(&MarioYellowL, data->MarioX, data->MarioY, YELLOW);
+  game_draw_sprite(&MarioGreenL , data->MarioX, data->MarioY, GREEN);    
+      }
   }else{
   game_draw_sprite(&MarioRed, data->MarioX, 0, RED);
   game_draw_sprite(&MarioYellow, data->MarioX, 0, YELLOW);
@@ -459,8 +555,7 @@ if (0-data->MapX+(64)>data->MONEY[data->i][0]*16)
     sprintf(s, "%d",data->MoneyN);
     game_draw_text((uint8_t*)s, 43, 7, RED);
 //char s[5];
-   sprintf(s, "%d",8-(((64)+data->MapY)/16));
-    game_draw_text((uint8_t*)s, 4, 7, RED);
+   
    
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
@@ -480,11 +575,13 @@ while(((data->MONEY[data->i1][0]!=0)||(data->MONEY[data->i1][1]!=0))&&(data->i1<
   }
   
   if (game_is_button_pressed (BUTTON_LEFT)) {
+    data->L=0;
     data->ButtonLeft = 1;
   } else {
     data->ButtonLeft = 0;
   }
   if (game_is_button_pressed (BUTTON_RIGHT)) {
+    data->L=1;
     data->ButtonRight = 1;
   } else {
     data->ButtonRight = 0;
