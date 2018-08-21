@@ -7,6 +7,8 @@
 
 #ifdef FRAME_BUFFER
 
+#define MAX_GOLD 16
+
 #define BLOCK_WIDTH 6
 #define BLOCK_HEIGHT 6
 
@@ -170,10 +172,10 @@ const game_sprite rope_sprite PROGMEM {
 static const uint8_t gold_lines[] PROGMEM {
     B00000000,
     B00000000,
-    B11111100,
-    B10000100,
-    B10000100,
-    B11111100,
+    B00000000,
+    B01111000,
+    B01001000,
+    B01111000,
 };
 
 const game_sprite gold_sprite PROGMEM {
@@ -201,14 +203,14 @@ const game_sprite solid_sprite PROGMEM {
 
 static const uint8_t level0[] PROGMEM {
     ".........."
-    "...RRR...."
+    "...RRR.G.."
     "BLBB.BBB.."
-    ".L........"
+    ".L..G...G."
     "BBBBBBLBBB"
     "......L..."
     "....P.LBRR"
     "..LBBBBB.."
-    "..L......."
+    "..L..G...."
     "BBBBBBBBBB"
 };
 
@@ -226,10 +228,16 @@ struct LodeRunnerData
     unsigned long anim_update;
     unsigned long move_update;
     unsigned long time;
+
+    uint8_t picked_gold_x[MAX_GOLD];
+    uint8_t picked_gold_y[MAX_GOLD];
+    uint8_t picked_gold;
 };
+
 static LodeRunnerData* data;
 
-inline static uint8_t get(int8_t x, int8_t y) {
+inline static uint8_t get(int8_t x, int8_t y)
+{
     if (x < 0 || x >= data->level_width || y < 0 || y >= data->level_height) return 'S';
     return pgm_read_byte(&data->level_ptr[x + y * 10]);
 }
@@ -264,6 +272,11 @@ inline static void draw_map()
                 case 'L':
                     spr = &ladder_sprite;
                     color = WHITE_DARK;
+                    break;
+
+                case 'G':
+                    spr = &gold_sprite;
+                    color = YELLOW;
                     break;
             }
             if (spr) {
@@ -314,7 +327,27 @@ static inline void nearest_ladder(int8_t x, int8_t y)
     }
 }
 
-static inline bool collide(int8_t x, int8_t y) {
+static inline void pick_gold()
+{
+    int8_t bx = (data->player_x + 3) / BLOCK_WIDTH;
+    int8_t by = (data->player_y + 2) / BLOCK_HEIGHT;
+    uint8_t c = get(bx, by);
+    if (c == 'G') {
+        for (uint8_t i = 0; i < data->picked_gold; ++i) {
+            if (data->picked_gold_x[i] == bx && data->picked_gold_y[i] == by) {
+                return;
+            }
+        }
+        data->picked_gold_x[data->picked_gold] = bx;
+        data->picked_gold_y[data->picked_gold] = by;
+        data->picked_gold++;
+        game_draw_sprite(&solid_sprite, SCREEN_PADDING_X + BLOCK_WIDTH * bx, SCREEN_PADDING_Y + BLOCK_HEIGHT * by, BLACK);
+        return;
+    }
+}
+
+static inline bool collide(int8_t x, int8_t y)
+{
     if (x < 0) return true;
     if (x + BLOCK_WIDTH > data->level_width * BLOCK_WIDTH) return true; 
     if (wall_at(x, y + BLOCK_HEIGHT - 1)) return true;
@@ -325,6 +358,7 @@ static void init_level()
 {
     data->level_width = 10;
     data->level_height = 10;
+    data->picked_gold = 0;
     data->level_ptr = (uint8_t*)level0;
     for (int i = 0; i < data->level_width; ++i) {
         for (int j = 0; j < data->level_height; ++j) {
@@ -338,7 +372,8 @@ static void init_level()
     draw_map();
 }
 
-static bool can_move() {
+static bool can_move()
+{
     return (data->player_state == ROPE ||
             collide(data->player_x, data->player_y + 1) ||
             ladder_at(data->player_x, data->player_y + BLOCK_HEIGHT));
@@ -518,6 +553,10 @@ static void LodeRunner_update(unsigned long delta)
             data->player_state = LAND;
             data->player_anim = STANDING;
         }
+    }
+
+    if (do_move) {
+        pick_gold();
     }
 }
 
