@@ -502,6 +502,8 @@ static void Mario_prepare()
     tune_init(mario);
     tune_enable();
 #endif
+
+    game_set_background(BLUE);
 }
 
 
