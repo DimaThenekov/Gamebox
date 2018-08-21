@@ -295,6 +295,9 @@ static void Ghostbuster_prepare()
     data->snposy[1] = 144;
     data->syposy[0] = 50;
     data->syposy[1] = 20;
+    data->sposy[2] = 160;
+    data->snposy[2] = 160;
+    data->syposy[2] = 50;
     data->pposy = 10;
     data->pyposy = 47;
     data->BlockPosy[0] = 36;
@@ -327,6 +330,14 @@ static void Ghostbuster_prepare()
     data->BlockYPosy[13] = 32;
     data->BlockPosy[14] = 145;
     data->BlockYPosy[14] = 32;
+    data->BlockPosy[15] = 157;
+    data->BlockYPosy[15] = 56;
+    data->BlockPosy[16] = 169;
+    data->BlockYPosy[16] = 50;
+    data->BlockPosy[17] = 175;
+    data->BlockYPosy[17] = 50;
+    data->BlockPosy[18] = 181;
+    data->BlockYPosy[18] = 50;
     data->BeginOfJump = 47;
     data->EndOfJump = 37;
     data->isJump = false;
@@ -367,10 +378,10 @@ static void Ghostbuster_render()
 
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 3; i++)
       game_draw_color_sprite(&slimer, data->sposy[i], data->syposy[i]);
 
-    for(int i = 0; i < 15; i++)
+    for(int i = 0; i < 19; i++)
       game_draw_color_sprite(&block, data->BlockPosy[i], data->BlockYPosy[i]);
   }
     /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
@@ -394,12 +405,12 @@ static void Ghostbuster_update(unsigned long delta)
     if(data->Win)
       return;
 
-    if(data->BlockPosy[14]+6 == 0) data->isBoss = true;
+    if(data->BlockPosy[18]+6 == 0) data->isBoss = true;
     
     if(!data->isBoss) {
-    for(int i = 0; i < 15; i++) {
+    for(int i = 0; i < 19; i++) {
 
-        if( (data->pposy+13 == data->BlockPosy[i] && data->flag || data->pposy == data->BlockPosy[i]+6 && !data->flag ) &&  data->pyposy+13 >= data->BlockYPosy[i]  &&  data->pyposy+13 <= data->BlockYPosy[i]+6 ) {
+        if( (data->pposy+13 == data->BlockPosy[i] && data->flag || data->pposy == data->BlockPosy[i]+6 && !data->flag ) && data->BlockYPosy[i] <= data->pyposy+13  && data->BlockYPosy[i] >= data->pyposy) {
           data->isCanWalk = false;
           break;
         }
@@ -410,7 +421,7 @@ static void Ghostbuster_update(unsigned long delta)
       
     }
     data->BeginOfJump = 47;
-    for(int i = 0; i<15; i++) {
+    for(int i = 0; i<19; i++) {
 
         if ( ( (data->pposy+2 >= data->BlockPosy[i]) && (data->pposy+2 <= data->BlockPosy[i] + 6) ) ||
         ( (data->pposy+11 >= data->BlockPosy[i]) && (data->pposy+11 <= data->BlockPosy[i] + 6) ) ||
@@ -425,7 +436,7 @@ static void Ghostbuster_update(unsigned long delta)
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
       data->loli = !data->loli;
-      for(int i = 0; i < 2; i++) {
+      for(int i = 0; i < 3; i++) {
           if( data->sposy[i] != data->pposy && data->loli )
               if(data->lol[i]) {
                 if(data->sposy[i] <= data->snposy[i] - 30)
@@ -453,20 +464,20 @@ static void Ghostbuster_update(unsigned long delta)
       if(data->isCanWalk) {
         
           if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
-            for(int i = 0; i < 2; i++) {
+            for(int i = 0; i < 3; i++) {
               data->sposy[i]++;
               data->snposy[i]++;
             }
-            for(int i = 0; i < 15; i++)
+            for(int i = 0; i < 19; i++)
               data->BlockPosy[i]++;
               
           }
           else if ( (game_is_button_pressed(BUTTON_RIGHT)) && (!data->isShoot) ) {
-            for(int i = 0; i < 2; i++) {
+            for(int i = 0; i < 3; i++) {
               data->sposy[i]--;
               data->snposy[i]--;
             }
-            for(int i = 0; i < 15; i++)
+            for(int i = 0; i < 19; i++)
             data->BlockPosy[i]--;
           }
       }
@@ -491,8 +502,8 @@ static void Ghostbuster_update(unsigned long delta)
         }
 
         for(int i = 0; i < data->ShootCounter; i+=10)
-          for(int j = 0; j < 2; j++)
-            if(data->ShootPosy[i/10] == data->sposy[j])
+          for(int j = 0; j < 3; j++)
+            if(data->ShootPosy[i/10] == data->sposy[j] && data->pyposy+10 >= data->syposy[j] && data->pyposy+10 <= data->syposy[j]+12)
               data->syposy[j] = 100;
 
 
