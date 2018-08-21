@@ -6,6 +6,7 @@
 #include "controls.h"
 #include "music.h"
 #include "font.h"
+#include "tunes.h"
 
 #define MAXLEN 128
 
@@ -116,7 +117,8 @@ static void Snake_prepare()
     data->hiscore = 0;
     game_load(&data->hiscore, sizeof(data->hiscore));
 #ifndef EMULATED
-    Player_setup_melody(33);
+    tune_init(the_last_v8);
+    tune_enable();
 #endif
 }
 
