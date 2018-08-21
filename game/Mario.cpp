@@ -470,6 +470,7 @@ struct MarioData
   int i;
   int Jamp;
   int j;
+  int GameR;
   int i1;
   //int Map[40][8];
   int MONEY[20][2];
@@ -488,6 +489,7 @@ static void Mario_prepare()
 {game_set_ups(60);
   /* Здесь код, который будет исполнятся один раз */
   /* Здесь нужно инициализировать переменные */
+  data->GameR=0;
   data->L=1;
   data->MapX = 6;
   data->MapY = -64;
@@ -553,12 +555,29 @@ if (0-data->MapX+(64)>data->MONEY[data->i][0]*16)
   game_draw_sprite(&MarioGreen , data->MarioX, 0, GREEN); 
     }
   //data->MarioY
-      char s[5];
-    sprintf(s, "%d",data->MoneyN);
-    game_draw_text((uint8_t*)s, 43, 7, RED);
+     
 //char s[5];
    
-   
+   if (data->GameR==1){
+    game_draw_text((uint8_t*)"GAME OVER", 0, 0, RED);
+    char s[5];
+    sprintf(s, "%d",data->MoneyN);
+    game_draw_text((uint8_t*)(s), 40, 20, RED);
+    game_draw_text((uint8_t*)"Score: ", 0, 20, RED);
+    }else{
+      if (data->GameR==2){
+    game_draw_text((uint8_t*)"YOU WIN", 10, 0, RED);
+    char s[5];
+    sprintf(s, "%d",data->MoneyN);
+    game_draw_text((uint8_t*)(s), 40, 20, RED);
+    game_draw_text((uint8_t*)"Score: ", 0, 20, RED);
+    }else{
+       char s[5];
+    sprintf(s, "%d",data->MoneyN);
+    game_draw_text((uint8_t*)s, 40, 0, RED);
+    }
+      }
+      
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
@@ -571,11 +590,22 @@ if (0-data->MapX+(64)>data->MONEY[data->i][0]*16)
 
 static void Mario_update(unsigned long delta)
 {
+  if (data->GameR != 0)
+  if (game_is_button_pressed (BUTTON_B))
+  {
+  data->GameR=0;
+for (data->i1=0 ; data->i1<=19 ;data->i1++){
+  data->MONEY[data->i1][0]=0;
+  data->MONEY[data->i1][1]=0;
+  
+  }
+  data->MoneyN=0;
+  }
 data->i1=0;
 while(((data->MONEY[data->i1][0]!=0)||(data->MONEY[data->i1][1]!=0))&&(data->i1<19)){
   data->i1=data->i1+1;
   }
-  
+if(data->GameR==0){  
   if (game_is_button_pressed (BUTTON_LEFT)) {
     data->L=0;
     data->ButtonLeft = 1;
@@ -598,6 +628,12 @@ while(((data->MONEY[data->i1][0]!=0)||(data->MONEY[data->i1][1]!=0))&&(data->i1<
     data->ButtonDown = 1;
   } else {
     data->ButtonDown = 0;
+  }
+}else{
+  data->ButtonDown = 0;
+  data->ButtonUp = 0;
+   data->ButtonRight = 0;
+   data->ButtonLeft = 0;
   }
   data->Jamp= data->Jamp - ((delta / 10) );
   if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)){
@@ -696,6 +732,7 @@ if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY
   data->MarioX = 30;
   data->MarioY = 32; 
       data->MapY= data->SetUpMapY+1;
+      data->GameR = 1;
       }
 //((0-data->MapX)+data->MarioX+4)/16;
  // data->MONEY[data->i1][1]=(data->MarioY-15-data->MapY)/16;
@@ -708,6 +745,17 @@ data->MONEY[data->i][0]=0-data->MONEY[data->i][0];
 data->MONEY[data->i][1]=0-data->MONEY[data->i][1];
 data->MoneyN =data->MoneyN +1;
 }}
+
+if (data->MapX<-1180){
+  data->GameR = 2;
+  
+  }
+
+
+
+
+
+
 }
 
 game_instance Mario = {
