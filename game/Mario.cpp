@@ -382,6 +382,7 @@ struct MarioData
   //int Map[40][8];
   int MONEY[20][2];
   int flag;
+  int MoneyN;
   //int Map[5][5] = {{ 1, 1, 1, 1, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 1 }};
   /* Объявляйте ваши переменные здесь */
   /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
@@ -399,6 +400,7 @@ static void Mario_prepare()
   data->MapY = -64;
   data->MarioX = 30;
   data->MarioY = 32;
+  data->MoneyN = 0 ;
   //data->Map[2][2]=1;
 
       data->SetUpMapY=data->MapY;
@@ -413,7 +415,7 @@ static void Mario_render()
   /* Он не должен менять состояние игры, для этого есть функция update */
   //pgm_read_byte(&Map[][])
   for (int i =max(((0-data->MapX)/16),0) ; i <= ((0-data->MapX)/16)+4; i++) 
-    for (int j = 0; j <= 8; j++){
+    for (int j = max(8-(((64)+data->MapY)/16)-4,0); j <= min(8-(((64)+data->MapY)/16),8); j++){
           if (pgm_read_byte(&Map[i][j]) == 0){
      game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLUE);
    }
@@ -445,8 +447,14 @@ if (0-data->MapX+(64)>data->MONEY[data->i][0]*16)
   game_draw_sprite(&MarioYellow, data->MarioX, 0, YELLOW);
   game_draw_sprite(&MarioGreen , data->MarioX, 0, GREEN); 
     }
-  
-
+  //data->MarioY
+      char s[5];
+    sprintf(s, "%d",data->MoneyN);
+    game_draw_text((uint8_t*)s, 43, 7, RED);
+//char s[5];
+   sprintf(s, "%d",8-(((64)+data->MapY)/16));
+    game_draw_text((uint8_t*)s, 4, 7, RED);
+   
   //game_draw_sprite(&StoneGreen, data->MapX, 48, RED);
   //game_draw_sprite(&StoneWhite, data->MapX, 48, WHITE);
   
@@ -489,7 +497,9 @@ while(((data->MONEY[data->i1][0]!=0)||(data->MONEY[data->i1][1]!=0))&&(data->i1<
   if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)){
   data->Jamp=0;
   }
-  
+  if (data->MapY>32){
+    data->Jamp=-1;
+  }
   if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0)||(pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX) / 16 )][((data->MarioY+16-data->MapY)/16)])!=0))
 if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   data->Jamp=10;
@@ -505,6 +515,12 @@ if((data->Jamp == 0)&&(data->ButtonUp == 1)){
   for(data->i=0;data->i<19;data->i++){
     if (data->MONEY[data->i][0]==((0-data->MapX)+data->MarioX+4)/16){
       if (data->MONEY[data->i][1]==(data->MarioY-15-data->MapY)/16){
+      data->flag=1;
+      
+      }
+    }
+    if (-data->MONEY[data->i][0]==((0-data->MapX)+data->MarioX+4)/16){
+      if (-data->MONEY[data->i][1]==(data->MarioY-15-data->MapY)/16){
       data->flag=1;
       
       }
@@ -576,6 +592,17 @@ if ((pgm_read_byte(&Map[(((0-data->MapX)+data->MarioX+11) / 16 )][((data->MarioY
   data->MarioY = 32; 
       data->MapY= data->SetUpMapY+1;
       }
+//((0-data->MapX)+data->MarioX+4)/16;
+ // data->MONEY[data->i1][1]=(data->MarioY-15-data->MapY)/16;
+      
+      for(data->i=0;data->i<data->i1;data->i++){
+if ((data->MarioY+5-data->MapY)/16==data->MONEY[data->i][1]-1)
+if (((0-data->MapX)+data->MarioX+5)/16==data->MONEY[data->i][0])
+{
+data->MONEY[data->i][0]=0-data->MONEY[data->i][0];
+data->MONEY[data->i][1]=0-data->MONEY[data->i][1];
+data->MoneyN =data->MoneyN +1;
+}}
 }
 
 game_instance Mario = {
