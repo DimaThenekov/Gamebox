@@ -740,7 +740,10 @@ data->MoneyN =data->MoneyN +1;
 
 if (data->MapX<-1180){
   data->GameR = 2;
-  
+  data->MapX = 3;
+  data->MarioX = 30;
+  data->MarioY = 32; 
+      data->MapY= data->SetUpMapY+1;
   }
 
 
