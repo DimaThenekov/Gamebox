@@ -482,7 +482,7 @@ static void draw_map()
     }
 }
 
-static bool wall_at(int8_t x, int8_t y)
+static bool wall_at_impl(int8_t x, int8_t y, uint8_t br)
 {
     int8_t bx = x / BLOCK_WIDTH;
     int8_t by = y / BLOCK_HEIGHT;
@@ -496,7 +496,7 @@ static bool wall_at(int8_t x, int8_t y)
             bool flag = true;
             for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
                 if (data->breaking_x[i] == bx + 1 && data->breaking_y[i] == by) {
-                    if (data->breaking_br[i] > 0) {
+                    if (data->breaking_br[i] >= br) {
                         flag = false;
                         break;
                     }
@@ -516,7 +516,7 @@ static bool wall_at(int8_t x, int8_t y)
         bool flag = true;
         for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
             if (data->breaking_x[i] == bx && data->breaking_y[i] == by) {
-                if (data->breaking_br[i] > 0) {
+                if (data->breaking_br[i] >= br) {
                     flag = false;
                     break;
                 }
@@ -528,6 +528,10 @@ static bool wall_at(int8_t x, int8_t y)
     }
     
     return false;
+}
+
+static bool wall_at(int8_t x, int8_t y) {
+    return wall_at_impl(x, y, BREAKING);
 }
 
 static bool ladder_at(int8_t x, int8_t y)
@@ -864,7 +868,7 @@ static void LodeRunner_update(unsigned long delta)
             init_level();
         }
         
-        if (wall_at(data->player_x, data->player_y)) {
+        if (wall_at_impl(data->player_x, data->player_y, 1)) {
             data->state = LOST;
             game_draw_sprite(&gameover_sprite, GAMEOVER_X, GAMEOVER_Y, WHITE);
             return;
