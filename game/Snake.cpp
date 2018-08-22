@@ -255,7 +255,7 @@ static void Snake_update(unsigned long delta)
     data->rotRightPressed = game_is_button_pressed(ROTRIGHT);
 }
 
-game_instance Snake = {
+const game_instance Snake PROGMEM = {
     "Snake",
     Snake_prepare,
     Snake_render,

@@ -360,6 +360,7 @@ static void Ghostbuster_prepare()
     data->Win = false;
     data->block = 0;
     data->deadsl = 0;
+    data->gameover = false;
 
 #ifndef EMULATED
     tune_init(ghostbusters);
@@ -389,8 +390,6 @@ static void Ghostbuster_render()
   if(data->Win)
     game_draw_text((const unsigned char *)"YOU WIN", 10, 29, GREEN);
 
-    game_draw_text(data->deadsl+"/4", 2, 2);
-
   if(!data->isBoss) {
 
     /* Здесь код, который будет вывзваться для отрисовки кадра */
@@ -418,10 +417,21 @@ static void Ghostbuster_render()
 static void Ghostbuster_update(unsigned long delta)
 {
     if(data->gameover)
+    {
+      if( game_is_button_pressed(BUTTON_A) || game_is_button_pressed(BUTTON_B) || game_is_button_pressed(BUTTON_UP)  || game_is_button_pressed(BUTTON_DOWN) || game_is_button_pressed(BUTTON_RIGHT) || game_is_button_pressed(BUTTON_LEFT)){
+        Ghostbuster_prepare();
+        data->gameover = false;
+      }
       return;
+    }
     if(data->Win)
+    {
+      if( game_is_button_pressed(BUTTON_A) || game_is_button_pressed(BUTTON_B) || game_is_button_pressed(BUTTON_UP)  || game_is_button_pressed(BUTTON_DOWN) || game_is_button_pressed(BUTTON_RIGHT) || game_is_button_pressed(BUTTON_LEFT)){
+        Ghostbuster_prepare();
+        data->Win = false;
+      }
       return;
-
+    }
     if(data->BlockPosy[18]+6 == 0 && data->deadsl == 4) data->isBoss = true;
 
     if(!data->isBoss) {
@@ -635,8 +645,9 @@ static void Ghostbuster_update(unsigned long delta)
     /* Здесь можно работать с кнопками и обновлять переменные */
 }
 }
-game_instance Ghostbuster = {
-    "Ghostbuster",         /* Имя, отображаемое в меню */
+
+const game_instance Ghostbuster PROGMEM = {
+    "Ghostbust",         /* Имя, отображаемое в меню */
     Ghostbuster_prepare,
     Ghostbuster_render,
     Ghostbuster_update,

@@ -144,7 +144,7 @@ static void Flappy_update(unsigned long delta)
     ++data->score;
 }
 
-game_instance Flappy = {
+const game_instance Flappy PROGMEM = {
     "Flappy",
     Flappy_prepare,
     Flappy_render,

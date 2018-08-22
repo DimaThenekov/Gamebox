@@ -446,7 +446,7 @@ if(i!=10)
         }
 }
 
-game_instance Saper = {
+const game_instance Saper PROGMEM = {
     "Saper",         /* Имя, отображаемое в меню */
     Saper_prepare,
     Saper_render,

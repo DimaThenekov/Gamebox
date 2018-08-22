@@ -8,31 +8,6 @@
 #include "menu.h"
 #include "music.h"
 
-/* List of all games */
-
-extern game_instance BackspaceInvaders;
-extern game_instance Snake;
-#ifdef FRAME_BUFFER
-extern game_instance Snake2;
-extern game_instance Snail;
-extern game_instance Ghostbuster;
-#endif
-extern game_instance Flappy;
-extern game_instance SpaceShips;
-extern game_instance Tester;
-extern game_instance Raycaster;
-extern game_instance BreakOut;
-extern game_instance Saper;
-extern game_instance Mario;
-#ifndef EMULATED /* for use only on real hardware */
-extern game_instance Dump;
-extern game_instance Player;
-#endif
-/* Register your game like so:
- *
- * extern game_instance YOUR_GAME_NAME;
- */
-
 static const MenuItem main_menu[] PROGMEM = {
     { "Invaders", &BackspaceInvaders },
     { "Snake", &Snake },
@@ -40,6 +15,7 @@ static const MenuItem main_menu[] PROGMEM = {
     { "Snake2", &Snake2 },
     { "Snail", &Snail },
     { "GhostBuster", &Ghostbuster },
+    { "LodeRunner", &LodeRunner },
 #endif
     { "Flappy", &Flappy },
     { "SpaceShips", &SpaceShips },
@@ -71,7 +47,7 @@ static const MenuItem main_menu[] PROGMEM = {
 static uint8_t memory[AVAIL_SPACE];
 
 static Menu *menu;
-static game_instance* ptr;
+static const game_instance *ptr;
 static long btn_timeout;
 static bool is_paused;
 
@@ -120,15 +96,15 @@ void update(unsigned long delta)
 {
     if (!ptr)
     {
-        ptr = (game_instance*)menu_update(menu, delta);
-        if (ptr && ptr->data_size <= AVAIL_SPACE)
+        ptr = (const game_instance*)menu_update(menu, delta);
+        if (ptr && pgm_read_word(&ptr->data_size) <= AVAIL_SPACE)
         {
             menu_finish(menu);
             menu = NULL;
             random_setup();
             // run game
-            *(ptr->data) = memory;
-            ptr->prepare();
+            *(void**)(pgm_read_pointer(&ptr->data)) = memory;
+            ((game_function_prepare)pgm_read_pointer(&ptr->prepare))();
         }
         else
         {
@@ -156,7 +132,7 @@ void update(unsigned long delta)
         {
             // shouldn't use SELECT in games
             game_reset_buttons(PAUSE);
-            ptr->update(delta);
+            ((game_function_update)pgm_read_pointer(&ptr->update))(delta);
         }
         else
         {
@@ -181,7 +157,7 @@ void render()
 {
     if (ptr && ptr->render)
     {
-        ptr->render();
+        ((game_function_render)pgm_read_pointer(&ptr->render))();
     }
     if (menu)
     {

@@ -104,7 +104,7 @@ static void Player_update(unsigned long delta)
     }
 }
 
-game_instance Player = {
+const game_instance Player PROGMEM = {
     "Player",
     Player_prepare,
     Player_render,

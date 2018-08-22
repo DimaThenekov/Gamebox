@@ -616,7 +616,7 @@ switch (data->game_set)
   }
 }
 
-game_instance SpaceShips = {
+const game_instance SpaceShips PROGMEM = {
     "SpaceShips",
     SpaceShips_prepare,
     SpaceShips_render,
