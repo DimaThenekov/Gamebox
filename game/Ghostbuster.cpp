@@ -226,14 +226,14 @@ const game_sprite YourSprite PROGMEM = {
     R, R, R, R, R, S, 0, 0, S, R, R, R, R, R, R, R, R, R, R, R, R, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O,
     R, R, R, R, R, S, S, S, S, R, R, R, R, R, R, R, R, R, R, R, R, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O,
     R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O,
-    R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, 
+    R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R,
     R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R,
     R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R,
     O, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R,
     O, O, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R, R,
     O, O, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, G,
     O, O, O, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G, 0, G,
-    O, O, O, O, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, O                          
+    O, O, O, O, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, O
  };
 
  const game_color_sprite boss PROGMEM = {
@@ -257,7 +257,7 @@ const game_sprite YourSprite PROGMEM = {
  const game_color_sprite laser_red PROGMEM = {
       3, 2, laser_lines_red
  };
- 
+
 struct GhostbusterData
 {
    int8_t pposy, ShootCounter, pyposy;
@@ -278,6 +278,8 @@ struct GhostbusterData
    int8_t isDamage;
    int8_t phase;
    bool Win;
+   int8_t block;
+   int8_t deadsl;
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
@@ -301,6 +303,9 @@ static void Ghostbuster_prepare()
     data->sposy[2] = 160;
     data->snposy[2] = 160;
     data->syposy[2] = 50;
+    data->sposy[3] = 181;
+    data->snposy[3] = 181;
+    data->syposy[3] = 50 - 12;
     data->pposy = 10;
     data->pyposy = 47;
     data->BlockPosy[0] = 36;
@@ -353,6 +358,9 @@ static void Ghostbuster_prepare()
     data->isDamage = 4;
     data->phase = 0;
     data->Win = false;
+    data->block = 0;
+    data->deadsl = 0;
+    data->gameover = false;
 
 #ifndef EMULATED
     tune_init(ghostbusters);
@@ -381,12 +389,12 @@ static void Ghostbuster_render()
 
   if(data->Win)
     game_draw_text((const unsigned char *)"YOU WIN", 10, 29, GREEN);
-  
+
   if(!data->isBoss) {
 
     /* Здесь код, который будет вывзваться для отрисовки кадра */
     /* Он не должен менять состояние игры, для этого есть функция update */
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 4; i++)
       game_draw_color_sprite(&slimer, data->sposy[i], data->syposy[i]);
 
     for(int i = 0; i < 19; i++)
@@ -397,7 +405,7 @@ static void Ghostbuster_render()
     game_draw_color_sprite(&boss, data->BossPosX, data->BossPosY);
     for(int i = 0; i < data->BossLifes; i++)
         game_draw_color_sprite(&boss_lifes, 17+i*2, 1);
-    if( data->phase > 60 && data->phase <= 100 ) 
+    if( data->phase > 60 && data->phase <= 100 )
         for(int i = 0; i < 10; i++)
             game_draw_color_sprite(&laser_white, data->BossPosX+4-i*3, data->BossPosY+5+i);
     if( data->phase > 100 && data->phase <= 102 )
@@ -409,12 +417,23 @@ static void Ghostbuster_render()
 static void Ghostbuster_update(unsigned long delta)
 {
     if(data->gameover)
+    {
+      if( game_is_button_pressed(BUTTON_A) || game_is_button_pressed(BUTTON_B) || game_is_button_pressed(BUTTON_UP)  || game_is_button_pressed(BUTTON_DOWN) || game_is_button_pressed(BUTTON_RIGHT) || game_is_button_pressed(BUTTON_LEFT)){
+        Ghostbuster_prepare();
+        data->gameover = false;
+      }
       return;
+    }
     if(data->Win)
+    {
+      if( game_is_button_pressed(BUTTON_A) || game_is_button_pressed(BUTTON_B) || game_is_button_pressed(BUTTON_UP)  || game_is_button_pressed(BUTTON_DOWN) || game_is_button_pressed(BUTTON_RIGHT) || game_is_button_pressed(BUTTON_LEFT)){
+        Ghostbuster_prepare();
+        data->Win = false;
+      }
       return;
+    }
+    if(data->BlockPosy[18]+6 == 0 && data->deadsl == 4) data->isBoss = true;
 
-    if(data->BlockPosy[18]+6 == 0) data->isBoss = true;
-    
     if(!data->isBoss) {
     for(int i = 0; i < 19; i++) {
 
@@ -423,10 +442,10 @@ static void Ghostbuster_update(unsigned long delta)
           break;
         }
 
-        else 
+        else
             data->isCanWalk = true;
-          
-      
+
+
     }
     data->BeginOfJump = 47;
     for(int i = 0; i<19; i++) {
@@ -434,17 +453,17 @@ static void Ghostbuster_update(unsigned long delta)
         if ( ( (data->pposy+2 >= data->BlockPosy[i]) && (data->pposy+2 <= data->BlockPosy[i] + 6) ) ||
         ( (data->pposy+11 >= data->BlockPosy[i]) && (data->pposy+11 <= data->BlockPosy[i] + 6) ) ||
         ( (data->pposy+6 >= data->BlockPosy[i]) && (data->pposy+6 <= data->BlockPosy[i] + 6) ) )
-                 { data->BeginOfJump = data->BlockYPosy[i]-15;}
-             
-                
-          
+                 { data->BeginOfJump = data->BlockYPosy[i]-15; data->block = i; }
+
+
+
     }
 
-   
+
     /* Здесь код, который будет выполняться в цикле */
     /* Переменная delta содержит количество миллисекунд с последнего вызова */
       data->loli = !data->loli;
-      for(int i = 0; i < 3; i++) {
+      for(int i = 0; i < 4; i++) {
           if( data->sposy[i] != data->pposy && data->loli )
               if(data->lol[i]) {
                 if(data->sposy[i] <= data->snposy[i] - 15)
@@ -457,31 +476,31 @@ static void Ghostbuster_update(unsigned long delta)
                 data->sposy[i]++;
               }
 
-            
+
           if( ((data->sposy[i] == data->pposy) || (data->pposy + 13 == data->sposy[i])) && (data->syposy[i] != 100) && data->pyposy+7 >= data->syposy[i] && data->pyposy+7 <= data->syposy[i]+12)
             data->gameover = true;
       }
-      
+
         if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
               data->flag = false;
           }
           else if ( (game_is_button_pressed(BUTTON_RIGHT)) && (!data->isShoot) ) {
             data->flag = true;
           }
-        
+
       if(data->isCanWalk) {
-        
+
           if( (game_is_button_pressed(BUTTON_LEFT)) && (!data->isShoot) ) {
-            for(int i = 0; i < 3; i++) {
+            for(int i = 0; i < 4; i++) {
               data->sposy[i]++;
               data->snposy[i]++;
             }
             for(int i = 0; i < 19; i++)
               data->BlockPosy[i]++;
-              
+
           }
           else if ( (game_is_button_pressed(BUTTON_RIGHT)) && (!data->isShoot) ) {
-            for(int i = 0; i < 3; i++) {
+            for(int i = 0; i < 4; i++) {
               data->sposy[i]--;
               data->snposy[i]--;
             }
@@ -490,7 +509,7 @@ static void Ghostbuster_update(unsigned long delta)
           }
       }
 
-      if( (game_is_button_pressed(BUTTON_A)) && (data->pyposy == data->BeginOfJump) )
+      if( (game_is_button_pressed(BUTTON_A)) && (data->pyposy == data->BeginOfJump || data->pyposy == 47) )
         data->isShoot = true;
       else
         data->isShoot = false;
@@ -510,23 +529,31 @@ static void Ghostbuster_update(unsigned long delta)
         }
 
         for(int i = 0; i < data->ShootCounter; i+=10)
-          for(int j = 0; j < 3; j++)
+          for(int j = 0; j < 4; j++)
             if(data->ShootPosy[i/10] == data->sposy[j] && data->pyposy+10 >= data->syposy[j] && data->pyposy+10 <= data->syposy[j]+12)
               data->syposy[j] = 100;
 
 
-      if( (data->pyposy == data->BeginOfJump) && (game_is_button_pressed(BUTTON_B) ) ) {
+      if( (data->pyposy == data->BeginOfJump || data->pyposy == 47) && (game_is_button_pressed(BUTTON_B) ) ) {
           data->isJump = true;
-          data->EndOfJump = data->BeginOfJump - 10;
+          if(data->BlockYPosy[data->block]+6 >= data->pyposy+15)
+              data->EndOfJump = data->BeginOfJump - 10;
+          else
+              data->EndOfJump = max(data->BlockYPosy[data->block]+6,37);
       }
       if(data->pyposy <= data->EndOfJump)
           data->isJump = false;
 
-      if(data->isJump) 
+      if(data->isJump)
         data->pyposy--;
 
-      if( (!data->isJump) && (data->pyposy < data->BeginOfJump))
-          data->pyposy++;
+      if(data->pyposy+15 <= data->BlockYPosy[data->block]) {
+        if( (!data->isJump) && (data->pyposy < data->BeginOfJump))
+            data->pyposy++;
+          }
+          else
+          if( (!data->isJump) && (data->pyposy < 47))
+              data->pyposy++;
     }
 
     else {
@@ -545,15 +572,15 @@ static void Ghostbuster_update(unsigned long delta)
         data->phase++;
         if(data->phase > 102)
             data->phase = 0;
-        
-       if( (data->pyposy == data->BeginOfJump) && (game_is_button_pressed(BUTTON_UP) ) ) {
+
+       if( (data->pyposy == data->BeginOfJump) && (game_is_button_pressed(BUTTON_B) ) ) {
           data->isJump = true;
           data->EndOfJump = data->BeginOfJump - 10;
       }
       if(data->pyposy <= data->EndOfJump)
           data->isJump = false;
 
-      if(data->isJump) 
+      if(data->isJump)
         data->pyposy--;
 
     data->loli = !data->loli;
@@ -563,7 +590,7 @@ static void Ghostbuster_update(unsigned long delta)
         data->pposy--;
         data->flag = false;
     }
-    
+
 
     if( (game_is_button_pressed(BUTTON_RIGHT)) && (data->pposy+13 < 64) && (data->loli) && (!data->isShoot) ) {
         data->pposy++;
@@ -595,7 +622,7 @@ static void Ghostbuster_update(unsigned long delta)
         data->gameover = true;
 
 
-      
+
       for(int i = 0; i < data->ShootCounter; i+=10)
             if(data->ShootPosy[i/10] >= data->BossPosX) {
               data->isDamage++;
@@ -605,7 +632,7 @@ static void Ghostbuster_update(unsigned long delta)
               }
             }
       }
-      
+
       if(data->BossLifes <= 0)
         data->Win = true;
 
@@ -614,7 +641,7 @@ static void Ghostbuster_update(unsigned long delta)
        for(int i = 0; i < 10; i++)
             if( data->BossPosX+4-i*3 < data->pposy+13 && data->BossPosX+4-i*3 > data->pposy &&
             data->BossPosY+5+i < data->pyposy+15 && data->BossPosY+5+i > data->pyposy)
-                data->gameover = true;      
+                data->gameover = true;
     /* Здесь можно работать с кнопками и обновлять переменные */
 }
 }

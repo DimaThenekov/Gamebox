@@ -15,6 +15,9 @@ target_sources(gamebox PUBLIC ../BackspaceInvaders.cpp ../BreakOut.cpp ../Flappy
                ../Raycaster.cpp ../Saper.cpp ../Snake.cpp ../Snail.cpp ../Snake2.cpp
                ../Tester.cpp ../Mario.cpp ../Ghostbuster.cpp ../SpaceShips.cpp ../LodeRunner.cpp)
 
+target_sources(gamebox PUBLIC ../application.cpp ../avrfix.cpp ../menu.cpp
+                         ../random.cpp)
+
 target_sources(gamebox PUBLIC ../application.cpp ../avrfix.cpp
 			   ../menu.cpp ../random.cpp)
 target_compile_definitions(gamebox PUBLIC EMULATED)

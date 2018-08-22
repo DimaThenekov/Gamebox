@@ -12,6 +12,7 @@
 
 #define MAX_GOLD 32
 #define MAX_BREAKING 16
+#define MAX_ENEMIES 8
 
 #define BLOCK_WIDTH 6
 #define BLOCK_HEIGHT 6
@@ -26,6 +27,7 @@
 
 #define ANIM_INTERVAL 100
 #define MOVE_INTERVAL 50
+#define ENEMY_MOVE_INTERVAL 75
 #define DIG_INTERVAL 250
 #define REGEN_TIMEOUT 5000
 #define FAST_REGEN_TIMEOUT 500
@@ -34,6 +36,16 @@
 #define LAND 0
 #define LADDER 1
 #define ROPE 2
+
+// enemy states
+#define DISABLED 0
+#define MOVING_LEFT 1
+#define MOVING_RIGHT 2
+#define MOVING_UP 3
+#define MOVING_DOWN 4
+#define RESPAWN 5
+#define FALLING 6
+#define TRAPPED 7
 
 // game state
 #define SELECTING 0
@@ -296,7 +308,7 @@ static const uint8_t levels[] PROGMEM {
     "......F..."
     "...RRRFG.."
     "BLBBGBBB.."
-    ".L..G...G."
+    ".L..E...G."
     "BBBBBBLBBB"
     "......LB.."
     "....P.LBRR"
@@ -317,6 +329,11 @@ static const uint8_t levels[] PROGMEM {
     "SSSSSSSSSS"
 };
 
+struct Enemy {
+    uint8_t state, anim;
+    int8_t x, y;
+    int8_t sx, sy;
+};
 
 struct LodeRunnerData
 {
@@ -331,6 +348,7 @@ struct LodeRunnerData
     unsigned long anim_update;
     unsigned long move_update;
     unsigned long dig_update;
+    unsigned long enemy_move_update;
     unsigned long time;
 
     int8_t picked_gold_x[MAX_GOLD];
@@ -341,6 +359,8 @@ struct LodeRunnerData
     int8_t breaking_y[MAX_BREAKING];
     uint8_t breaking_br[MAX_BREAKING];
     unsigned long breaking_regen[MAX_BREAKING];
+
+    Enemy enemies[MAX_ENEMIES];
 
     Menu *menu;
     uint8_t state;
@@ -482,7 +502,7 @@ static void draw_map()
     }
 }
 
-static bool wall_at_impl(int8_t x, int8_t y, uint8_t br)
+static bool wall_at_impl(int8_t x, int8_t y, uint8_t br, bool ignore)
 {
     int8_t bx = x / BLOCK_WIDTH;
     int8_t by = y / BLOCK_HEIGHT;
@@ -506,6 +526,16 @@ static bool wall_at_impl(int8_t x, int8_t y, uint8_t br)
                 return true;
             }
         }
+
+        if (!ignore) {
+            for (uint8_t i = 0; i < MAX_ENEMIES; ++i) {
+                if (data->enemies[i].state == TRAPPED) {
+                    if ((bx + 1 == data->enemies[i].x / BLOCK_WIDTH) && (by == data->enemies[i].y / BLOCK_HEIGHT)) {
+                        return true;
+                    }
+                }
+            }
+        }
     }
     uint8_t c = get(bx, by);
     if (c == 'S') {
@@ -526,12 +556,22 @@ static bool wall_at_impl(int8_t x, int8_t y, uint8_t br)
             return true;
         }
     }
+
+    if (!ignore) {
+        for (uint8_t i = 0; i < MAX_ENEMIES; ++i) {
+            if (data->enemies[i].state == TRAPPED) {
+                if ((bx == data->enemies[i].x / BLOCK_WIDTH) && (by == data->enemies[i].y / BLOCK_HEIGHT)) {
+                    return true;
+                }
+            }
+        }
+    }
     
     return false;
 }
 
-static bool wall_at(int8_t x, int8_t y) {
-    return wall_at_impl(x, y, BREAKING);
+static inline bool wall_at(int8_t x, int8_t y) {
+    return wall_at_impl(x, y, BREAKING, false);
 }
 
 static bool ladder_at(int8_t x, int8_t y)
@@ -603,9 +643,16 @@ static void init_level()
     data->level_gold = 0;
     data->level_ptr = (uint8_t*)levels;
     data->level_ptr += SCREEN_WIDTH * SCREEN_HEIGHT * data->level;
-    for (int8_t i = 0; i < MAX_BREAKING; ++i) {
+    for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
         data->breaking_br[i] = 0;
     }
+
+    for (uint8_t i = 0; i < MAX_ENEMIES; ++i) {
+        data->enemies[i].state = DISABLED;
+    }
+
+    uint8_t enemies = 0;
+
     for (int8_t i = 0; i < data->level_width; ++i) {
         for (int8_t j = 0; j < data->level_height; ++j) {
             if (get(i, j) == 'P') {
@@ -615,6 +662,14 @@ static void init_level()
 
             if (get(i, j) == 'G') {
                 data->level_gold++;
+            }
+
+            if (get(i, j) == 'E') {
+                data->enemies[enemies].state = RESPAWN;
+                data->enemies[enemies].anim = STANDING;
+                data->enemies[enemies].x = data->enemies[enemies].sx = BLOCK_WIDTH * i;
+                data->enemies[enemies].y = data->enemies[enemies].sy = BLOCK_HEIGHT * j;
+                enemies++;
             }
         }
     }
@@ -653,6 +708,32 @@ static void LodeRunner_render()
         game_draw_sprite(&player_sprites[data->player_anim],
                         data->player_x + SCREEN_PADDING_X,
                         data->player_y + SCREEN_PADDING_Y, GREEN);
+
+        for (uint8_t i = 0; i < MAX_ENEMIES; ++i) {
+            if (data->enemies[i].state) {
+                game_draw_sprite(&player_sprites[data->enemies[i].anim],
+                                data->enemies[i].x + SCREEN_PADDING_X,
+                                data->enemies[i].y + SCREEN_PADDING_Y, RED);
+            }
+        }
+    }
+}
+
+static void enemy_select_direction(Enemy *e)
+{
+    e->anim = STANDING;
+    if (data->player_x < e->x) {
+        e->state = MOVING_LEFT;
+    } else {
+        e->state = MOVING_RIGHT;
+    }
+
+    if (e->state == MOVING_LEFT && wall_at(e->x - BLOCK_WIDTH, e->y)) {
+        e->state = MOVING_RIGHT;
+    }
+
+    if (e->state == MOVING_RIGHT && wall_at(e->x + BLOCK_WIDTH, e->y)) {
+        e->state = MOVING_LEFT;
     }
 }
 
@@ -690,6 +771,7 @@ static void LodeRunner_update(unsigned long delta)
 
     bool do_anim = false;
     bool do_move = false;
+    bool do_enemy_move = false;
     bool do_dig = false;
 
     if (data->time - data->anim_update > ANIM_INTERVAL) {
@@ -700,6 +782,11 @@ static void LodeRunner_update(unsigned long delta)
     if (data->time - data->move_update > MOVE_INTERVAL) {
         do_move = true;
         data->move_update = data->time;
+    }
+
+    if (data->time - data->enemy_move_update > ENEMY_MOVE_INTERVAL) {
+        do_enemy_move = true;
+        data->enemy_move_update = data->time;
     }
 
     if (data->time - data->dig_update > DIG_INTERVAL) {
@@ -869,10 +956,104 @@ static void LodeRunner_update(unsigned long delta)
             init_level();
         }
         
-        if (wall_at_impl(data->player_x, data->player_y, 1)) {
+        if (wall_at_impl(data->player_x, data->player_y, 1, true) || wall_at_impl(data->player_x, data->player_y + BLOCK_HEIGHT - 1, 1, true)) {
             data->state = LOST;
             game_draw_sprite(&gameover_sprite, GAMEOVER_X, GAMEOVER_Y, WHITE);
             return;
+        }
+    }
+
+    if (do_enemy_move) {
+        for (uint8_t i = 0; i < MAX_ENEMIES; ++i) {
+            Enemy e = data->enemies[i];
+            if (!e.state) continue;
+            if (e.state == RESPAWN) {
+                e.x = e.sx;
+                e.y = e.sy;
+                enemy_select_direction(&e);
+            }
+            int8_t bx = e.x / BLOCK_WIDTH;
+            int8_t by = e.y / BLOCK_HEIGHT;
+
+            if (bx * BLOCK_WIDTH == e.x && by * BLOCK_HEIGHT == e.y) {
+                if (!wall_at(e.x, e.y + BLOCK_HEIGHT) && !ladder_at(e.x, e.y + BLOCK_HEIGHT)) {
+                    e.state = FALLING;
+                    goto cnt;
+                }
+                if (e.state == TRAPPED) {
+                    if (wall_at_impl(e.x, e.y, 1, true)) {
+                        e.state = RESPAWN;
+                    }
+                    goto cnt;
+                }
+                if (e.state == FALLING) {
+                    enemy_select_direction(&e);
+
+                    if (wall_at(e.x - BLOCK_WIDTH, e.y) && wall_at(e.x + BLOCK_WIDTH, e.y) && wall_at(e.x, e.y + BLOCK_HEIGHT)) {
+                        e.state = TRAPPED;
+                    }
+                    goto cnt;
+                }
+                if (e.state == MOVING_LEFT || e.state == MOVING_RIGHT) {
+                    if (ladder_at(e.x, e.y + BLOCK_HEIGHT)) {
+                        if (data->player_y > e.y) {
+                            e.state = MOVING_DOWN;
+                            e.anim = CLIMBING0;
+                            goto cnt;
+                        }
+                    }
+                    if (ladder_at(e.x, e.y)) {
+                        if (data->player_y < e.y) {
+                            e.state = MOVING_UP;
+                            e.anim = CLIMBING0;
+                            goto cnt;
+                        }
+                    }
+
+                    if (e.state == MOVING_LEFT) {
+                        if (wall_at(e.x - BLOCK_HEIGHT, e.y)) {
+                            e.state = MOVING_RIGHT;
+                            e.anim = STANDING;
+                        }
+                    } else {
+                        if (wall_at(e.x + BLOCK_HEIGHT, e.y)) {
+                            e.state = MOVING_LEFT;
+                            e.anim = STANDING;
+                        }
+                    }
+                }
+                if (e.state == MOVING_DOWN || e.state == MOVING_UP) {
+                    if (e.state == MOVING_DOWN) {
+                        if (!ladder_at(e.x, e.y + BLOCK_HEIGHT)) {
+                            enemy_select_direction(&e);
+                        }
+                    } else {
+                        if (!ladder_at(e.x, e.y)) {
+                            enemy_select_direction(&e);
+                        }
+                    }
+                }
+            }
+cnt:;
+    switch (e.state) {
+        case MOVING_LEFT: e.x--; break;
+        case MOVING_RIGHT: e.x++; break;
+        case MOVING_UP: e.y--; break;
+        case MOVING_DOWN: case FALLING: e.y++; break;
+    }
+
+    if (e.state == FALLING) {
+        e.anim = STANDING;
+    }
+    if (e.state != TRAPPED) {
+        if (e.anim == STANDING) e.anim = WALKING0;
+        else if (e.anim == WALKING0) e.anim = WALKING1;
+        else if (e.anim == WALKING1) e.anim = WALKING0;
+        else if (e.anim == CLIMBING0) e.anim = CLIMBING1;
+        else if (e.anim == CLIMBING1) e.anim = CLIMBING0;
+    }
+
+                data->enemies[i] = e;
         }
     }
 
