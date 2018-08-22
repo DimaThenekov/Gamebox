@@ -761,7 +761,7 @@ if (data->MapX<-1180){
 
 }
 
-game_instance Mario = {
+const game_instance Mario PROGMEM = {
   "Mario",         /* Имя, отображаемое в меню */
   Mario_prepare,
   Mario_render,

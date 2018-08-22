@@ -85,7 +85,7 @@ void Dump_update(unsigned long delta)
     data->pressed = game_is_any_button_pressed(NEXT | PREV);
 }
 
-game_instance Dump = {
+const game_instance Dump PROGMEM = {
     "EEPROM",
     Dump_prepare,
     Dump_render,

@@ -74,7 +74,7 @@ void Tester_update(unsigned long delta)
     data->pressed = game_is_any_button_pressed(NEXT | PREV);
 }
 
-game_instance Tester = {
+const game_instance Tester PROGMEM = {
     "Font",
     Tester_prepare,
     Tester_render,

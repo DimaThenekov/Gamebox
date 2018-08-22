@@ -262,7 +262,8 @@ static void BreakOut_update(unsigned long delta) {
         data->ballY += data->speedy;
     }
 }
-game_instance BreakOut = {
+
+const game_instance BreakOut PROGMEM = {
     "BreakOut",
     BreakOut_prepare,
     BreakOut_render,

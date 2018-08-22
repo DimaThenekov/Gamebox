@@ -74,16 +74,6 @@ uint8_t game_sprite_height(const struct game_sprite *s)
     return pgm_read_byte(&s->height);
 }
 
-uint8_t game_color_sprite_width(const struct game_color_sprite *s)
-{
-    return pgm_read_byte(&s->width);
-}
-
-uint8_t game_color_sprite_height(const struct game_color_sprite *s)
-{
-    return pgm_read_byte(&s->height);
-}
-
 const uint8_t *game_sprite_line(const struct game_sprite *s, uint8_t line)
 {
     return (pgm_read_byte(&s->width) + 7) / 8 * line
@@ -92,7 +82,7 @@ const uint8_t *game_sprite_line(const struct game_sprite *s, uint8_t line)
 
 const uint8_t *game_color_sprite_line(const struct game_color_sprite *s, uint8_t line)
 {
-    return game_color_sprite_width(s) * line + (const uint8_t*)pgm_read_pointer(&s->lines);
+    return game_sprite_width(s) * line + (const uint8_t*)pgm_read_pointer(&s->lines);
 }
 
 static void game_sprite_render_line(const struct game_sprite *s, uint8_t *buf, int8_t x, uint8_t y, int8_t color, uint8_t ry)
@@ -126,7 +116,7 @@ static void game_color_sprite_render_line(const struct game_color_sprite *s,
     uint8_t *buf, int8_t x, uint8_t y, uint8_t ry)
 {
     uint8_t line = ry - y;
-    uint8_t width = game_color_sprite_width(s);
+    uint8_t width = game_sprite_width(s);
     const uint8_t *ptr = game_color_sprite_line(s, line);
     for (uint8_t dx = 0; dx < width; ++dx)
     {
@@ -205,7 +195,7 @@ void game_draw_rect(int8_t x, int8_t y, int8_t w, int8_t h, uint8_t color)
 
 void game_draw_color_sprite(const struct game_color_sprite *s, int8_t x, int8_t y)
 {
-    uint8_t height = game_color_sprite_height(s);
+    uint8_t height = game_sprite_height(s);
 #ifdef FRAME_BUFFER
     if (use_frame_buffer)
     {

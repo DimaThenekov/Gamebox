@@ -124,8 +124,10 @@ static void Template_update(unsigned long delta)
     /* Здесь можно работать с кнопками и обновлять переменные */
 }
 
-game_instance Template = {
-    "Template",         /* Имя, отображаемое в меню */
+const game_instance Template PROGMEM = {
+    "Template",         /* Название игры. 
+                           Используется как имя записи в EEPROM. 
+                           Не больше 10 символов */
     Template_prepare,
     Template_render,
     Template_update,
@@ -134,5 +136,5 @@ game_instance Template = {
 };
 
 
-/* Не забудьте зарегистрировать игру в application.cpp */
+/* Не забудьте зарегистрировать игру в application.cpp, libgame.h */
 /* Также нужно добавить файл с игрой в qt_emulator/CMakeLists.txt */

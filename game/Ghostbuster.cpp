@@ -618,7 +618,8 @@ static void Ghostbuster_update(unsigned long delta)
     /* Здесь можно работать с кнопками и обновлять переменные */
 }
 }
-game_instance Ghostbuster = {
+
+const game_instance Ghostbuster PROGMEM = {
     "Ghostbuster",         /* Имя, отображаемое в меню */
     Ghostbuster_prepare,
     Ghostbuster_render,

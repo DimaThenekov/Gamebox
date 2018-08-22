@@ -294,7 +294,7 @@ static void Raycaster_update(unsigned long delta)
     }
 }
 
-game_instance Raycaster = {
+const game_instance Raycaster PROGMEM = {
     "3D",
     Raycaster_prepare,
     Raycaster_render,

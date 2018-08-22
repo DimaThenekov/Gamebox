@@ -632,7 +632,7 @@ void BackspaceInvaders_prepare()
 }
 
 
-game_instance BackspaceInvaders = {
+const game_instance BackspaceInvaders PROGMEM = {
     "Invaders",
     BackspaceInvaders_prepare,
     BackspaceInvaders_render,

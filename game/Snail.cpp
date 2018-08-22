@@ -421,7 +421,7 @@ static void Snail_update(unsigned long delta)
     Snail_check_win();
 }
 
-game_instance Snail = {
+const game_instance Snail PROGMEM = {
     "Snail",
     Snail_prepare,
     Snail_render,

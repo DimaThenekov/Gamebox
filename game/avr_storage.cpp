@@ -14,6 +14,7 @@
 #define STORAGE_SIG2 'i'
 
 #include "storage.h"
+#include "config.h"
 #include <avr/eeprom.h>
 #include <string.h>
 
@@ -106,9 +107,10 @@ static uint8_t storage_new_file(const char *name)
     {
         // fill new entry
         int addr = SECTOR_OFFSET + SECTOR_SIZE * new_entry;
-        for (; *name ; ++name, ++addr)
+        int8_t len = 0;
+        for (; pgm_read_byte(name) && len < FILENAME_LENGTH ; ++name, ++addr, ++len)
         {
-            EEPROM_update(addr, *name);
+            EEPROM_update(addr, pgm_read_byte(name));
         }
         EEPROM_update(addr, 0);
         EEPROM_update(SECTOR_OFFSET + SECTOR_SIZE * new_entry + FILENAME_LENGTH, 0);
@@ -143,11 +145,11 @@ static uint8_t storage_find_file(const char *name)
         for (uint8_t x = 0 ; found && x < FILENAME_LENGTH ; ++x, ++p)
         {
             char c = EEPROM_read(SECTOR_OFFSET + SECTOR_SIZE * entry + x);
-            if (*p != c)
+            if (pgm_read_byte(p) != c)
             {
                 found = false;
             }
-            else if (!*p)
+            else if (!pgm_read_byte(p))
             {
                 break;
             }
