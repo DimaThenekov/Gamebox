@@ -477,7 +477,7 @@ static void Ghostbuster_update(unsigned long delta)
               }
 
 
-          if( ((data->sposy[i] == data->pposy) || (data->pposy + 13 == data->sposy[i])) && (data->syposy[i] != 100) && data->pyposy+7 >= data->syposy[i] && data->pyposy+7 <= data->syposy[i]+12)
+          if( ((data->sposy[i] == data->pposy) || (data->pposy + 13 == data->sposy[i]) || (data->sposy[i]+7 == data->pposy) || (data->pposy + 13 == data->sposy[i]+7)) && (data->syposy[i] != 100) && data->pyposy+7 >= data->syposy[i] && data->pyposy+7 <= data->syposy[i]+12)
             data->gameover = true;
       }
 
