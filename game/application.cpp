@@ -20,14 +20,15 @@ extern game_instance Tester;
 extern game_instance Raycaster;
 extern game_instance BreakOut;
 extern game_instance Saper;
+extern game_instance artyom;
 #ifndef EMULATED /* for use only on real hardware */
 extern game_instance Dump;
 extern game_instance Player;
 #endif
 /* Register your game like so:
- * 
- * extern game_instance YOUR_GAME_NAME;
- */
+ **/ 
+
+ 
 
 static const MenuItem main_menu[] PROGMEM = {
     { "Invaders", &BackspaceInvaders },
@@ -39,16 +40,18 @@ static const MenuItem main_menu[] PROGMEM = {
     { "Flappy", &Flappy },
     { "BreakOut", &BreakOut },
     { "Saper", &Saper },
+        { "artyom", &artyom },
     { "3D", &Raycaster },
     { "Font", &Tester },
 #ifndef EMULATED /* for use only on real hardware */
     { "EEPROM", &Dump },
     { "Music", &Player },
+
 #endif
     /* Register your game like so:
-     * 
-     * { "YOUR_GAME_NAME", &YOUR_GAME_NAME },
-     */
+     * */
+     
+     
     { NULL, NULL }
 };
 
