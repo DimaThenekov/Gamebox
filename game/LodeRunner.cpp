@@ -570,7 +570,7 @@ static void pick_gold()
         data->picked_gold_x[data->picked_gold] = bx;
         data->picked_gold_y[data->picked_gold] = by;
         data->picked_gold++;
-        if (data->picked_gold < data->level_gold) {
+        if (data->picked_gold != data->level_gold) {
             game_draw_sprite(&solid_sprite, SCREEN_PADDING_X + BLOCK_WIDTH * bx, SCREEN_PADDING_Y + BLOCK_HEIGHT * by, BLACK);
         } else {
             draw_map();
