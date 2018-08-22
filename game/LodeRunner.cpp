@@ -56,13 +56,54 @@
 #define PLAYING 1
 #define LOST 2
 
-#define N_LEVELS 2
+// level definitions
+
+#define N_LEVELS 3
 
 static const MenuItem level_menu[] PROGMEM = {
     { "Level 01", (void*)1 },
     { "Level 02", (void*)2 },
+    { "Level 03", (void*)3 },
 
     { "", NULL }
+};
+
+static const uint8_t levels[] PROGMEM {
+    // level 01
+    "......F..."
+    "...RRRFG.."
+    "BLBBGBBB.."
+    ".L..E...G."
+    "BBBBBBLBBB"
+    "......LB.."
+    "....P.LBRR"
+    "G.LBBBBB.G"
+    "..L..G...."
+    "BBBBBBBBBB"
+
+    // level 02
+    ".....PF..."
+    "SBBBBBBBSL"
+    "SBBBBBBBSL"
+    "SG.GBG.GSL"
+    "SGGGBGGGSL"
+    "SBBBBBBBSL"
+    "SBBBBBBBSL"
+    "SG.GBG.GSL"
+    "SGGGGGGGGL"
+    "SSSSSSSSSS"
+
+    // level 03
+    "..G..F.G.."
+    "LBBBBBBBBL"
+    "L.RRR.E..L"
+    "LB.G.BBLBB"
+    "L..E...L.."
+    "LBBBBBBB.G"
+    "L.G......."
+    "L..RRRRG.."
+    "LBBB..BBBL"
+    "L....P...L"
 };
 
 enum Animation {
@@ -305,32 +346,6 @@ const game_sprite breaking_sprites[BREAKING - 1] PROGMEM {
     {BLOCK_WIDTH, BLOCK_HEIGHT, breaking1_lines},
     {BLOCK_WIDTH, BLOCK_HEIGHT, breaking2_lines},
     {BLOCK_WIDTH, BLOCK_HEIGHT, breaking3_lines},
-};
-
-static const uint8_t levels[] PROGMEM {
-    // level 01
-    "......F..."
-    "...RRRFG.."
-    "BLBBGBBB.."
-    ".L..E...G."
-    "BBBBBBLBBB"
-    "......LB.."
-    "....P.LBRR"
-    "G.LBBBBB.G"
-    "..L..G...."
-    "BBBBBBBBBB"
-
-    // level 02
-    ".....PF..."
-    "SBBBBBBBSL"
-    "SBBBBBBBSL"
-    "SG.GBG.GSL"
-    "SGGGBGGGSL"
-    "SBBBBBBBSL"
-    "SBBBBBBBSL"
-    "SG.GBG.GSL"
-    "SGGGGGGGGL"
-    "SSSSSSSSSS"
 };
 
 struct Enemy {
@@ -748,17 +763,6 @@ static inline bool is_transparent(uint8_t c) {
     return (c == '.' || c == 'G' || c == 'P' || c == 'E' || (c == 'F' && data->picked_gold != data->level_gold));
 }
 
-static inline bool enemy_avoids(int8_t x, int8_t y) {
-    int8_t bx = x / BLOCK_WIDTH;
-    int8_t by = y / BLOCK_WIDTH;
-    uint8_t c1 = get(bx, by);
-    uint8_t c2 = get(bx, by + 1);
-    if (is_transparent(c1) && is_transparent(c2)) {
-        return true;
-    }
-    return false;
-}
-
 static void LodeRunner_update(unsigned long delta)
 {
     if (game_is_button_pressed(BUTTON_START)) {
@@ -1074,12 +1078,12 @@ static void LodeRunner_update(unsigned long delta)
                     }
 
                     if (e.state == MOVING_LEFT) {
-                        if (wall_at(e.x - BLOCK_WIDTH, e.y) || enemy_avoids(e.x - BLOCK_WIDTH, e.y)) {
+                        if (wall_at(e.x - BLOCK_WIDTH, e.y)) {
                             e.state = MOVING_RIGHT;
                             e.anim = STANDING;
                         }
                     } else {
-                        if (wall_at(e.x + BLOCK_WIDTH, e.y) || enemy_avoids(e.x + BLOCK_WIDTH, e.y)) {
+                        if (wall_at(e.x + BLOCK_WIDTH, e.y)) {
                             e.state = MOVING_LEFT;
                             e.anim = STANDING;
                         }
