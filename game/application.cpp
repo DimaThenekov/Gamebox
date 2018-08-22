@@ -97,7 +97,7 @@ void update(unsigned long delta)
     if (!ptr)
     {
         ptr = (const game_instance*)menu_update(menu, delta);
-        if (ptr && ptr->data_size <= AVAIL_SPACE)
+        if (ptr && pgm_read_word(&ptr->data_size) <= AVAIL_SPACE)
         {
             menu_finish(menu);
             menu = NULL;
