@@ -79,8 +79,57 @@
   };
 
 */
+#define O 0x31
+#define R RED
+#define G GREEN
+#define T TRANSPARENT
+#define K BLACK
+#define Y YELLOW
+#define W WHITE
+static const uint8_t ColorMario_lines[] PROGMEM = {
+    T, T, T, R, R, R, R, R, T, T, T, T,
+    T, T, R, R, R, R, R, R, R, R, R, T,
+    T, T, G, G, G, Y, Y, G, Y, T, T, T,
+    T, G, Y, G, Y, Y, Y, G, Y, Y, Y, T,
+    T, G, Y, G, G, Y, Y, Y, G, Y, Y, Y,
+    T, G, G, Y, Y, Y, Y, G, G, G, G, T,
+    T, T, T, Y, Y, Y, Y, Y, Y, T, T, T,
+    T, T, G, G, R, G, G, G, T, T, T, T,
+    T, G, G, G, R, G, G, R, G, G, G, T,
+    G, G, G, G, R, R, R, R, G, G, G, G,
+    Y, Y, G, R, Y, R, R, Y, R, G, Y, Y,
+    Y, Y, Y, R, R, R, R, R, R, Y, Y, Y,
+    Y, Y, R, R, R, R, R, R, R, R, Y, Y,
+    T, T, R, R, R, T, T, R, R, R, T, T,
+    T, G, G, G, T, T, T, G, G, G, T, T,
+    G, G, G, G, T, T, T, G, G, G, G, T,
+};
 
+static const game_color_sprite ColorMario PROGMEM = {
+    12, 16, ColorMario_lines
+};
+static const uint8_t ColorBlock_lines[] PROGMEM = {
+    O, W, W, W, W, W, W, W, W, K, O, W, W, W, W, O, 
+    W, O, O, O, O, O, O, O, O, K, W, O, O, O, O, K, 
+    W, O, O, O, O, O, O, O, O, K, W, O, O, O, O, K, 
+    W, O, O, O, O, O, O, O, O, K, W, O, O, O, O, K, 
+    W, O, O, O, O, O, O, O, O, K, W, K, O, O, O, K, 
+    W, O, O, O, O, O, O, O, O, K, O, K, K, K, K, O, 
+    W, O, O, O, O, O, O, O, O, K, W, W, W, W, W, K, 
+    W, O, O, O, O, O, O, O, O, K, W, O, O, O, O, K, 
+    W, O, O, O, O, O, O, O, O, K, W, O, O, O, O, K, 
+    W, K, O, O, O, O, O, O, K, K, W, O, O, O, O, K, 
+    K, K, K, K, O, O, O, O, K, W, O, O, O, O, O, K, 
+    W, W, K, K, K, K, K, K, K, W, O, O, O, O, O, K, 
+    W, O, W, W, K, K, K, K, W, O, O, O, O, O, O, K, 
+    W, O, O, O, W, W, W, K, W, O, O, O, O, O, O, K, 
+    W, O, O, O, O, O, O, K, W, O, O, O, O, O, K, K, 
+    O, K, K, K, K, K, K, O, W, K, K, K, K, K, K, T, 
+};
 
+static const game_color_sprite ColorBlock PROGMEM = {
+    16, 16, ColorBlock_lines
+};
 const uint8_t MarioRedL_lines[] PROGMEM = {
   B00001111, B10000000,
   B01111111, B11000000,
@@ -167,77 +216,7 @@ const game_sprite MarioGreenL PROGMEM = {
 
 
 
-const uint8_t MarioRed_lines[] PROGMEM = {
-  B00011111, B00000000,
-  B00111111, B11100000,
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B00001000, B00000000,
-  B00001001, B00000000,
-  B00001111, B00000000,
-  B00010110, B10000000,
-  B00011111, B10000000,
-  B00111111, B11000000,
-  B00111001, B11000000,
-  B00000000, B00000000,
-  B00000000, B00000000
-};
 
-const game_sprite MarioRed PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, MarioRed_lines
-};
-
-const uint8_t MarioYellow_lines[] PROGMEM = {
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B00000110, B10000000,
-  B00101110, B11100000,
-  B00100111, B01110000,
-  B00011110, B00000000,
-  B00011111, B11000000,
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B11001001, B00110000,
-  B11100000, B01110000,
-  B11000000, B00110000,
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B00000000, B00000000
-};
-
-const game_sprite MarioYellow PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, MarioYellow_lines
-};
-
-const uint8_t MarioGreen_lines[] PROGMEM = {
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B00111001, B00000000,
-  B01010001, B00000000,
-  B01011000, B10000000,
-  B01100001, B11100000,
-  B00000000, B00000000,
-  B00110111, B00000000,
-  B01110110, B11100000,
-  B11110000, B11110000,
-  B00100000, B01000000,
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B00000000, B00000000,
-  B01110001, B11000000,
-  B11110001, B11100000
-};
-
-const game_sprite MarioGreen PROGMEM = {
-  // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-  16, 16, 2, MarioGreen_lines
-};
 const uint8_t StoneGreen_lines[] PROGMEM = {
   B10000000, B00100001,
   B01111111, B10011110,
@@ -510,9 +489,10 @@ static void Mario_render()
     for (int j = max(8-(((64)+data->MapY)/16)-4,0); j <= min(8-(((64)+data->MapY)/16),8); j++){
          
     if (pgm_read_byte(&Map[i][j]) == 1){
-       game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLACK);
-     game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), 0x31/*(RED + 0x02 )*/);
-    game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
+      game_draw_color_sprite(&ColorBlock,data->MapX+(i*16),data->MapY+(j*16));//ColorBlock
+      // game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLACK);
+   //  game_draw_sprite(&StoneGreen, data->MapX+(i*16), data->MapY+(j*16), 0x31/*(RED + 0x02 )*/);
+   // game_draw_sprite(&StoneWhite, data->MapX+(i*16), data->MapY+(j*16), WHITE);
    }
 if (pgm_read_byte(&Map[i][j]) == 2){
    game_draw_rect(data->MapX+(i*16),data->MapY+(j*16),16,16,BLACK);
@@ -532,18 +512,16 @@ if (0-data->MapX+(64)>data->MONEY[data->i][0]*16)
   }
   if (data->MarioY>0){
     if (data->L==1){
-  game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
-  game_draw_sprite(&MarioYellow, data->MarioX, data->MarioY, YELLOW);
-  game_draw_sprite(&MarioGreen , data->MarioX, data->MarioY, GREEN);
+       game_draw_color_sprite(&ColorMario,data->MarioX, data->MarioY);
+ // game_draw_sprite(&MarioRed, data->MarioX, data->MarioY, RED);
     }else{
     game_draw_sprite(&MarioRedL, data->MarioX, data->MarioY, RED);
   game_draw_sprite(&MarioYellowL, data->MarioX, data->MarioY, YELLOW);
   game_draw_sprite(&MarioGreenL , data->MarioX, data->MarioY, GREEN);    
       }
   }else{
-  game_draw_sprite(&MarioRed, data->MarioX, 0, RED);
-  game_draw_sprite(&MarioYellow, data->MarioX, 0, YELLOW);
-  game_draw_sprite(&MarioGreen , data->MarioX, 0, GREEN); 
+     game_draw_color_sprite(&ColorMario,data->MarioX, data->MarioY);
+  
     }
   //data->MarioY
      
