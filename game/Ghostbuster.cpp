@@ -620,7 +620,7 @@ static void Ghostbuster_update(unsigned long delta)
 }
 
 const game_instance Ghostbuster PROGMEM = {
-    "Ghostbuster",         /* Имя, отображаемое в меню */
+    "Ghostbust",         /* Имя, отображаемое в меню */
     Ghostbuster_prepare,
     Ghostbuster_render,
     Ghostbuster_update,
