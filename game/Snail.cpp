@@ -73,7 +73,7 @@ static const game_sprite crate PROGMEM = {
 };
 
 
-static const uint8_t level1[] PROGMEM = {
+static const uint8_t levels[] PROGMEM = {
     "BBBBB..."
     "BS..B..."
     "B.C.B..."
@@ -82,9 +82,7 @@ static const uint8_t level1[] PROGMEM = {
     "BXCB...."
     "BX.B...."
     "BBBB...."
-};
 
-static const uint8_t level2[] PROGMEM = {
     "BBBBBBBB"
     "BS.BXXXB"
     "B..CC..B"
@@ -93,20 +91,7 @@ static const uint8_t level2[] PROGMEM = {
     "B..B...."
     "BBBB...."
     "........"
-};
 
-static const uint8_t level3[] PROGMEM = {
-    "...BBBBB"
-    ".BBB...B"
-    ".BSC.B.B"
-    "BBCC...B"
-    "B..BB.BB"
-    "BX.X...B"
-    "BB...X.B"
-    ".BBBBBBB"
-};
-
-static const uint8_t level4[] PROGMEM = {
     "BBBBBBBB"
     "B...BS.B"
     "B....C.B"
@@ -115,9 +100,7 @@ static const uint8_t level4[] PROGMEM = {
     "....B.XB"
     "....BBBB"
     "........"
-};
 
-static const uint8_t level5[] PROGMEM = {
     "BBBBBBBB"
     "BS..B..B"
     "B..CCC.B"
@@ -126,9 +109,7 @@ static const uint8_t level5[] PROGMEM = {
     "........"
     "........"
     "........"
-};
 
-static const uint8_t level6[] PROGMEM = {
     ".BBBBBBB"
     ".B.....B"
     ".B.C...B"
@@ -137,9 +118,7 @@ static const uint8_t level6[] PROGMEM = {
     "BSC...B."
     "BX.X..B."
     "BBBBBBB."
-};
 
-static const uint8_t level7[] PROGMEM = {
     "BBBBBBBB"
     "BS.B...B"
     "B..B...B"
@@ -148,9 +127,7 @@ static const uint8_t level7[] PROGMEM = {
     "B.CC..CB"
     "BX.B...B"
     "BBBBBBBB"
-};
 
-static const uint8_t level8[] PROGMEM = {
     "BBBBBBBB"
     "BS.B...B"
     "B..B...B"
@@ -159,9 +136,7 @@ static const uint8_t level8[] PROGMEM = {
     "B.CC..DB"
     "BX.B...B"
     "BBBBBBBB"
-};
 
-static const uint8_t level9[] PROGMEM = {
     ".BBBBBBB"
     "BB..BS.B"
     "B..CXD.B"
@@ -170,9 +145,7 @@ static const uint8_t level9[] PROGMEM = {
     "B..B...B"
     "B..B...B"
     "BBBBBBBB"
-};
 
-static const uint8_t level10[] PROGMEM = {
     "..BBBBB."
     "BBBSXXB."
     "B..C..B."
@@ -181,9 +154,7 @@ static const uint8_t level10[] PROGMEM = {
     "B.CC.XB."
     "B.....B."
     "BBBBBBB."
-};
 
-static const uint8_t level11[] PROGMEM = {
     "BBBBBBB."
     "BS....B."
     "BXB...B."
@@ -192,20 +163,15 @@ static const uint8_t level11[] PROGMEM = {
     "B.B.C..B"
     "BX..BBBB"
     "BBBBB..."
-};
 
-static const uint8_t * const levels[] PROGMEM = {
-    level1,
-    level2,
-    level4,
-    level5,
-    level6,
-    level7,
-    level8,
-    level9,
-    level10,
-    level11,
-    level3
+    "...BBBBB"
+    ".BBB...B"
+    ".BSC.B.B"
+    "BBCC...B"
+    "B..BB.BB"
+    "BX.X...B"
+    "BB...X.B"
+    ".BBBBBBB"
 };
 
 static const MenuItem level_menu[] PROGMEM = {
@@ -284,7 +250,7 @@ static void Snail_draw_field()
 void Snail_prepare_level(int lev)
 {
     data->level = lev;
-    uint8_t *ptr = (uint8_t*)pgm_read_pointer(&levels[lev]);
+    const uint8_t *ptr = levels + lev * W * H;
     for (int r = 0 ; r < H ; ++r)
         for (int c = 0 ; c < W ; ++c)
         {
