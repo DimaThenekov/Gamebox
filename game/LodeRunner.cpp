@@ -4,6 +4,8 @@
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
+#include "music.h"
+#include "tunes.h"
 
 #ifdef FRAME_BUFFER
 
@@ -580,6 +582,11 @@ static void LodeRunner_prepare()
     data->time = 0;
 
     init_level();
+
+#ifndef EMULATED
+    tune_init(cantina);
+    tune_enable();
+#endif
 }
 
 static void LodeRunner_render()
