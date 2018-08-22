@@ -8,31 +8,6 @@
 #include "menu.h"
 #include "music.h"
 
-/* List of all games */
-
-extern game_instance BackspaceInvaders;
-extern game_instance Snake;
-#ifdef FRAME_BUFFER
-extern game_instance Snake2;
-extern game_instance Snail;
-#endif
-extern game_instance Flappy;
-extern game_instance LodeRunner;
-extern game_instance SpaceShips;
-extern game_instance Tester;
-extern game_instance Raycaster;
-extern game_instance BreakOut;
-extern game_instance Saper;
-extern game_instance Mario;
-#ifndef EMULATED /* for use only on real hardware */
-extern game_instance Dump;
-extern game_instance Player;
-#endif
-/* Register your game like so:
- * 
- * extern game_instance YOUR_GAME_NAME;
- */
-
 static const MenuItem main_menu[] PROGMEM = {
     { "Invaders", &BackspaceInvaders },
     { "Snake", &Snake },

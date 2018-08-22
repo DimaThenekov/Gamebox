@@ -27,6 +27,7 @@ extern const game_instance Snake PROGMEM;
 #ifdef FRAME_BUFFER
 extern const game_instance Snake2 PROGMEM;
 extern const game_instance Snail PROGMEM;
+extern const game_instance LodeRunner PROGMEM;
 #endif
 extern const game_instance Ghostbuster PROGMEM;
 extern const game_instance Flappy PROGMEM;

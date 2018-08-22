@@ -118,14 +118,14 @@ static const uint8_t player_ropeclimbing1_lines[] PROGMEM {
 };
 
 const game_sprite player_sprites[ANIMATION_MAX] PROGMEM  {
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, player_standing_lines},
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, player_walking0_lines},
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, player_walking1_lines},
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, player_hanging_lines},
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, player_climbing0_lines},
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, player_climbing1_lines},
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, player_ropeclimbing0_lines},
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, player_ropeclimbing1_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, player_standing_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, player_walking0_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, player_walking1_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, player_hanging_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, player_climbing0_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, player_climbing1_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, player_ropeclimbing0_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, player_ropeclimbing1_lines},
 };
 
 static const uint8_t ladder_lines[] PROGMEM {
@@ -140,7 +140,6 @@ static const uint8_t ladder_lines[] PROGMEM {
 const game_sprite ladder_sprite PROGMEM {
     BLOCK_WIDTH,
     BLOCK_HEIGHT,
-    1,
     ladder_lines,
 };
 
@@ -152,7 +151,6 @@ static const uint8_t ladder_partial_lines[] PROGMEM {
 const game_sprite ladder_partial_sprite PROGMEM {
     BLOCK_WIDTH,
     SCREEN_PADDING_Y,
-    1,
     ladder_partial_lines,
 };
 
@@ -168,7 +166,6 @@ static const uint8_t brick_lines[] PROGMEM {
 const game_sprite brick_sprite PROGMEM {
     BLOCK_WIDTH,
     BLOCK_HEIGHT,
-    1,
     brick_lines,
 };
 
@@ -184,7 +181,6 @@ static const uint8_t rope_lines[] PROGMEM {
 const game_sprite rope_sprite PROGMEM {
     BLOCK_WIDTH,
     BLOCK_HEIGHT,
-    1,
     rope_lines,
 };
 
@@ -200,7 +196,6 @@ static const uint8_t gold_lines[] PROGMEM {
 const game_sprite gold_sprite PROGMEM {
     BLOCK_WIDTH,
     BLOCK_HEIGHT,
-    1,
     gold_lines,
 };
 
@@ -216,7 +211,6 @@ static const uint8_t solid_lines[] PROGMEM {
 const game_sprite solid_sprite PROGMEM {
     BLOCK_WIDTH,
     BLOCK_HEIGHT,
-    1,
     solid_lines,
 };
 
@@ -248,9 +242,9 @@ static const uint8_t breaking3_lines[] PROGMEM {
 };
 
 const game_sprite breaking_sprites[BREAKING - 1] PROGMEM {
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, breaking1_lines},
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, breaking2_lines},
-    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, breaking3_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, breaking1_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, breaking2_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, breaking3_lines},
 };
 
 static const uint8_t level0[] PROGMEM {
@@ -294,13 +288,13 @@ struct LodeRunnerData
 
 static LodeRunnerData* data;
 
-static inline uint8_t get(int8_t x, int8_t y)
+static uint8_t get(int8_t x, int8_t y)
 {
     if (x < 0 || x >= data->level_width || y < 0 || y >= data->level_height) return 'S';
     return pgm_read_byte(&data->level_ptr[x + y * 10]);
 }
 
-static inline void draw_brick(int8_t x, int8_t y, int8_t br) {
+static void draw_brick(int8_t x, int8_t y, int8_t br) {
     int8_t sx = SCREEN_PADDING_X + x * BLOCK_WIDTH;
     int8_t sy = SCREEN_PADDING_Y + y * BLOCK_HEIGHT;
     if (br >= BREAKING) {
@@ -314,7 +308,7 @@ static inline void draw_brick(int8_t x, int8_t y, int8_t br) {
     }
 }
 
-static inline void dig(int8_t x, int8_t y) {
+static void dig(int8_t x, int8_t y) {
     for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
         if (data->breaking_x[i] == x && data->breaking_y[i] == y) {
             if (data->breaking_br[i] < BREAKING) {
@@ -340,7 +334,7 @@ static inline void dig(int8_t x, int8_t y) {
     }
 }
 
-static inline void regen() {
+static void regen() {
     for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
         if (data->breaking_br[i] && data->breaking_regen[i]) {
             if (data->breaking_regen[i] > data->time) {
@@ -428,7 +422,7 @@ static void draw_map()
     }
 }
 
-static inline bool wall_at(int8_t x, int8_t y)
+static bool wall_at(int8_t x, int8_t y)
 {
     int8_t bx = x / BLOCK_WIDTH;
     int8_t by = y / BLOCK_HEIGHT;
@@ -476,7 +470,7 @@ static inline bool wall_at(int8_t x, int8_t y)
     return false;
 }
 
-static inline bool ladder_at(int8_t x, int8_t y)
+static bool ladder_at(int8_t x, int8_t y)
 {
     int8_t bx = x / BLOCK_WIDTH;
     int8_t by = y / BLOCK_HEIGHT;
@@ -491,7 +485,7 @@ static inline bool ladder_at(int8_t x, int8_t y)
     return false;
 }
 
-static inline void nearest_ladder(int8_t x, int8_t y)
+static void nearest_ladder(int8_t x, int8_t y)
 {
     int8_t bx = (x + 3) / BLOCK_WIDTH;
     int8_t by = y / BLOCK_HEIGHT;
@@ -504,7 +498,7 @@ static inline void nearest_ladder(int8_t x, int8_t y)
     }
 }
 
-static inline void pick_gold()
+static void pick_gold()
 {
     int8_t bx = (data->player_x + 3) / BLOCK_WIDTH;
     int8_t by = (data->player_y + 2) / BLOCK_HEIGHT;
@@ -523,7 +517,7 @@ static inline void pick_gold()
     }
 }
 
-static inline bool collide(int8_t x, int8_t y)
+static bool collide(int8_t x, int8_t y)
 {
     if (x < 0) return true;
     if (x + BLOCK_WIDTH > data->level_width * BLOCK_WIDTH) return true; 
@@ -769,7 +763,7 @@ static void LodeRunner_update(unsigned long delta)
     }
 }
 
-game_instance LodeRunner = {
+const game_instance LodeRunner PROGMEM {
     "LodeRunner",
     LodeRunner_prepare,
     LodeRunner_render,
