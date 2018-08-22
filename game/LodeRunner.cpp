@@ -144,6 +144,18 @@ const game_sprite ladder_sprite PROGMEM {
     ladder_lines,
 };
 
+static const uint8_t ladder_partial_lines[] PROGMEM {
+    B11111100,
+    B10000100,
+};
+
+const game_sprite ladder_partial_sprite PROGMEM {
+    BLOCK_WIDTH,
+    SCREEN_PADDING_Y,
+    1,
+    ladder_partial_lines,
+};
+
 static const uint8_t brick_lines[] PROGMEM {
     B10111100,
     B10111100,
@@ -242,8 +254,8 @@ const game_sprite breaking_sprites[BREAKING - 1] PROGMEM {
 };
 
 static const uint8_t level0[] PROGMEM {
-    ".........."
-    "...RRR.G.."
+    "......F..."
+    "...RRRFG.."
     "BLBB.BBB.."
     ".L..G...G."
     "BBBBBBLBBB"
@@ -379,6 +391,16 @@ static void draw_map()
                     color = WHITE;
                     break;
 
+                case 'F':
+                    if (data->level_gold == data->picked_gold) {
+                        spr = &ladder_sprite;
+                        color = CYAN;
+                        if (j == 0) {
+                            game_draw_sprite(&ladder_partial_sprite, x, 0, color);
+                        }
+                    }
+                    break;
+
                 case 'G':
                     spr = &gold_sprite;
                     color = YELLOW;
@@ -393,6 +415,16 @@ static void draw_map()
             x += BLOCK_WIDTH;
         }
         y += BLOCK_HEIGHT;
+    }
+    for (uint8_t i = 0; i < data->picked_gold; ++i) {
+        int8_t bx = data->picked_gold_x[i];
+        int8_t by = data->picked_gold_y[i];
+        game_draw_sprite(&solid_sprite, SCREEN_PADDING_X + BLOCK_WIDTH * bx, SCREEN_PADDING_Y + BLOCK_HEIGHT * by, BLACK);
+    }
+    for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
+        if (data->breaking_br[i]) {
+            draw_brick(data->breaking_x[i], data->breaking_y[i], data->breaking_br[i]);
+        }
     }
 }
 
@@ -450,11 +482,13 @@ static inline bool ladder_at(int8_t x, int8_t y)
     int8_t by = y / BLOCK_HEIGHT;
     if (x % BLOCK_WIDTH != 0) {
         uint8_t c = get(bx + 1, by);
-        if (c == 'L')
+        if (c == 'L' || (c == 'F' && data->level_gold == data->picked_gold))
             return true;
     }
     uint8_t c = get(bx, by);
-    return (c == 'L');
+    if (c == 'L' || (c == 'F' && data->level_gold == data->picked_gold))
+        return true;
+    return false;
 }
 
 static inline void nearest_ladder(int8_t x, int8_t y)
@@ -462,7 +496,7 @@ static inline void nearest_ladder(int8_t x, int8_t y)
     int8_t bx = (x + 3) / BLOCK_WIDTH;
     int8_t by = y / BLOCK_HEIGHT;
     uint8_t c = get(bx, by);
-    if (c == 'L') {
+    if (c == 'L' || (c == 'F' && data->level_gold == data->picked_gold)) {
         data->player_x = bx * BLOCK_WIDTH;
         data->player_state = LADDER;
         data->player_anim = CLIMBING0;
@@ -484,7 +518,7 @@ static inline void pick_gold()
         data->picked_gold_x[data->picked_gold] = bx;
         data->picked_gold_y[data->picked_gold] = by;
         data->picked_gold++;
-        game_draw_sprite(&solid_sprite, SCREEN_PADDING_X + BLOCK_WIDTH * bx, SCREEN_PADDING_Y + BLOCK_HEIGHT * by, BLACK);
+        draw_map();
         return;
     }
 }
@@ -585,7 +619,8 @@ static void LodeRunner_update(unsigned long delta)
             } else {
                 x = (data->player_x + BLOCK_WIDTH + 3) / BLOCK_WIDTH;
             }
-            if (get(x, y) == 'B') {
+            uint8_t b = get(x, y);
+            if (b == 'B' && !wall_at(x * BLOCK_WIDTH, (y - 1) * BLOCK_HEIGHT)) {
                 data->dig_update = data->time;
                 dig(x, y);
             }
