@@ -29,8 +29,10 @@
 #define MOVE_INTERVAL 50
 #define ENEMY_MOVE_INTERVAL 75
 #define DIG_INTERVAL 250
-#define REGEN_TIMEOUT 5000
+
+#define REGEN_TIMEOUT 6000
 #define FAST_REGEN_TIMEOUT 500
+#define CLIMBING_OUT_TIMEOUT 3000
 
 // character states
 #define LAND 0
@@ -46,6 +48,8 @@
 #define RESPAWN 5
 #define FALLING 6
 #define TRAPPED 7
+#define CLIMBING_OUT 8
+#define FREE_FALLING 9
 
 // game state
 #define SELECTING 0
@@ -333,6 +337,7 @@ struct Enemy {
     uint8_t state, anim;
     int8_t x, y;
     int8_t sx, sy;
+    unsigned long timeout;
 };
 
 struct LodeRunnerData
@@ -648,6 +653,7 @@ static void init_level()
     }
 
     for (uint8_t i = 0; i < MAX_ENEMIES; ++i) {
+        data->enemies[i].timeout = 0;
         data->enemies[i].state = DISABLED;
     }
 
@@ -704,7 +710,8 @@ static void LodeRunner_render()
 {
     if (data->state == SELECTING) {
         menu_render(data->menu);
-    } else {
+    }
+    if (data->state == PLAYING) { 
         game_draw_sprite(&player_sprites[data->player_anim],
                         data->player_x + SCREEN_PADDING_X,
                         data->player_y + SCREEN_PADDING_Y, GREEN);
@@ -735,6 +742,21 @@ static void enemy_select_direction(Enemy *e)
     if (e->state == MOVING_RIGHT && wall_at(e->x + BLOCK_WIDTH, e->y)) {
         e->state = MOVING_LEFT;
     }
+}
+
+static inline bool is_transparent(uint8_t c) {
+    return (c == '.' || c == 'G' || c == 'P' || c == 'E' || (c == 'F' && data->picked_gold != data->level_gold));
+}
+
+static inline bool enemy_avoids(int8_t x, int8_t y) {
+    int8_t bx = x / BLOCK_WIDTH;
+    int8_t by = y / BLOCK_WIDTH;
+    uint8_t c1 = get(bx, by);
+    uint8_t c2 = get(bx, by + 1);
+    if (is_transparent(c1) && is_transparent(c2)) {
+        return true;
+    }
+    return false;
 }
 
 static void LodeRunner_update(unsigned long delta)
@@ -924,7 +946,7 @@ static void LodeRunner_update(unsigned long delta)
     if (data->player_state == LAND && !(left ^ right)) {
         data->player_anim = STANDING;
     }
-    
+
     if (data->player_state != ROPE) {
         int8_t bx = data->player_x / BLOCK_WIDTH;
         int8_t bx2 = (data->player_x + BLOCK_WIDTH - 1) / BLOCK_WIDTH;
@@ -955,8 +977,9 @@ static void LodeRunner_update(unsigned long delta)
             }
             init_level();
         }
-        
-        if (wall_at_impl(data->player_x, data->player_y, 1, true) || wall_at_impl(data->player_x, data->player_y + BLOCK_HEIGHT - 1, 1, true)) {
+
+        if (wall_at_impl(data->player_x, data->player_y, 1, true) || 
+                wall_at_impl(data->player_x, data->player_y + BLOCK_HEIGHT - 1, 1, true)) {
             data->state = LOST;
             game_draw_sprite(&gameover_sprite, GAMEOVER_X, GAMEOVER_Y, WHITE);
             return;
@@ -966,35 +989,75 @@ static void LodeRunner_update(unsigned long delta)
     if (do_enemy_move) {
         for (uint8_t i = 0; i < MAX_ENEMIES; ++i) {
             Enemy e = data->enemies[i];
+            int8_t bx = e.x / BLOCK_WIDTH;
+            int8_t by = e.y / BLOCK_HEIGHT;
             if (!e.state) continue;
+
+            if (e.state == TRAPPED && e.timeout < data->time && e.timeout) {
+                e.state = CLIMBING_OUT;
+                e.timeout = 0;
+                e.anim = CLIMBING0;
+                goto cnt;
+            }
+
             if (e.state == RESPAWN) {
                 e.x = e.sx;
                 e.y = e.sy;
+                e.timeout = 0;
                 enemy_select_direction(&e);
             }
-            int8_t bx = e.x / BLOCK_WIDTH;
-            int8_t by = e.y / BLOCK_HEIGHT;
 
             if (bx * BLOCK_WIDTH == e.x && by * BLOCK_HEIGHT == e.y) {
-                if (!wall_at(e.x, e.y + BLOCK_HEIGHT) && !ladder_at(e.x, e.y + BLOCK_HEIGHT)) {
-                    e.state = FALLING;
-                    goto cnt;
-                }
                 if (e.state == TRAPPED) {
                     if (wall_at_impl(e.x, e.y, 1, true)) {
                         e.state = RESPAWN;
                     }
                     goto cnt;
                 }
-                if (e.state == FALLING) {
-                    enemy_select_direction(&e);
 
-                    if (wall_at(e.x - BLOCK_WIDTH, e.y) && wall_at(e.x + BLOCK_WIDTH, e.y) && wall_at(e.x, e.y + BLOCK_HEIGHT)) {
-                        e.state = TRAPPED;
-                    }
+                if (e.state == CLIMBING_OUT) {
+                    enemy_select_direction(&e);
                     goto cnt;
                 }
+
+                if (e.state == FALLING) {
+                    e.state = TRAPPED;
+                    e.timeout = data->time + CLIMBING_OUT_TIMEOUT;
+                    goto cnt;
+                }
+
+                if (e.state == FREE_FALLING) {
+                    if (wall_at(e.x, e.y + BLOCK_HEIGHT)) {
+                        enemy_select_direction(&e);
+                    }
+                }
+
+                if (!wall_at(e.x, e.y + BLOCK_HEIGHT) && !ladder_at(e.x, e.y + BLOCK_HEIGHT)) {
+                    if (get(bx, by) != 'R') {
+                        if (is_transparent(get(bx, by + 1))) {
+                            e.state = FREE_FALLING;
+                        } else {
+                            e.state = FALLING;
+                        }
+                    } else {
+                        e.anim = ROPECLIMBING0;
+                    }
+                    goto cnt;
+                } else {
+                    if (e.state == MOVING_LEFT || e.state == MOVING_RIGHT) {
+                        e.anim = STANDING;
+                    }
+                }
+
                 if (e.state == MOVING_LEFT || e.state == MOVING_RIGHT) {
+                    if ((get(bx, by) == 'R') && !wall_at(e.x, e.y + BLOCK_HEIGHT)) {
+                        if (data->player_y > e.y) {
+                            e.state = FREE_FALLING;
+                            e.anim = STANDING;
+                            goto cnt;
+                        }
+                    }
+
                     if (ladder_at(e.x, e.y + BLOCK_HEIGHT)) {
                         if (data->player_y > e.y) {
                             e.state = MOVING_DOWN;
@@ -1011,12 +1074,12 @@ static void LodeRunner_update(unsigned long delta)
                     }
 
                     if (e.state == MOVING_LEFT) {
-                        if (wall_at(e.x - BLOCK_HEIGHT, e.y)) {
+                        if (wall_at(e.x - BLOCK_WIDTH, e.y) || enemy_avoids(e.x - BLOCK_WIDTH, e.y)) {
                             e.state = MOVING_RIGHT;
                             e.anim = STANDING;
                         }
                     } else {
-                        if (wall_at(e.x + BLOCK_HEIGHT, e.y)) {
+                        if (wall_at(e.x + BLOCK_WIDTH, e.y) || enemy_avoids(e.x + BLOCK_WIDTH, e.y)) {
                             e.state = MOVING_LEFT;
                             e.anim = STANDING;
                         }
@@ -1035,30 +1098,63 @@ static void LodeRunner_update(unsigned long delta)
                 }
             }
 cnt:;
-    switch (e.state) {
-        case MOVING_LEFT: e.x--; break;
-        case MOVING_RIGHT: e.x++; break;
-        case MOVING_UP: e.y--; break;
-        case MOVING_DOWN: case FALLING: e.y++; break;
-    }
+            switch (e.state) {
+                case MOVING_LEFT:
+                    e.x--;
+                    break;
+                case MOVING_RIGHT:
+                    e.x++;
+                    break;
+                case MOVING_UP:
+                case CLIMBING_OUT:
+                    e.y--;
+                    break;
+                case MOVING_DOWN:
+                case FALLING:
+                case FREE_FALLING:
+                    e.y++;
+                    break;
+            }
 
-    if (e.state == FALLING) {
-        e.anim = STANDING;
-    }
-    if (e.state != TRAPPED) {
-        if (e.anim == STANDING) e.anim = WALKING0;
-        else if (e.anim == WALKING0) e.anim = WALKING1;
-        else if (e.anim == WALKING1) e.anim = WALKING0;
-        else if (e.anim == CLIMBING0) e.anim = CLIMBING1;
-        else if (e.anim == CLIMBING1) e.anim = CLIMBING0;
-    }
+            if (e.state == FALLING || e.state == FREE_FALLING || e.state == TRAPPED) {
+                e.anim = STANDING;
+            }
 
-                data->enemies[i] = e;
+            if (e.state != TRAPPED) {
+                if (e.anim == STANDING) e.anim = WALKING0;
+                else if (e.anim == WALKING0) e.anim = WALKING1;
+                else if (e.anim == WALKING1) e.anim = WALKING0;
+                else if (e.anim == CLIMBING0) e.anim = CLIMBING1;
+                else if (e.anim == CLIMBING1) e.anim = CLIMBING0;
+                else if (e.anim == ROPECLIMBING0) e.anim = ROPECLIMBING1;
+                else if (e.anim == ROPECLIMBING1) e.anim = ROPECLIMBING0;
+            }
+
+            data->enemies[i] = e;
         }
     }
 
     if (do_dig) {
         regen();
+    }
+
+    if (do_move || do_enemy_move) {
+        for (uint8_t i = 0; i < MAX_ENEMIES; ++i) {
+            Enemy e = data->enemies[i];
+            if (!e.state) continue;
+
+            int8_t dx = e.x - data->player_x;
+            int8_t dy = e.y - data->player_y;
+            if (dx < 0) dx = -dx;
+            if (dy < 0) dy = -dy;
+            if (dx < BLOCK_WIDTH && dy < BLOCK_HEIGHT) {
+                data->state = LOST;
+                game_draw_sprite(&gameover_sprite, GAMEOVER_X, GAMEOVER_Y, WHITE);
+                return;
+            }
+        }
+        
+ 
     }
 }
 
