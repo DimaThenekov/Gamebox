@@ -743,6 +743,8 @@ static void LodeRunner_render()
 
 static void enemy_select_direction(Enemy *e)
 {
+    if (wall_at(e->x - BLOCK_WIDTH, e->y) && wall_at(e->x + BLOCK_WIDTH, e->y))
+        return;
     e->anim = STANDING;
     if (data->player_x < e->x) {
         e->state = MOVING_LEFT;
@@ -1091,11 +1093,11 @@ static void LodeRunner_update(unsigned long delta)
                 }
                 if (e.state == MOVING_DOWN || e.state == MOVING_UP) {
                     if (e.state == MOVING_DOWN) {
-                        if (!ladder_at(e.x, e.y + BLOCK_HEIGHT)) {
+                        if (e.y == data->player_y || !ladder_at(e.x, e.y + BLOCK_HEIGHT)) {
                             enemy_select_direction(&e);
                         }
                     } else {
-                        if (!ladder_at(e.x, e.y)) {
+                        if (e.y == data->player_y || !ladder_at(e.x, e.y)) {
                             enemy_select_direction(&e);
                         }
                     }
