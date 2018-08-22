@@ -7,7 +7,7 @@
 
 #ifdef FRAME_BUFFER
 
-#define MAX_GOLD 16
+#define MAX_GOLD 32
 #define MAX_BREAKING 16
 
 #define BLOCK_WIDTH 6
@@ -247,17 +247,31 @@ const game_sprite breaking_sprites[BREAKING - 1] PROGMEM {
     {BLOCK_WIDTH, BLOCK_HEIGHT, breaking3_lines},
 };
 
-static const uint8_t level0[] PROGMEM {
+/*static const uint8_t level0[] PROGMEM {
     "......F..."
     "...RRRFG.."
-    "BLBB.BBB.."
+    "BLBBGBBB.."
     ".L..G...G."
     "BBBBBBLBBB"
-    "......L..."
+    "......LB.."
     "....P.LBRR"
-    "..LBBBBB.."
+    "G.LBBBBB.G"
     "..L..G...."
     "BBBBBBBBBB"
+};
+*/
+
+static const uint8_t level0[] PROGMEM {
+    ".....PF..."
+    "SBBBBBBBSL"
+    "SBBBBBBBSL"
+    "SG.GBG.GSL"
+    "SGGGBGGGSL"
+    "SBBBBBBBSL"
+    "SBBBBBBBSL"
+    "SG.GBG.GSL"
+    "SGGGGGGGGL"
+    "SSSSSSSSSS"
 };
 
 
