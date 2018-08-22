@@ -4,6 +4,7 @@
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
+#include "menu.h"
 #include "music.h"
 #include "tunes.h"
 
