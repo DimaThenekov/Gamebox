@@ -146,14 +146,14 @@ const uint8_t invader4lines[] PROGMEM = {
 #define EXPLOSION_WIDTH 6
 #define EXPLOSION_HEIGHT 6
 const game_sprite explosions[EXPLOSION_FRAMES] PROGMEM = {
-    {EXPLOSION_WIDTH, EXPLOSION_HEIGHT, 1, explosion1lines},
-    {EXPLOSION_WIDTH, EXPLOSION_HEIGHT, 1, explosion2lines}
+    {EXPLOSION_WIDTH, EXPLOSION_HEIGHT, explosion1lines},
+    {EXPLOSION_WIDTH, EXPLOSION_HEIGHT, explosion2lines}
 };
 
 #define INVADER_TYPES 4
 const game_sprite invaders[INVADER_TYPES] PROGMEM = {
-    {8, 7, 1, invader1lines}, {11, 8, 2, invader2lines},
-    {13, 10, 2, invader3lines}, {8, 8, 1, invader4lines}
+    {8, 7, invader1lines}, {11, 8, invader2lines},
+    {13, 10, invader3lines}, {8, 8, invader4lines}
 };
 
 uint8_t invader_width(int type)
@@ -192,7 +192,7 @@ const uint8_t cannonLines[] PROGMEM = {
 };
 
 const game_sprite cannon PROGMEM = {
-    13, 8, 2, cannonLines
+    13, 8, cannonLines
 };
 
 ////////////////////////////////////////////////////////////
@@ -221,7 +221,7 @@ const uint8_t gameOverLines[] PROGMEM = {
 };
 
 const game_sprite gameOver PROGMEM = {
-    31, 15, 4, gameOverLines
+    31, 15, gameOverLines
 };
 
 ////////////////////////////////////////////////////////////
@@ -237,7 +237,7 @@ const uint8_t lifeLines[] PROGMEM = {
 };
 
 const game_sprite life PROGMEM = {
-    3, 3, 1, lifeLines
+    3, 3, lifeLines
 };
 
 ////////////////////////////////////////////////////////////
@@ -255,7 +255,7 @@ const uint8_t hiLines[] PROGMEM = {
 };
 
 const game_sprite hiLabel PROGMEM = {
-    8, 5, 1, hiLines
+    8, 5, hiLines
 };
 
 ////////////////////////////////////////////////////////////
@@ -273,7 +273,7 @@ const uint8_t waveLines[] PROGMEM = {
 #define WAVE_X 14
 #define WAVE_Y 1
 const game_sprite wave_sprite PROGMEM = {
-    15, 5, 2, waveLines
+    15, 5, waveLines
 };
 
 ////////////////////////////////////////////////////////////
@@ -296,7 +296,7 @@ const uint8_t logoLines[] PROGMEM = {
 };
 
 const game_sprite logo PROGMEM = {
-    53, 12, 7, logoLines
+    53, 12, logoLines
 };
 
 ////////////////////////////////////////////////////////////
@@ -315,7 +315,7 @@ const uint8_t pauseLines[] PROGMEM = {
 };
 
 const game_sprite pause PROGMEM = {
-    36, 5, 5, pauseLines
+    36, 5, pauseLines
 };
 
 ////////////////////////////////////////////////////////////

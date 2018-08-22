@@ -90,7 +90,7 @@ void game_draw_sprite(const struct game_sprite *s, int8_t x, int8_t y, uint8_t c
             int yy = y + dy;
             if (xx < 0 || xx >= WIDTH || yy < 0 || yy >= HEIGHT)
                 continue;
-            int byte = s->lineSize * dy + dx / 8;
+            int byte = (s->width + 7) / 8 * dy + dx / 8;
             int bit = 7 - dx % 8;
             if ((s->lines[byte] >> bit) & 1)
                 game_draw_pixel(xx, yy, color);

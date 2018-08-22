@@ -69,7 +69,7 @@ static const game_color_sprite block PROGMEM = {
 };
 
 static const game_sprite crate PROGMEM = {
-    8, 8, 1, crate_lines
+    8, 8, crate_lines
 };
 
 

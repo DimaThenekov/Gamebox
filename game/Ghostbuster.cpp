@@ -389,7 +389,7 @@ static void Ghostbuster_render()
   if(data->Win)
     game_draw_text((const unsigned char *)"YOU WIN", 10, 29, GREEN);
 
-    game_draw_text((const unsigned char *)data->deadsl+"/4", 2, 2);
+    game_draw_text(data->deadsl+"/4", 2, 2);
 
   if(!data->isBoss) {
 

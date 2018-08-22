@@ -19,7 +19,7 @@ const uint8_t ShipSprite_lines[] PROGMEM = {
 };
 
 const game_sprite ShipSprite PROGMEM = {
-    12, 8, 2, ShipSprite_lines
+    12, 8, ShipSprite_lines
 };
 
 const uint8_t BallSprite_lines[] PROGMEM = {
@@ -30,7 +30,7 @@ const uint8_t BallSprite_lines[] PROGMEM = {
 };
 
 const game_sprite BallSprite PROGMEM = {
-    3, 3, 1, BallSprite_lines
+    3, 3, BallSprite_lines
 };
 
 const uint8_t GameoverSprite_lines[] PROGMEM = {
@@ -45,7 +45,7 @@ const uint8_t GameoverSprite_lines[] PROGMEM = {
 };
 
 const game_sprite GameoverSprite PROGMEM = {
-    64, 8, 8, GameoverSprite_lines
+    64, 8, GameoverSprite_lines
 };
 
 const uint8_t YouwinSprite_lines[] PROGMEM = {
@@ -61,7 +61,7 @@ const uint8_t YouwinSprite_lines[] PROGMEM = {
 };
 
 const game_sprite YouwinSprite PROGMEM = {
-    64, 8, 8, YouwinSprite_lines
+    64, 8, YouwinSprite_lines
 };
 
 struct SpaceShipsData

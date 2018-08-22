@@ -6,6 +6,7 @@
 #include "controls.h"
 #include "music.h"
 #include "font.h"
+#include "tunes.h"
 
 #ifdef FRAME_BUFFER
 
@@ -44,7 +45,7 @@ static const uint8_t gameOverLines[] PROGMEM = {
 };
 
 static const game_sprite gameOver PROGMEM = {
-    31, 15, 4, gameOverLines
+    31, 15, gameOverLines
 };
 
 enum Phases
@@ -138,7 +139,8 @@ static void Snake_prepare()
     data->hiscore = 0;
     game_load(&data->hiscore, sizeof(data->hiscore));
 #ifndef EMULATED
-    Player_setup_melody(33);
+    tune_init(where_time_dropped_dead);
+    tune_enable();
 #endif
 }
 

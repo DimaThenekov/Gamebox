@@ -88,8 +88,8 @@ const uint8_t YourSprite1_lines[] PROGMEM = {
   B11111000
 };
 const game_sprite YourSprite1 PROGMEM = {
-    // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    5, 5, 1, YourSprite1_lines
+    // ШИРИНА, ВЫСОТА, ДАННЫЕ
+    5, 5, YourSprite1_lines
 };
 //------------------------------------------------------------------------------------------------
 const uint8_t bl_lines[] PROGMEM = {
@@ -102,8 +102,8 @@ const uint8_t bl_lines[] PROGMEM = {
   B11111110
 };
 const game_sprite bl PROGMEM = {
-    // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    7, 7, 1, bl_lines
+    // ШИРИНА, ВЫСОТА, ДАННЫЕ
+    7, 7, bl_lines
 };
 const uint8_t bl1_lines[] PROGMEM = {
   B10101000,
@@ -113,8 +113,8 @@ const uint8_t bl1_lines[] PROGMEM = {
   B10101000
 };
 const game_sprite bl1 PROGMEM = {
-    // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    5, 5, 1, bl1_lines
+    // ШИРИНА, ВЫСОТА, ДАННЫЕ
+    5, 5, bl1_lines
 };
 const uint8_t bl2_lines[] PROGMEM = {
   B00110000,
@@ -124,8 +124,8 @@ const uint8_t bl2_lines[] PROGMEM = {
   B00010000
 };
 const game_sprite bl2 PROGMEM = {
-    // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    5, 5, 1, bl2_lines
+    // ШИРИНА, ВЫСОТА, ДАННЫЕ
+    5, 5, bl2_lines
 };
 const uint8_t bl3_lines[] PROGMEM = {
   B00110000,
@@ -135,8 +135,8 @@ const uint8_t bl3_lines[] PROGMEM = {
   B01111000
 };
 const game_sprite bl3 PROGMEM = {
-    // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    5, 5, 1, bl3_lines
+    // ШИРИНА, ВЫСОТА, ДАННЫЕ
+    5, 5, bl3_lines
 };
 const uint8_t bl4_lines[] PROGMEM = {
   B00110000,
@@ -146,8 +146,8 @@ const uint8_t bl4_lines[] PROGMEM = {
   B00110000
 };
 const game_sprite bl4 PROGMEM = {
-    // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    5, 5, 1, bl4_lines
+    // ШИРИНА, ВЫСОТА, ДАННЫЕ
+    5, 5, bl4_lines
 };
 
 /* Функции отрисовки
