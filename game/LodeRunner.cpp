@@ -600,6 +600,7 @@ static void init_level()
     data->picked_gold = 0;
     data->player_state = LAND;
     data->player_anim = STANDING;
+    data->level_gold = 0;
     data->level_ptr = (uint8_t*)levels;
     data->level_ptr += SCREEN_WIDTH * SCREEN_HEIGHT * data->level;
     for (int8_t i = 0; i < MAX_BREAKING; ++i) {
