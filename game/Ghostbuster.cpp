@@ -289,7 +289,7 @@ static void Ghostbuster_prepare()
 {
     /* Здесь код, который будет исполнятся один раз */
     /* Здесь нужно инициализировать переменные */
-    for(int i = 0; i<2; i++)
+    for(int i = 0; i<4; i++)
       data->lol[i] = true;
     data->flag = true;
     data->isShoot = false;
@@ -531,7 +531,7 @@ static void Ghostbuster_update(unsigned long delta)
         for(int i = 0; i < data->ShootCounter; i+=10)
           for(int j = 0; j < 4; j++)
             if(data->ShootPosy[i/10] == data->sposy[j] && data->pyposy+10 >= data->syposy[j] && data->pyposy+10 <= data->syposy[j]+12)
-              data->syposy[j] = 100;
+              { data->syposy[j] = 100; data->deadsl++; }
 
 
       if( (data->pyposy == data->BeginOfJump || data->pyposy == 47) && (game_is_button_pressed(BUTTON_B) ) ) {
@@ -540,6 +540,8 @@ static void Ghostbuster_update(unsigned long delta)
               data->EndOfJump = data->BeginOfJump - 10;
           else
               data->EndOfJump = max(data->BlockYPosy[data->block]+6,37);
+          if(data->BlockPosy[18] >= 0 && data->BlockPosy[18] <= 10)
+              data->EndOfJump = 27;
       }
       if(data->pyposy <= data->EndOfJump)
           data->isJump = false;
