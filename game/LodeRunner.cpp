@@ -8,6 +8,7 @@
 #ifdef FRAME_BUFFER
 
 #define MAX_GOLD 16
+#define MAX_BREAKING 16
 
 #define BLOCK_WIDTH 6
 #define BLOCK_HEIGHT 6
@@ -17,8 +18,14 @@
 #define SCREEN_PADDING_X 2
 #define SCREEN_PADDING_Y 2
 
+// how many different levels of breaking (0 - solid, (BREAKING - 1) - almost broken)
+#define BREAKING 4
+
 #define ANIM_INTERVAL 100
 #define MOVE_INTERVAL 50
+#define DIG_INTERVAL 250
+#define REGEN_TIMEOUT 5000
+#define FAST_REGEN_TIMEOUT 500
 
 // character states
 #define LAND 0
@@ -201,6 +208,39 @@ const game_sprite solid_sprite PROGMEM {
     solid_lines,
 };
 
+static const uint8_t breaking1_lines[] PROGMEM {
+    B01111000,
+    B00110000,
+    B00000000,
+    B00000000,
+    B00000000,
+    B00000000,
+};
+
+static const uint8_t breaking2_lines[] PROGMEM {
+    B11111100,
+    B01111000,
+    B00110000,
+    B00000000,
+    B00000000,
+    B00000000,
+};
+
+static const uint8_t breaking3_lines[] PROGMEM {
+    B11111100,
+    B11111100,
+    B01111000,
+    B01111000,
+    B00110000,
+    B00110000,
+};
+
+const game_sprite breaking_sprites[BREAKING - 1] PROGMEM {
+    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, breaking1_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, breaking2_lines},
+    {BLOCK_WIDTH, BLOCK_HEIGHT, 1, breaking3_lines},
+};
+
 static const uint8_t level0[] PROGMEM {
     ".........."
     "...RRR.G.."
@@ -220,43 +260,108 @@ struct LodeRunnerData
     int8_t player_x, player_y;
     uint8_t level;
     uint8_t level_width, level_height;
+    uint8_t level_gold;
     uint8_t *level_ptr;
-    int8_t camera_x, camera_y;
     uint8_t player_anim;
     uint8_t player_state;
 
     unsigned long anim_update;
     unsigned long move_update;
+    unsigned long dig_update;
     unsigned long time;
 
-    uint8_t picked_gold_x[MAX_GOLD];
-    uint8_t picked_gold_y[MAX_GOLD];
+    int8_t picked_gold_x[MAX_GOLD];
+    int8_t picked_gold_y[MAX_GOLD];
     uint8_t picked_gold;
+
+    int8_t breaking_x[MAX_BREAKING];
+    int8_t breaking_y[MAX_BREAKING];
+    uint8_t breaking_br[MAX_BREAKING];
+    unsigned long breaking_regen[MAX_BREAKING];
 };
 
 static LodeRunnerData* data;
 
-inline static uint8_t get(int8_t x, int8_t y)
+static inline uint8_t get(int8_t x, int8_t y)
 {
     if (x < 0 || x >= data->level_width || y < 0 || y >= data->level_height) return 'S';
     return pgm_read_byte(&data->level_ptr[x + y * 10]);
 }
 
-inline static void draw_map()
+static inline void draw_brick(int8_t x, int8_t y, int8_t br) {
+    int8_t sx = SCREEN_PADDING_X + x * BLOCK_WIDTH;
+    int8_t sy = SCREEN_PADDING_Y + y * BLOCK_HEIGHT;
+    if (br >= BREAKING) {
+        game_draw_sprite(&solid_sprite, sx, sy, BLACK);
+    } else {
+        game_draw_sprite(&solid_sprite, sx, sy, WHITE_DARK);
+        game_draw_sprite(&brick_sprite, sx, sy, RED_DARK);
+        if (br > 0) {
+            game_draw_sprite(&breaking_sprites[br - 1], sx, sy, BLACK);
+        }
+    }
+}
+
+static inline void dig(int8_t x, int8_t y) {
+    for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
+        if (data->breaking_x[i] == x && data->breaking_y[i] == y) {
+            if (data->breaking_br[i] < BREAKING) {
+                data->breaking_br[i]++;
+                data->breaking_regen[i] = data->time + FAST_REGEN_TIMEOUT;
+                if (data->breaking_br[i] == BREAKING) {
+                    data->breaking_regen[i] = data->time + REGEN_TIMEOUT;
+                }
+                draw_brick(x, y, data->breaking_br[i]);
+            }
+            return;
+        }
+    }
+    for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
+        if (!data->breaking_br[i]) {
+            data->breaking_br[i] = 1;
+            data->breaking_regen[i] = data->time + FAST_REGEN_TIMEOUT;
+            data->breaking_x[i] = x;
+            data->breaking_y[i] = y;
+            draw_brick(x, y, 1);
+            return;
+        }
+    }
+}
+
+static inline void regen() {
+    for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
+        if (data->breaking_br[i] && data->breaking_regen[i]) {
+            if (data->breaking_regen[i] > data->time) {
+                continue;
+            }
+
+            if (!--data->breaking_br[i]) {
+                data->breaking_regen[i] = 0;
+            } else {
+                data->breaking_regen[i] = data->time + FAST_REGEN_TIMEOUT;
+            }
+            draw_brick(data->breaking_x[i], data->breaking_y[i], data->breaking_br[i]);
+        }
+    }
+}
+
+static void draw_map()
 {
     game_clear_screen();
     int8_t x;
     int8_t y = SCREEN_PADDING_Y;
-    for (int8_t j = data->camera_y; j < data->camera_y + SCREEN_HEIGHT; ++j) {
+    for (int8_t j = 0; j < SCREEN_HEIGHT; ++j) {
         x = SCREEN_PADDING_X;
-        for (int8_t i = data->camera_x; i < data->camera_x + SCREEN_WIDTH; ++i) {
+        for (int8_t i = 0; i < SCREEN_WIDTH; ++i) {
             uint8_t block = get(i, j);
             const game_sprite *spr = NULL;
             uint8_t color;
+            uint8_t bg = 0xff;
             switch (block) {
                 case 'B':
                     spr = &brick_sprite;
                     color = RED_DARK;
+                    bg = WHITE_DARK;
                     break;
 
                 case 'S':
@@ -266,18 +371,21 @@ inline static void draw_map()
 
                 case 'R':
                     spr = &rope_sprite;
-                    color = WHITE_DARK;
+                    color = WHITE;
                     break;
 
                 case 'L':
                     spr = &ladder_sprite;
-                    color = WHITE_DARK;
+                    color = WHITE;
                     break;
 
                 case 'G':
                     spr = &gold_sprite;
                     color = YELLOW;
                     break;
+            }
+            if (bg != 0xff) {
+                game_draw_sprite(&solid_sprite, x, y, bg);
             }
             if (spr) {
                 game_draw_sprite(spr, x, y, color);
@@ -294,11 +402,46 @@ static inline bool wall_at(int8_t x, int8_t y)
     int8_t by = y / BLOCK_HEIGHT;
     if (x % BLOCK_WIDTH != 0) {
         uint8_t c = get(bx + 1, by);
-        if (c == 'B' || c == 'S')
+        if (c == 'S') {
             return true;
+        }
+
+        if (c == 'B') {
+            bool flag = true;
+            for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
+                if (data->breaking_x[i] == bx + 1 && data->breaking_y[i] == by) {
+                    if (data->breaking_br[i] >= BREAKING) {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            if (flag) {
+                return true;
+            }
+        }
     }
     uint8_t c = get(bx, by);
-    return (c == 'B' || c == 'S');
+    if (c == 'S') {
+        return true;
+    }
+
+    if (c == 'B') {
+        bool flag = true;
+        for (uint8_t i = 0; i < MAX_BREAKING; ++i) {
+            if (data->breaking_x[i] == bx && data->breaking_y[i] == by) {
+                if (data->breaking_br[i] >= BREAKING) {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        if (flag) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 static inline bool ladder_at(int8_t x, int8_t y)
@@ -360,12 +503,18 @@ static void init_level()
     data->level_height = 10;
     data->picked_gold = 0;
     data->level_ptr = (uint8_t*)level0;
-    for (int i = 0; i < data->level_width; ++i) {
-        for (int j = 0; j < data->level_height; ++j) {
+    for (int8_t i = 0; i < MAX_BREAKING; ++i) {
+        data->breaking_br[i] = 0;
+    }
+    for (int8_t i = 0; i < data->level_width; ++i) {
+        for (int8_t j = 0; j < data->level_height; ++j) {
             if (get(i, j) == 'P') {
                 data->player_x = BLOCK_WIDTH * i;
                 data->player_y = BLOCK_HEIGHT * j;
-                break;
+            }
+
+            if (get(i, j) == 'G') {
+                data->level_gold++;
             }
         }
     }
@@ -383,8 +532,6 @@ static void LodeRunner_prepare()
 {
     game_enable_frame_buffer();
     data->level = 0;
-    data->camera_x = 0;
-    data->camera_y = 0;
 
     data->anim_update = 0;
     data->move_update = 0;
@@ -397,7 +544,7 @@ static void LodeRunner_render()
 {
     game_draw_sprite(&player_sprites[data->player_anim],
                     data->player_x + SCREEN_PADDING_X,
-                    data->player_y + SCREEN_PADDING_Y, WHITE);
+                    data->player_y + SCREEN_PADDING_Y, GREEN);
 }
 
 static void LodeRunner_update(unsigned long delta)
@@ -406,11 +553,14 @@ static void LodeRunner_update(unsigned long delta)
     bool right = game_is_button_pressed(BUTTON_RIGHT);
     bool up = game_is_button_pressed(BUTTON_UP);
     bool down = game_is_button_pressed(BUTTON_DOWN);
+    bool dig_left = game_is_button_pressed(BUTTON_B);
+    bool dig_right = game_is_button_pressed(BUTTON_A);
 
     data->time += delta;
 
     bool do_anim = false;
     bool do_move = false;
+    bool do_dig = false;
 
     if (data->time - data->anim_update > ANIM_INTERVAL) {
         data->anim_update = data->time;
@@ -420,6 +570,26 @@ static void LodeRunner_update(unsigned long delta)
     if (data->time - data->move_update > MOVE_INTERVAL) {
         do_move = true;
         data->move_update = data->time;
+    }
+
+    if (data->time - data->dig_update > DIG_INTERVAL) {
+        do_dig = true;
+    }
+
+    if (do_dig) {
+        if (dig_left ^ dig_right) {
+            int8_t y = (data->player_y + BLOCK_HEIGHT) / BLOCK_HEIGHT;
+            int8_t x;
+            if (dig_left) {
+                x = (data->player_x - 3) / BLOCK_WIDTH;
+            } else {
+                x = (data->player_x + BLOCK_WIDTH + 3) / BLOCK_WIDTH;
+            }
+            if (get(x, y) == 'B') {
+                data->dig_update = data->time;
+                dig(x, y);
+            }
+        }
     }
 
     if (do_move) {
@@ -557,6 +727,10 @@ static void LodeRunner_update(unsigned long delta)
 
     if (do_move) {
         pick_gold();
+    }
+
+    if (do_dig) {
+        regen();
     }
 }
 
