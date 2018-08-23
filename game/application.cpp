@@ -165,7 +165,7 @@ void update(unsigned long delta)
 
 void render()
 {
-    if (ptr && ptr->render)
+    if (ptr && pgm_read_pointer(&ptr->render))
     {
         ((game_function_render)pgm_read_pointer(&ptr->render))();
     }
