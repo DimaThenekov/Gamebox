@@ -22,7 +22,7 @@ static const MenuItem main_menu[] PROGMEM = {
     { "BreakOut", &BreakOut },
     { "Saper", &Saper },
     { "Mario", &Mario},
-    { "artyom", &artyom },
+/* Not finished    { "artyom", &artyom }, */
     { "3D", &Raycaster },
 #ifndef EMULATED /* for use only on real hardware */
     { "Font", &Tester },

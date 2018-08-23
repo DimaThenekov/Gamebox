@@ -1,3 +1,4 @@
+#if 0
 #pragma GCC optimize ("-O3")
 
 #include "libgame.h"
@@ -96,37 +97,32 @@ const game_sprite YourSprite PROGMEM = {
  * */
  
 const uint8_t prep_lines[] PROGMEM = {
-    B11111111, B11111111,
-    B11111111, B11111111,
-    B11111111, B10000011,
-    B11111111, B11111111,
-    B11111111, B11110011,
-    B11100111, B10111011,
-    B11111111, B11110011,
-    B11111111, B11111111,
-    B11111111, B11111111,
-    B00000000, B00000000,
+    B11111111,
+    B11111111,
+    B11111111,
+    B11111111,
+    B11111111,
 };
 const game_sprite prep PROGMEM = {
     // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    5, 5, 2, prep_lines
+    5, 5, prep_lines
 };
  
 const uint8_t YourSprite_lines[] PROGMEM = {
-    B00010000, B01000000,
-    B00001000, B10000000,
-    B00000101, B00000000,
-    B00111111, B11100000,
-    B01111111, B11110000,
-    B11100111, B00111000,
-    B01111111, B11110000,
-    B00111111, B11100000,
-    B00001010, B10000000,
-    B00010000, B01000000
+    B00010000,
+    B00001000,
+    B00000101,
+    B00111111,
+    B01111111,
+    B11100111,
+    B01111111,
+    B00111111,
+    B00001010,
+    B00010000,
 };
 const game_sprite YourSprite PROGMEM = {
     // ШИРИНА, ВЫСОТА, КОЛИЧЕСТВО БАЙТ НА СТРОКУ, ДАННЫЕ
-    5, 10, 2, YourSprite_lines
+    5, 10, YourSprite_lines
 };
 struct artyomData
 {
@@ -214,7 +210,7 @@ if(data->spriteY <= 50){
     /* Здесь можно работать с кнопками и обновлять переменные */
 }
 
-game_instance artyom = {
+const game_instance artyom PROGMEM = {
     "artyom",         /* Имя, отображаемое в меню */
    artyom_prepare,
     artyom_render,
@@ -225,3 +221,4 @@ game_instance artyom = {
 
 
 /* Не забудьте зарегистрировать игру в application.cpp */
+#endif

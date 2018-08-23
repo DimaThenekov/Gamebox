@@ -37,6 +37,7 @@ extern const game_instance Raycaster PROGMEM;
 extern const game_instance BreakOut PROGMEM;
 extern const game_instance Saper PROGMEM;
 extern const game_instance Mario PROGMEM;
+extern const game_instance artyom;
 #ifndef EMULATED /* for use only on real hardware */
 extern const game_instance Dump PROGMEM;
 extern const game_instance Player PROGMEM;
