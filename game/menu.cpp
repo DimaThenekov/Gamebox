@@ -83,7 +83,9 @@ void menu_render(Menu *m)
             break;
         int8_t x = m->menux;
         int8_t y = (FONT_HEIGHT + 1) * iter + m->menuy;
-        int8_t color = (page + iter == m->sel) ? RED : WHITE;
+        int8_t color = (page + iter == m->sel)
+            ? RED
+            : pgm_read_pointer(&m->menu[page + iter].opaque) ? WHITE : ORANGE;
         while (c)
         {
             game_draw_char(c, x, y, color, m->bg);

@@ -22,26 +22,38 @@ struct game_instance
 
 /* List of all games */
 
+/* LKSH 2016 */
 extern const game_instance BackspaceInvaders PROGMEM;
+
 extern const game_instance Snake PROGMEM;
+extern const game_instance Raycaster PROGMEM;
+
+/* LKSH 2017 */
+extern const game_instance Flappy PROGMEM;
+extern const game_instance BreakOut PROGMEM;
+#ifdef FRAME_BUFFER
+extern const game_instance Saper PROGMEM;
+#endif
+
+/* LKSH 2018 */
 #ifdef FRAME_BUFFER
 extern const game_instance Snake2 PROGMEM;
 extern const game_instance Snail PROGMEM;
 extern const game_instance LodeRunner PROGMEM;
 #endif
-extern const game_instance Ghostbuster PROGMEM;
-extern const game_instance Flappy PROGMEM;
 extern const game_instance SpaceShips PROGMEM;
-extern const game_instance Tester PROGMEM;
-extern const game_instance Raycaster PROGMEM;
-extern const game_instance BreakOut PROGMEM;
-extern const game_instance Saper PROGMEM;
 extern const game_instance Mario PROGMEM;
-extern const game_instance artyom;
-#ifndef EMULATED /* for use only on real hardware */
+extern const game_instance Ghostbuster PROGMEM;
+/*extern const game_instance artyom;*/
+extern const game_instance TicTacToe PROGMEM;
+
+/* Test applications */
+#ifndef EMULATED
 extern const game_instance Dump PROGMEM;
 extern const game_instance Player PROGMEM;
 #endif
+extern const game_instance Tester PROGMEM;
+
 /* Register your game like so:
  *
  * extern game_instance YOUR_GAME_NAME;

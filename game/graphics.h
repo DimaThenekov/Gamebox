@@ -25,6 +25,9 @@
 #define YELLOW_MIDDLE 0x30
 #define WHITE_DARK 0x7
 #define WHITE_MIDDLE 0x70
+
+#define ORANGE 0x31
+
 #define TRANSPARENT 0xff
 
 // SPRITE

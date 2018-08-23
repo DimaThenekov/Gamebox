@@ -9,20 +9,30 @@
 #include "music.h"
 
 static const MenuItem main_menu[] PROGMEM = {
+    { "\xcb\xca\xd8 2016", NULL },
     { "Invaders", &BackspaceInvaders },
     { "Snake", &Snake },
+
+    { "\xcb\xca\xd8 2017", NULL },
+    { "Flappy", &Flappy },
+    { "BreakOut", &BreakOut },
+#ifdef FRAME_BUFFER
+    { "Saper", &Saper },
+#endif
+
+    { "\xcb\xca\xd8 2018", NULL },
 #ifdef FRAME_BUFFER
     { "Snake2", &Snake2 },
     { "Snail", &Snail },
-    { "GhostBuster", &Ghostbuster },
     { "LodeRunner", &LodeRunner },
 #endif
-    { "Flappy", &Flappy },
+    { "GhostBuster", &Ghostbuster },
     { "SpaceShips", &SpaceShips },
-    { "BreakOut", &BreakOut },
-    { "Saper", &Saper },
     { "Mario", &Mario},
+    { "TicTacToe", &Mario},
 /* Not finished    { "artyom", &artyom }, */
+
+    { "Demos", NULL },
     { "3D", &Raycaster },
 #ifndef EMULATED /* for use only on real hardware */
     { "Font", &Tester },
