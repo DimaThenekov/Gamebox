@@ -1,5 +1,6 @@
-# libgame 
-Game library for Arduino and LED display 64x64
+# Gamebox
+
+Hardware platform and game library based on Arduino and LED display 64x64
 
 This project uses Adafruit-like display:
 https://learn.adafruit.com/32x16-32x32-rgb-led-matrix
