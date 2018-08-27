@@ -5,7 +5,19 @@ Hardware platform and game library based on Arduino and LED display 64x64
 This project uses Adafruit-like display:
 https://learn.adafruit.com/32x16-32x32-rgb-led-matrix
 
-It requires the following Arduino connections:
+The display is logically split into two parts with separate controllers.
+Lower part of display is connected through the upper one with
+the cable as follows:
+```
+LLLLUUUU
+LLLLUUUU
+```
+Therefore this is logically 128x32 display.
+Arduino shifts 128 pixels into display registers at every iteration.
+
+Demonstration of the working prototype: https://www.youtube.com/watch?v=gy7oADJboqM
+
+## Arduino Uno wiring
 
 Display-Arduino
 * R1 - 2
@@ -28,17 +40,28 @@ Buttons are connected via 74165, NES joystick is connected to (CLOCK, LATCHJ, SE
 * LATCHJ - 13
 * DATA - A4
 
-The display is logically split into two parts with separate controllers.
-Lower part of display is connected through the upper one with
-the cable as follows:
-```
-LLLLUUUU
-LLLLUUUU
-```
-Therefore this is logically 128x32 display.
-Arduino shifts 128 pixels into display registers at every iteration.
+## Arduino Mega wiring
 
-Demonstration of the working prototype: https://www.youtube.com/watch?v=gy7oADJboqM
+Display-Arduino
+* R1 - 53
+* G1 - 52
+* B1 - 51
+* R2 - 22
+* G2 - 23
+* B2 - 24
+* A - A0
+* B - A1
+* C - A2
+* D - A3
+* LAT - 5
+* CLK - 2
+* OE - 3
+
+Buttons are connected via 74165, NES joystick is connected to (CLOCK, LATCHJ, SER)
+* CLOCK - A8
+* LATCHB - A9
+* LATCHJ - A10
+* DATA - A11
 
 ## Tutorial
 See game/Template.cpp
