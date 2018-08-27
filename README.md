@@ -63,5 +63,17 @@ Buttons are connected via 74165, NES joystick is connected to (CLOCK, LATCHJ, SE
 * LATCHJ - A10
 * DATA - A11
 
+## Sound chip connection
+
+Configuration with Arduino Mega supports chiptune music for YM-2149.
+
+YM-Arduino:
+* BC2 - +5V
+* BDIR - A7
+* BC1 - A6
+* DATA(8 pins) - PORTC(8 pins)
+
+YM has its own clock generator.
+
 ## Tutorial
 See game/Template.cpp
