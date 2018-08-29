@@ -77,3 +77,87 @@ YM has its own clock generator.
 
 ## Tutorial
 See game/Template.cpp
+
+## Existing games
+
+### BreakOut
+
+Pong-like game.
+
+![](screenshots/BreakOut.png)
+
+### Flappy
+
+Flappy submarine - use any key to push it up.
+
+![](screenshots/Flappy.png)
+
+### Ghostbuster
+
+You can't beat the boss here.
+
+![](screenshots/Ghostbuster.png)
+
+### Invaders
+
+Space invaders-like game.
+
+![](screenshots/Invaders.png)
+
+### LodeRunner
+
+Lode runner in a small labyrinth.
+
+![](screenshots/LodeRunner.png)
+
+### Mario
+
+Mario collecting the coins and trying not to fall into the hole.
+
+![](screenshots/Mario.png)
+
+### Saper
+
+Minesweeper game.
+
+![](screenshots/Saper.png)
+
+### Snail
+
+Sokoban-like game.
+
+![](screenshots/Snail.png)
+
+### Snake
+
+Simplest snake. Try to grow it bigger than 128 and overflow the buffer.
+
+![](screenshots/Snake.png)
+
+### Snake2
+
+Snake with the obstacles.
+Demonstrates using of the frame buffer for storing the game map.
+
+![](screenshots/Snake2.png)
+
+### SpaceShips
+
+Spaceship and asteroids. No shooting.
+
+![](screenshots/SpaceShips.png)
+
+### TicTacToe
+
+Almost working tic-tac-toe game.
+
+![](screenshots/TicTacToe.png)
+
+## Future games
+
+* 2048
+* Tetris
+* rogue-like
+* Doom-like
+* True breakout-like game
+* Anything else from Atari 2600
