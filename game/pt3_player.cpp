@@ -199,14 +199,14 @@ static uint16_t pt3_get_sample_ptr(uint8_t i)
     return music_peek2(SAMPLES_OFFSET + i * 2);
 }
 
-bool pt3_init(const uint8_t *pt3)
+bool pt3_init(uint32_t pt3)
 {
-    if (pgm_read_byte(pt3) != 'P'
-        || pgm_read_byte(pt3 + 1) != 'r'
-        || pgm_read_byte(pt3 + 2) != 'o'
-        || pgm_read_byte(pt3 + 3) != 'T'
+    if (pgm_read_byte_far(pt3) != 'P'
+        || pgm_read_byte_far(pt3 + 1) != 'r'
+        || pgm_read_byte_far(pt3 + 2) != 'o'
+        || pgm_read_byte_far(pt3 + 3) != 'T'
         /* Skipped some letters */
-        || pgm_read_byte(pt3 + 11) != '3')
+        || pgm_read_byte_far(pt3 + 11) != '3')
     {
         return false;
     }

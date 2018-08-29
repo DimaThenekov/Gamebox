@@ -139,7 +139,7 @@ static void Snake_prepare()
     data->hiscore = 0;
     game_load(&data->hiscore, sizeof(data->hiscore));
 #ifndef EMULATED
-    tune_init(where_time_dropped_dead);
+    tune_init(where_time_dropped_dead_addr());
     tune_enable();
 #endif
 }

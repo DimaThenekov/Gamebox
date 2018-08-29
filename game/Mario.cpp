@@ -479,7 +479,7 @@ static void Mario_prepare()
       data->SetUpMapY=data->MapY;
 
 #ifndef EMULATED
-    tune_init(mario);
+    tune_init(mario_addr());
     tune_enable();
 #endif
 

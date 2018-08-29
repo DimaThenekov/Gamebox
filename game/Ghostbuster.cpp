@@ -363,7 +363,7 @@ static void Ghostbuster_prepare()
     data->gameover = false;
 
 #ifndef EMULATED
-    tune_init(ghostbusters);
+    tune_init(ghostbusters_addr());
     tune_enable();
 #endif
 }

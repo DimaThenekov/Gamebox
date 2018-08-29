@@ -117,7 +117,7 @@ static void Snake_prepare()
     data->hiscore = 0;
     game_load(&data->hiscore, sizeof(data->hiscore));
 #ifndef EMULATED
-    tune_init(the_last_v8);
+    tune_init(the_last_v8_addr());
     tune_enable();
 #endif
 }

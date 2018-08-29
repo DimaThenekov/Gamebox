@@ -3,15 +3,15 @@
 #include <avr/pgmspace.h>
 #include "music.h"
 
-static const uint8_t *ram;
+static uint32_t ram;
 static uint16_t ram_addr;
 static bool mute;
 static uint8_t ayregs[14];
 static bool fxm;
 
-bool fxm_init(const uint8_t *fxm);
+bool fxm_init(uint32_t fxm);
 void fxm_loop();
-bool pt3_init(const uint8_t *pt3);
+bool pt3_init(uint32_t pt3);
 void pt3_loop();
 
 
@@ -25,7 +25,7 @@ uint16_t music_peek2(uint16_t addr)
     return music_peek(addr) + (music_peek(addr + 1) << 8);
 }
 
-void music_set_ram(const uint8_t *p, uint16_t offs)
+void music_set_ram(uint32_t p, uint16_t offs)
 {
     ram = p;
     ram_addr = offs;
@@ -51,7 +51,7 @@ void music_send_ay()
         music_send_data(i, ayregs[i]);
 }
 
-void tune_init(const uint8_t *tune)
+void tune_init(uint32_t tune)
 {
     noInterrupts();
 

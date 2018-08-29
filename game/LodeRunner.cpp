@@ -716,7 +716,7 @@ static void LodeRunner_prepare()
     data->state = SELECTING;
 
 #ifndef EMULATED
-    tune_init(cantina);
+    tune_init(cantina_addr());
     tune_enable();
 #endif
 }

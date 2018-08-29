@@ -123,7 +123,7 @@ static void SpaceShips_prepare()
   game_load(&data->hiscore, sizeof(data->hiscore));
 
 #ifndef EMULATED
-    tune_init(commando);
+    tune_init(commando_addr());
     tune_enable();
 #endif
 }

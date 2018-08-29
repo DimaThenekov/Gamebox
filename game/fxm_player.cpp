@@ -226,15 +226,15 @@ ret:
   music_set_ay_reg(2 * ch->id + 1, ch->tone >> 8);
 }
 
-bool fxm_init(const uint8_t *fxm)
+bool fxm_init(uint32_t fxm)
 {
-    if (pgm_read_byte(fxm) != 'F'
-        || pgm_read_byte(fxm + 1) != 'X'
-        || pgm_read_byte(fxm + 2) != 'S'
-        || pgm_read_byte(fxm + 3) != 'M')
+    if (pgm_read_byte_far(fxm) != 'F'
+        || pgm_read_byte_far(fxm + 1) != 'X'
+        || pgm_read_byte_far(fxm + 2) != 'S'
+        || pgm_read_byte_far(fxm + 3) != 'M')
         return false;
 
-    music_set_ram(fxm + 6, pgm_read_byte(fxm + 4) + (pgm_read_byte(fxm + 5) << 8));
+    music_set_ram(fxm + 6, pgm_read_byte_far(fxm + 4) + (pgm_read_byte_far(fxm + 5) << 8));
   
   for (int i = 0 ; i < 3 ; ++i)
   {
@@ -258,9 +258,9 @@ bool fxm_init(const uint8_t *fxm)
     channels[i].b3e = false;
     channels[i].sp = 0;
   }
-  channels[0].address_in_pattern = pgm_read_byte(fxm + 6) + (pgm_read_byte(fxm + 7) << 8);
-  channels[1].address_in_pattern = pgm_read_byte(fxm + 8) + (pgm_read_byte(fxm + 9) << 8);
-  channels[2].address_in_pattern = pgm_read_byte(fxm + 10) + (pgm_read_byte(fxm + 11) << 8);
+  channels[0].address_in_pattern = pgm_read_byte_far(fxm + 6) + (pgm_read_byte_far(fxm + 7) << 8);
+  channels[1].address_in_pattern = pgm_read_byte_far(fxm + 8) + (pgm_read_byte_far(fxm + 9) << 8);
+  channels[2].address_in_pattern = pgm_read_byte_far(fxm + 10) + (pgm_read_byte_far(fxm + 11) << 8);
 
   music_clear_ay();
 
