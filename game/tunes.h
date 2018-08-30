@@ -6,11 +6,12 @@
 #include <Arduino.h>
 #include "music.h"
 
+typedef uint32_t (*TuneAddr)();
+
+#define TUNE_ADDR(A) A##_addr
+
 #define TUNE(A, B) extern const uint8_t B[] MUSICMEM; \
-                   static inline uint32_t B##_addr()  \
-                   {                                  \
-                       return pgm_get_far_address(B); \
-                   }
+                   uint32_t TUNE_ADDR(B)();
 #include "tunes_list.h"
 #undef TUNE
 

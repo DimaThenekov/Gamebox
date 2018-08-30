@@ -34,8 +34,6 @@ void tune_enable();
 void tune_disable();
 void music_mute();
 
-// TODO: improve this interface
-void Player_setup_melody(int i);
 void Player_setup_random_melody();
 
 #endif

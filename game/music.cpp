@@ -17,7 +17,7 @@ void pt3_loop();
 
 uint8_t music_peek(uint16_t addr)
 {
-    return pgm_read_byte(ram + addr - ram_addr);
+    return pgm_read_byte_far(ram + addr - ram_addr);
 }
 
 uint16_t music_peek2(uint16_t addr)
