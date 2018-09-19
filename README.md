@@ -159,5 +159,6 @@ Almost working tic-tac-toe game.
 * Tetris
 * rogue-like
 * Doom-like
+* Klad
 * True breakout-like game
 * Anything else from Atari 2600
