@@ -145,30 +145,31 @@ const uint8_t trajectory[T_LENGTH] PROGMEM = {24, 26, 28, 30, 33, 35, 37, 39, 40
 
 struct NY2019Data
 {
-/*    int snowX[SNOW];
-    int snowY[SNOW];
-    int snowType[SNOW];
-    int snowColor[SNOW];
-    int snowSpeedX[SNOW];
-    int snowSpeedY[SNOW];
-    int snowPhase[SNOW];*/
+    int8_t snowX[SNOW];
+    int8_t snowY[SNOW];
+    int8_t snowColor[SNOW];
+    int8_t snowSpeedX[SNOW];
+    int8_t snowSpeedY[SNOW];
+    int8_t snowPhase[SNOW];
+    int8_t winePhase;
+    int8_t tonguePhase;
 };
-static NY2019Data* data; /* Эта переменная - указатель на структуру, которая содержит ваши переменные */
+static NY2019Data* data;
 
 void generateSnow(int i)
 {
-/*    int c = rand() % 3;
+    int c = rand() % 3;
     int color = BLUE;
     if (c == 1)
         color = CYAN;
     else if (c == 2)
         color = WHITE;
     data->snowColor[i] = color;
-    data->snowX[i] = rand() % 64;
+    data->snowX[i] = rand() % WIDTH;
     data->snowY[i] = 0;
     data->snowSpeedX[i] = rand() % 2 + 1;
     data->snowSpeedY[i] = rand() % 4 + 1;
-    data->snowPhase[i] = rand() % T_LENGTH;*/
+    data->snowPhase[i] = rand() % T_LENGTH;
 }
 
 static void NY2019_prepare()
@@ -184,22 +185,36 @@ static void NY2019_prepare()
     for (int i = 0 ; i < SNOW ; ++i)
     {
         generateSnow(i);
+        data->snowY[i] = rand() % HEIGHT;
     }
+    data->winePhase = 0;
+    data->tonguePhase = 0;
 }
 
 static void NY2019_render()
 {
-/*    for (int i = 0 ; i < SNOW ; ++i)
+    // snowflakes
+    for (int i = 0 ; i < SNOW ; ++i)
     {
         game_draw_pixel(data->snowX[i], data->snowY[i], data->snowColor[i]);
-    }*/
+    }
+    // wine
+    int wineX = data->winePhase;
+    if (data->winePhase == 3)
+        wineX = 1;
+    game_draw_rect(wineX, 0, 3, 1, 0x11);
+    // tongue
+    int tongueX = data->tonguePhase;
+    if (data->tonguePhase >= 4)
+        tongueX = 6 - tongueX;
+    game_draw_rect(tongueX, 10, 2, 2, 0x11);
 }
 
 static void NY2019_update(unsigned long delta)
 {
     for (int i = 0 ; i < SNOW ; ++i)
     {
-        /*int x = data->snowX[i];
+        int x = data->snowX[i];
         int y = data->snowY[i];
         y += data->snowSpeedY[i];
         x -= pgm_read_byte(&trajectory[data->snowPhase[i]]);
@@ -211,8 +226,10 @@ static void NY2019_update(unsigned long delta)
         if (y >= HEIGHT)
         {
             generateSnow(i);
-        }*/
+        }
     }
+    data->winePhase = (data->winePhase + 1) % 4;
+    data->tonguePhase = (data->tonguePhase + 1) % 6;
 }
 
 const game_instance NY2019 PROGMEM = {
