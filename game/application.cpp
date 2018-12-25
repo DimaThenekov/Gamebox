@@ -31,6 +31,7 @@ static const MenuItem main_menu[] PROGMEM = {
     { "Mario", &Mario},
     { "TicTacToe", &TicTacToe},
 /* Not finished    { "artyom", &artyom }, */
+    { "NY2019", &NY2019},
 
     { "Demos", NULL },
     { "3D", &Raycaster },
