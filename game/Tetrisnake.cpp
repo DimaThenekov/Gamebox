@@ -8,8 +8,6 @@
 #include "font.h"
 #include "tunes.h"
 
-#define FRAME_BUFFER
-
 #ifdef FRAME_BUFFER
 
 #define ROTLEFT BUTTON_SE

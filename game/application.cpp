@@ -33,6 +33,7 @@ static const MenuItem main_menu[] PROGMEM = {
 /* Not finished    { "artyom", &artyom }, */
 #ifdef FRAME_BUFFER
     { "NY2019", &NY2019},
+    { "Tetrisnake", &Tetrisnake },
 #endif
 
     { "Demos", NULL },
@@ -42,7 +43,6 @@ static const MenuItem main_menu[] PROGMEM = {
     { "EEPROM", &Dump },
     { "Music", &Player },
 #endif
-    { "Tetrisnake", &Tetrisnake },
     /* Register your game like so:
      *
      * { "YOUR_GAME_NAME", &YOUR_GAME_NAME },
