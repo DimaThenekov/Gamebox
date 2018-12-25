@@ -113,14 +113,16 @@ struct Entity {
     uint8_t x;
     uint32_t y;
     uint8_t w;
-    uint8_t mx;
-    uint8_t my;
+};
+
+struct Doodle : Entity {
+    uint8_t jump_counter;
 };
 
 struct DoodleJumpData
 {
     uint32_t scene_height;
-    Entity doodle;
+    Doodle doodle;
     Entity planes[PLANES_MAX_COUNT];
     uint32_t planes_size;
 };
@@ -160,6 +162,7 @@ static void DoodleJump_reset()
     data->doodle.w = DOODLE_WIDTH;
     data->doodle.y = 50;
     data->doodle.x = (WIDTH - DOODLE_WIDTH) / 2;
+    data->doodle.jump_counter = 10;
 
     DoodleJump_add_plank(0, 5, WIDTH);
 }
@@ -170,23 +173,20 @@ static void DoodleJump_render_plane(Entity *obj)
     game_draw_rect(obj->x, y, obj->w, PLANE_HEIGHT, WHITE);
 }
 
-static void DoodleJump_render_doodle(Entity *obj)
+static void DoodleJump_render_doodle(Doodle *obj)
 {
     int y = HEIGHT - obj->y - data->scene_height - DOODLE_HEIGHT;
     game_draw_rect(obj->x, y, obj->w, DOODLE_HEIGHT, GREEN);
-    DEBUG("%d\n", obj->y);
 }
 
-static void DoodleJump_update_doodle(Entity *obj)
+static void DoodleJump_update_doodle(Doodle *obj)
 {
-    obj->x += obj->mx;
-    obj->y += obj->my;
-
-    // gravity
-    if (obj->my > -1) {
-        
+    if (obj->jump_counter > 0) {
+        obj->jump_counter--;
+        obj->y++;
+    } else {
+        obj->y--;
     }
-    obj->my = -1;
 }
 
 static void DoodleJump_prepare()
