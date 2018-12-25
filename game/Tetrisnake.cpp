@@ -320,8 +320,8 @@ static void cut_snake()
 static void generate_brick()
 {
     uint8_t  formIdx = rand() % BRICK_FORMS_COUNT;
-    data->genFigureWidth  = pgm_read_byte(&tetrisnakeBrick[formIdx]).width;
-    data->genFigureHeight = pgm_read_byte(&tetrisnakeBrick[formIdx]).height;
+    data->genFigureWidth  = pgm_read_byte(&tetrisnakeBrick[formIdx].width);
+    data->genFigureHeight = pgm_read_byte(&tetrisnakeBrick[formIdx].height);
     int8_t  x =LEFT_BOUND + 1 + rand() % (RIGHT_BOUND-LEFT_BOUND-data->genFigureWidth);
     int8_t y = UP_BOUND-data->genFigureHeight+1;
     uint8_t color = (rand() % 4) << 6;
