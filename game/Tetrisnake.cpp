@@ -108,14 +108,6 @@ static const game_sprite tetrisnakeBrick[] PROGMEM = {
     {3, 3, brickForms[6]},
 };
 
-struct TetrisnakeFigure {
-    int8_t x;
-    int8_t y;
-    uint8_t color;
-    uint8_t isInverted;
-    const game_sprite* sprite;
-};
-
 // TetrisnakeBlock structure
 #define block_color(i)            (data->blocks[i] & COLOR)
 #define block_property(i, mask) !!(data->blocks[i] & mask)
@@ -149,9 +141,14 @@ struct TetrisnakeData
     uint8_t tact;
     uint8_t blockTimer;
     uint16_t score;
-    TetrisnakeFigure genFigure;
     uint8_t blocks[BLOCK_BUFFER_SIZE];
-
+    int8_t genFigureX;
+    int8_t genFigureY;
+    uint8_t genFigureColor;
+    uint8_t genFigureIsInverted;
+    uint8_t genFigureWidth;
+    uint8_t genFigureHeight;
+    uint8_t genFigureLines[4];
 };
 static TetrisnakeData* data;
 
@@ -261,7 +258,7 @@ static bool is_any_obstacle(int newX, int newY)
 
 static bool is_finish_gen()
 {
-    return data->genFigure.y > UP_BOUND;
+    return data->genFigureY > UP_BOUND;
 }
 
 static bool is_fell_on_brick(int newX, int newY)
@@ -323,10 +320,20 @@ static void cut_snake()
 static void generate_brick()
 {
     uint8_t  formIdx = rand() % BRICK_FORMS_COUNT;
-    int8_t  x =LEFT_BOUND + 1 + rand() % (RIGHT_BOUND-LEFT_BOUND-pgm_read_byte(&tetrisnakeBrick[formIdx].width));
-    int8_t y = UP_BOUND-pgm_read_byte(&tetrisnakeBrick[formIdx].height)+1;
+    data->genFigureWidth  = pgm_read_byte(&tetrisnakeBrick[formIdx]).width;
+    data->genFigureHeight = pgm_read_byte(&tetrisnakeBrick[formIdx]).height;
+    int8_t  x =LEFT_BOUND + 1 + rand() % (RIGHT_BOUND-LEFT_BOUND-data->genFigureWidth);
+    int8_t y = UP_BOUND-data->genFigureHeight+1;
     uint8_t color = (rand() % 4) << 6;
-    data->genFigure = {x, y, color, rand() % 2, &tetrisnakeBrick[formIdx]};
+    data->genFigureX = x;
+    data->genFigureY = y;
+    data->genFigureColor = color;
+    data->genFigureIsInverted = rand() % 2;
+    for(uint8_t i=0;i<4;i++)
+    {
+        data->genFigureLines[i] = pgm_read_byte((uint8_t*)pgm_read_pointer(&tetrisnakeBrick[formIdx].lines)+i);
+    }
+    
 }
 
 static void generate_block(int x, bool left, bool right, bool up, uint8_t color)
@@ -343,18 +350,18 @@ static void generate_block(int x, bool left, bool right, bool up, uint8_t color)
 
 static void generate_blocks()
 {
-    if(data->genFigure.y <= UP_BOUND) {
-        int8_t height = data->genFigure.sprite->height;
-        int8_t width = data->genFigure.sprite->width;
-        int16_t startX = data->genFigure.x;
+    if(data->genFigureY <= UP_BOUND) {
+        int8_t height = data->genFigureHeight;
+        int8_t width = data->genFigureWidth;
+        int16_t startX = data->genFigureX;
 
-        int8_t  y = data->genFigure.isInverted ? height + data->genFigure.y : -data->genFigure.y-1;
-        uint8_t line = data->genFigure.sprite->lines[y];
+        int8_t  y = data->genFigureIsInverted ? height + data->genFigureY : -data->genFigureY-1;
+        uint8_t line = data->genFigureLines[y];
         uint8_t upLine;
-        if(data->genFigure.isInverted)
-            upLine = y < height-1 ? data->genFigure.sprite->lines[y+1] : 0x00;
+        if(data->genFigureIsInverted)
+            upLine = y < height-1 ? data->genFigureLines[y+1] : 0x00;
         else
-            upLine = y > 0 ? data->genFigure.sprite->lines[y-1] : 0x00;
+            upLine = y > 0 ? data->genFigureLines[y-1] : 0x00;
         uint8_t mask = 0x80;
         bool isFree = true;
         for(uint8_t dx=0;dx<width;++dx)
@@ -382,11 +389,11 @@ static void generate_blocks()
                     bool left = line & (mask << 1);
                     bool right = line & (mask >> 1);
                     bool up = upLine & mask;
-                    generate_block(startX+dx, left, right, up, data->genFigure.color);
+                    generate_block(startX+dx, left, right, up, data->genFigureColor);
                 }
                 mask >>= 1;
             }
-            data->genFigure.y++;
+            data->genFigureY++;
         }
     }
 }
@@ -506,7 +513,10 @@ static void Tetrisnake_reset()
     data->rotLeftPressed = false;
     data->rotRightPressed = false;
     data->half = false;
-    data->genFigure = {0, 0, NULL};
+    data->genFigureX = 0;
+    data->genFigureY = 0;
+    data->genFigureColor = 0;
+    data->genFigureIsInverted = 0;
     data->tact = 0;
     data->blockTimer = 0;
     data->score = 0;
