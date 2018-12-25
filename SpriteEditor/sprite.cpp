@@ -49,7 +49,7 @@ void Sprite::paintEvent(QPaintEvent * /* event */)
     }
 }
 
-void Sprite::putPixel(QMouseEvent *event)
+void Sprite::putPixel(QMouseEvent *event, bool erase)
 {
     int pixelW = width() / WIDTH;
     int pixelH = height() / HEIGHT;
@@ -57,7 +57,7 @@ void Sprite::putPixel(QMouseEvent *event)
     int y = event->y() / pixelH;
     if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT)
     {
-        pixels[y][x] = pal->getColor();
+        pixels[y][x] = erase ? 0 : pal->getColor();
         update();
         emit spriteUpdated();
     }
@@ -67,10 +67,14 @@ void Sprite::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
         putPixel(event);
+    else if (event->button() == Qt::RightButton)
+        putPixel(event, true);
 }
 
 void Sprite::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton)
         putPixel(event);
+    else if (event->buttons() == Qt::RightButton)
+        putPixel(event, true);
 }

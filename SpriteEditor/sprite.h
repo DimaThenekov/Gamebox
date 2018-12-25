@@ -29,7 +29,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
-    void putPixel(QMouseEvent *event);
+    void putPixel(QMouseEvent *event, bool erase = false);
 
 private:
     int pixels[HEIGHT][WIDTH];
