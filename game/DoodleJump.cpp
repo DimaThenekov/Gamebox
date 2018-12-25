@@ -51,7 +51,6 @@ struct DoodleJumpData
     uint32_t planks_size;
     uint32_t planks_last_gen;
     uint32_t planks_last_gen_complete;
-    char score_text[10];
 };
 static DoodleJumpData* data;
 
@@ -116,6 +115,13 @@ static void render_doodle(Doodle *obj)
     } else {
         DEBUG("no sprite\n");
     }
+}
+
+static void render_score()
+{
+    char s[5];
+    sprintf(s, "%d", data->scene_height / 10);
+    game_draw_text((uint8_t *) s, 0, 0, GREEN);
 }
 
 static bool collide_with(Entity *src, Entity *target) {
@@ -222,9 +228,7 @@ static void DoodleJump_render()
     }
 
     render_doodle(&data->doodle);
-
-    sprintf(data->score_text, "%d", data->scene_height / 10);
-    game_draw_text((const uint8_t *) data->score_text, 0, 0, GREEN);
+    render_score();
 }
 
 static void DoodleJump_update(unsigned long delta)
