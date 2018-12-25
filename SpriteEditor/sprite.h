@@ -6,12 +6,14 @@
 #define WIDTH 64
 #define HEIGHT 16
 
+class Palette;
+
 class Sprite : public QWidget
 {
     Q_OBJECT
 
 public:
-    Sprite(QWidget *parent = 0);
+    Sprite(Palette *p, QWidget *parent = 0);
 
     int getPixel(int row, int col);
 
@@ -27,6 +29,7 @@ protected:
 
 private:
     int pixels[HEIGHT][WIDTH];
+    Palette *pal;
 };
 
 #endif

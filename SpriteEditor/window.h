@@ -4,6 +4,7 @@
 #include <QtWidgets>
 
 class Sprite;
+class Palette;
 
 class Window : public QWidget
 {
@@ -16,6 +17,7 @@ private slots:
     void updateSprite();
 
 private:
+    Palette *palette;
     Sprite *sprite;
     QTextEdit *code;
 };

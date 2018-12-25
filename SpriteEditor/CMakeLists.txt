@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 11)
 # Find the QtWidgets library
 find_package(Qt5Widgets)
 
-add_executable(SpriteEditor main.cpp window.cpp sprite.cpp)
+add_executable(SpriteEditor main.cpp window.cpp sprite.cpp palette.cpp)
 
 # Use the Widgets module from Qt 5.
 target_link_libraries(SpriteEditor Qt5::Widgets)

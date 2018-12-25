@@ -1,14 +1,18 @@
 #include "window.h"
 #include "sprite.h"
+#include "palette.h"
 
 Window::Window()
 {
-    sprite = new Sprite;
+    palette = new Palette;
+    sprite = new Sprite(palette);
     code = new QTextEdit;
 
     code->setReadOnly(true);
 
     QVBoxLayout *mainLayout = new QVBoxLayout();
+    mainLayout->addWidget(palette);
+    mainLayout->addSpacing(1);
     mainLayout->addWidget(sprite);
     mainLayout->addSpacing(1);
     mainLayout->addWidget(code);
@@ -21,6 +25,8 @@ Window::Window()
 
 void Window::updateSprite()
 {
+    static int palette[COLORS] = {0, 1};
+
     QString s;
     int left = WIDTH, right = 0, top = HEIGHT, bottom = 0;
     for (int r = 0 ; r < HEIGHT ; ++r)

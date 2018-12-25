@@ -1,37 +1,10 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include "sprite.h"
+#include "palette.h"
 
-/*static int color_map[4] = {0, 128, 192, 255};
-
-static int rev_color_map(int c)
-{
-    switch (c)
-    {
-    case 128:
-        return 1;
-    case 192:
-        return 2;
-    case 255:
-        return 3;
-    }
-    return 0;
-}
-
-static QColor map_color(uint8_t c)
-{
-    int r = c & RED;
-    r = (r & 0xf) + ((r & 0xf0) >> 3);
-    int g = c & GREEN;
-    g = ((g & 0xf) >> 1) + ((g & 0xf0) >> 4);
-    int b = c & BLUE;
-    b = ((b & 0xf) >> 2) + ((b & 0xf0) >> 5);
-    QColor color(color_map[r], color_map[g], color_map[b]);
-    return color;
-}*/
-
-Sprite::Sprite(QWidget *parent)
-    : QWidget(parent)
+Sprite::Sprite(Palette *p, QWidget *parent)
+    : QWidget(parent), pal(p)
 {
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
@@ -64,7 +37,7 @@ void Sprite::paintEvent(QPaintEvent * /* event */)
     {
         for (int x = 0 ; x < WIDTH ; ++x)
         {
-            QBrush brush(pixels[y][x] ? QColor(255, 255, 255) : QColor(0, 0, 0));
+            QBrush brush(rgb[pixels[y][x]]);
             painter.setBrush(brush);
             painter.drawRect(QRect(x * pixelW, y * pixelH, pixelW, pixelH));
             painter.setBrush(Qt::NoBrush);
@@ -80,7 +53,7 @@ void Sprite::mousePressEvent(QMouseEvent *event)
         int pixelH = height() / HEIGHT;
         int x = event->x() / pixelW;
         int y = event->y() / pixelH;
-        pixels[y][x] = 1;
+        pixels[y][x] = pal->getColor();
         update();
         emit spriteUpdated();
     }
