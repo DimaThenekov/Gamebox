@@ -55,7 +55,7 @@ void Window::updateSprite()
     }
     else if (multicolor)
     {
-        s = "const uint8_t spriteLines[] PROGMEM = {\n";
+        s = "static const uint8_t spriteLines[] PROGMEM = {\n";
         for (int r = top ; r <= bottom ; ++r)
         {
             s += "    ";
@@ -66,12 +66,12 @@ void Window::updateSprite()
             s += "\n";
         }
         s += "};\n";
-        s += QString("const game_color_sprite sprite PROGMEM = {%1, %2, spriteLines};\n")
+        s += QString("static const game_color_sprite sprite PROGMEM = {%1, %2, spriteLines};\n")
             .arg(right - left + 1).arg(bottom - top + 1);
     }
     else
     {
-        s = "const uint8_t spriteLines[] PROGMEM = {\n";
+        s = "static const uint8_t spriteLines[] PROGMEM = {\n";
         for (int r = top ; r <= bottom ; ++r)
         {
             s += "    ";
@@ -95,7 +95,7 @@ void Window::updateSprite()
             s += "\n";
         }
         s += "};\n";
-        s += QString("const game_sprite sprite PROGMEM = {%1, %2, spriteLines};\n")
+        s += QString("static const game_sprite sprite PROGMEM = {%1, %2, spriteLines};\n")
             .arg(right - left + 1).arg(bottom - top + 1);
     }
     code->setPlainText(s);
