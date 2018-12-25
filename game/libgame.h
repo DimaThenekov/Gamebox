@@ -48,6 +48,11 @@ extern const game_instance Ghostbuster PROGMEM;
 extern const game_instance TicTacToe PROGMEM;
 extern const game_instance Tetrisnake PROGMEM;
 
+/* NY2019 mini-hackaton */
+#ifdef FRAME_BUFFER
+extern const game_instance NY2019 PROGMEM;
+#endif
+
 /* Test applications */
 #ifndef EMULATED
 extern const game_instance Dump PROGMEM;
