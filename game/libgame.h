@@ -52,6 +52,7 @@ extern const game_instance TicTacToe PROGMEM;
 extern const game_instance NY2019 PROGMEM;
 extern const game_instance Tetrisnake PROGMEM;
 #endif
+extern const game_instance DoodleJump PROGMEM;
 
 /* Test applications */
 #ifndef EMULATED
