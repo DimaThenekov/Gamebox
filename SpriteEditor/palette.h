@@ -3,11 +3,10 @@
 
 #include <QtWidgets>
 
-#define COLORS 8
-
-extern int gameboxPalette[COLORS];
+#define COLORS 64
 
 QColor getRGB(int col);
+int getPalette(int col);
 
 class Palette : public QWidget
 {

@@ -61,7 +61,7 @@ void Window::updateSprite()
             s += "    ";
             for (int c = left ; c <= right ; ++c)
             {
-                s += QString("0x%1, ").arg(gameboxPalette[sprite->getPixel(r, c)], 2, 16, QChar('0'));
+                s += QString("0x%1, ").arg(getPalette(sprite->getPixel(r, c)), 2, 16, QChar('0'));
             }
             s += "\n";
         }

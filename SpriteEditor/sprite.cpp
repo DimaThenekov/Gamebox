@@ -6,6 +6,10 @@
 Sprite::Sprite(Palette *p, QWidget *parent)
     : QWidget(parent), pal(p)
 {
+    for (int y = 0 ; y < HEIGHT ; ++y)
+        for (int x = 0 ; x < WIDTH ; ++x)
+            pixels[y][x] = 0;
+ 
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
 }
@@ -24,7 +28,7 @@ QSize Sprite::minimumSizeHint() const
 
 QSize Sprite::sizeHint() const
 {
-    return QSize(WIDTH * 20 + 1, HEIGHT * 20 + 1);
+    return QSize(WIDTH * 15 + 1, HEIGHT * 15 + 1);
 }
 
 void Sprite::paintEvent(QPaintEvent * /* event */)

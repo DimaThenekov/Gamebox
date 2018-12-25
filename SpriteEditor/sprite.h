@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #define WIDTH 64
-#define HEIGHT 16
+#define HEIGHT 64
 
 class Palette;
 
