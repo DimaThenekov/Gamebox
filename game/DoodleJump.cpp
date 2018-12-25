@@ -107,29 +107,27 @@ const game_sprite YourSprite PROGMEM = {
         }                        \
     } while (0)
 
-typedef struct _Plane {
-    uint8_t x;
+typedef struct _Entity {
+    uint32_t x;
     uint8_t y;
-} Plane;
+    uint8_t w;
+} Entity;
 
 struct DoodleJumpData
 {
     uint32_t scene_height;
-    uint32_t doodle_x;
-    uint32_t doodle_y;
-    Plane planes[PLANES_MAX_COUNT];
+    Entity planes[PLANES_MAX_COUNT];
     uint32_t planes_size;
-    /* Объявляйте ваши переменные здесь */
-    /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
 static DoodleJumpData* data;
 
 static void DoodleJump_remove_plank(uint32_t index)
 {
     int last = data->planes_size - 1;
-    Plane *planes = data->planes;
+    Entity *planes = data->planes;
     planes[index].x = planes[last].x;
     planes[index].y = planes[last].y;
+    planes[index].w = planes[last].w;
     data->planes_size--;
 }
 
@@ -140,18 +138,17 @@ static void DoodleJump_add_plank(uint8_t x, uint8_t y)
         return;
     }
 
-    Plane *plane = &data->planes[data->planes_size];
+    Entity *plane = &data->planes[data->planes_size];
     data->planes_size++;
     plane->x = x;
     plane->y = y;
+    plane->w = PLANE_WIDTH;
 
     DEBUG("Add plane (%d:%d)\n", plane->x, plane->y);
 }
 
 static void DoodleJump_reset()
 {
-    Plane *planes = data->planes;
-
     data->scene_height = 0;
     data->planes_size = 0;
 
@@ -165,7 +162,7 @@ static void DoodleJump_prepare()
 
 static void DoodleJump_render()
 {
-    Plane *plane;
+    Entity *plane;
     for (int i = 0; i < data->planes_size; ++i) {
 
         plane = &data->planes[i];
