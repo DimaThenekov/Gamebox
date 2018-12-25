@@ -112,7 +112,7 @@ static void render_doodle(Doodle *obj)
     if (obj->sprite) {
         int x = obj->x + (obj->w - pgm_read_byte(&obj->sprite->width)) / 2;
         int y = HEIGHT + data->scene_height - obj->y - pgm_read_byte(&obj->sprite->height);
-        game_draw_color_sprite(obj->sprite, x, y);
+        game_draw_color_sprite(obj->sprite, x + 1, y);
     } else {
         DEBUG("no sprite\n");
     }
