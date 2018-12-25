@@ -11,7 +11,7 @@
 #define DOODLE_JUMP_STR 30
 #define PLANKS_MAX_COUNT 15
 
-#define DEBUG_ENABLE true
+#define DEBUG_ENABLE false
 #define DEBUG(...) do {          \
         if (DEBUG_ENABLE) {      \
             printf(__VA_ARGS__); \
@@ -51,6 +51,8 @@ struct DoodleJumpData
     uint32_t planks_size;
     uint32_t planks_last_gen;
     uint32_t planks_last_gen_complete;
+    uint16_t score;
+    uint16_t high_score;
 };
 static DoodleJumpData* data;
 
@@ -80,6 +82,14 @@ static void add_plank(uint8_t x, uint32_t y, uint8_t w)
     DEBUG("Add plank %d (%d:%d)\n", data->planks_size, plank->x, plank->y);
 }
 
+static void add_score(uint16_t value)
+{
+    data->score += value;
+    if (data->score > data->high_score) {
+        data->high_score = data->score;
+    }
+}
+
 static void DoodleJump_reset()
 {
     DEBUG("reset game\n");
@@ -96,8 +106,9 @@ static void DoodleJump_reset()
     data->doodle.jump_counter = 0;
     data->doodle.sprite = &sprite_doodle;
 
+    data->score = 0;
+
     add_plank(0, 1, WIDTH);
-    add_plank(5, 5, 10);
 }
 
 static void render_plank(Entity *obj)
@@ -117,14 +128,15 @@ static void render_doodle(Doodle *obj)
     }
 }
 
-static void render_compact_number(uint16_t number, int8_t x, int8_t y, uint8_t color) {
-    int len = ceil(log10(number + 1));
-    game_draw_digits(number, len < 1 ? 1 : len, x, y, color);
-}
-
 static void render_score()
 {
-    render_compact_number(data->scene_height / 10, 0, 0, WHITE);
+    int len1 = ceil(log10(data->score + 1));
+    int len2 = ceil(log10(data->high_score + 1));
+    len1 = len1 < 1 ? 1 : len1;
+    len2 = len2 < 1 ? 1 : len2;
+    uint8_t color = data->score >= data->high_score ? GREEN : RED;
+    game_draw_digits(data->score, len1, 0, 0, GREEN);
+    game_draw_digits(data->high_score, len2, WIDTH - len2 - 5, 0, color);
 }
 
 static bool collide_with(Entity *src, Entity *target) {
@@ -217,13 +229,20 @@ static void update_entities()
 
     if (data->scene_motion > 0) {
         data->scene_motion--;
+        int prev = data->scene_height / 10;
         data->scene_height++;
+        int curr = data->scene_height / 10;
+        int changed = curr - prev;
+        if (changed > 0) {
+            add_score(changed);
+        }
     }
 }
 
 static void DoodleJump_prepare()
 {
     DoodleJump_reset();
+    game_load(&data->high_score, sizeof(data->high_score));
 }
 
 static void DoodleJump_render()
