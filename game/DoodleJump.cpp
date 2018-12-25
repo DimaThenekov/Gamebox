@@ -96,6 +96,8 @@ const game_sprite YourSprite PROGMEM = {
  * */
 
 #define PLANES_MAX_COUNT 5
+#define DOODLE_WIDTH 4
+#define DOODLE_HEIGHT 4
 #define PLANE_WIDTH 5
 #define PLANE_HEIGHT 2
 
@@ -162,17 +164,23 @@ static void DoodleJump_reset()
     data->scene_height = 0;
     data->planes_size = 0;
 
+    data->doodle.w = DOODLE_WIDTH;
+    data->doodle.y = 0;
+    data->doodle.x = (WIDTH - DOODLE_WIDTH) / 2;
+
     DoodleJump_add_plank(5, 5);
 }
 
 static void DoodleJump_render_plane(Entity *obj)
 {
-    //game_draw_rect(plane->x, plane->y, PLANE_WIDTH, PLANE_HEIGHT, WHITE);
+    int y = HEIGHT - obj->y - data->scene_height;
+    game_draw_rect(obj->x, y, obj->w, PLANE_HEIGHT, WHITE);
 }
 
 static void DoodleJump_render_doodle(Entity *obj)
 {
-
+    int y = HEIGHT - obj->y - data->scene_height - DOODLE_HEIGHT;
+    game_draw_rect(obj->x, y, obj->w, DOODLE_HEIGHT, GREEN);
 }
 
 static void DoodleJump_prepare()
