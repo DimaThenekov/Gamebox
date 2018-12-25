@@ -1,6 +1,7 @@
 #pragma GCC optimize ("-O3")
 
 #include "libgame.h"
+#include "math.h"
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
@@ -95,11 +96,10 @@ const game_sprite YourSprite PROGMEM = {
  *
  * */
 
-#define PLANES_MAX_COUNT 5
 #define DOODLE_WIDTH 4
 #define DOODLE_HEIGHT 4
-#define PLANE_WIDTH 5
-#define PLANE_HEIGHT 2
+#define DOODLE_JUMP_STR 30
+#define PLANES_MAX_COUNT 15
 
 #define DEBUG_ENABLE true
 #define DEBUG(...) do {          \
@@ -138,7 +138,7 @@ struct Entity {
 };
 
 struct Doodle : Entity {
-    uint8_t jump_counter;
+    int8_t jump_counter;
     const game_color_sprite *sprite;
 };
 
@@ -151,7 +151,7 @@ struct DoodleJumpData
 };
 static DoodleJumpData* data;
 
-static void DoodleJump_remove_plank(uint32_t index)
+static void remove_plank(uint32_t index)
 {
     int last = data->planes_size - 1;
     Entity *planes = data->planes;
@@ -161,7 +161,7 @@ static void DoodleJump_remove_plank(uint32_t index)
     data->planes_size--;
 }
 
-static void DoodleJump_add_plank(uint8_t x, uint8_t y, uint8_t w)
+static void add_plank(uint8_t x, uint8_t y, uint8_t w)
 {
     if (data->planes_size >= PLANES_MAX_COUNT) {
         DEBUG("Add plane failed! (%d:%d) \n", x, y);
@@ -185,25 +185,26 @@ static void DoodleJump_reset()
     data->planes_size = 0;
 
     data->doodle.w = DOODLE_WIDTH;
-    data->doodle.y = 50;
+    data->doodle.y = 10;
     data->doodle.x = (WIDTH - DOODLE_WIDTH) / 2;
-    data->doodle.jump_counter = 10;
+    data->doodle.jump_counter = 0;
     data->doodle.sprite = &sprite_doodle;
 
-    DoodleJump_add_plank(0, 5, WIDTH);
+    add_plank(0, 1, WIDTH);
 }
 
-static void DoodleJump_render_plane(Entity *obj)
+static void render_plane(Entity *obj)
 {
     int y = HEIGHT - obj->y - data->scene_height;
-    game_draw_rect(obj->x, y, obj->w, PLANE_HEIGHT, WHITE);
+    game_draw_rect(obj->x, y, obj->w, 2, WHITE);
 }
 
-static void DoodleJump_render_doodle(Doodle *obj)
+static void render_doodle(Doodle *obj)
 {
     if (obj->sprite) {
-        int y = HEIGHT - obj->sprite->height - obj->y - data->scene_height;
-        game_draw_color_sprite(obj->sprite, obj->x, y);
+        int x = obj->x + (obj->w - obj->sprite->width) / 2;
+        int y = HEIGHT - data->scene_height - obj->y - obj->sprite->height;
+        game_draw_color_sprite(obj->sprite, x, y);
     } else {
         DEBUG("no sprite\n");
     }
@@ -222,13 +223,27 @@ static bool collide_with(Entity *src, Entity *target) {
     return false;
 }
 
-static void DoodleJump_update_entities()
+static void update_controller()
+{
+    if (game_is_button_pressed(BUTTON_LEFT)) {
+        if (data->doodle.x > 0) {
+            data->doodle.x--;
+        }
+    } else if (game_is_button_pressed(BUTTON_RIGHT)) {
+        if (data->doodle.x + data->doodle.w < WIDTH) {
+            data->doodle.x++;
+        }
+    }
+}
+
+static void update_entities()
 {
     Doodle *doodle = &data->doodle;
+    doodle->jump_counter--;
 
     if (doodle->jump_counter > 0) {
-        doodle->jump_counter--;
-        doodle->y++;
+        float motion_mul = doodle->jump_counter / (float) DOODLE_JUMP_STR;
+        doodle->y += round(2 * motion_mul);
     } else {
         bool collide = false;
         for (int i = 0; i < data->planes_size; ++i) {
@@ -240,14 +255,10 @@ static void DoodleJump_update_entities()
         }
 
         if (collide) {
-            doodle->jump_counter = 10;
+            doodle->jump_counter = DOODLE_JUMP_STR;
         } else {
             doodle->y--;
         }
-    }
-
-    if (doodle->y <= data->scene_height) {
-        DoodleJump_reset();
     }
 }
 
@@ -260,15 +271,20 @@ static void DoodleJump_render()
 {
     Entity *plane;
     for (int i = 0; i < data->planes_size; ++i) {
-        DoodleJump_render_plane(&data->planes[i]);
+        render_plane(&data->planes[i]);
     }
 
-    DoodleJump_render_doodle(&data->doodle);
+    render_doodle(&data->doodle);
 }
 
 static void DoodleJump_update(unsigned long delta)
 {
-    DoodleJump_update_entities();
+    update_controller();
+    update_entities();
+
+    if (data->doodle.y <= data->scene_height) {
+        DoodleJump_reset();
+    }
 }
 
 const game_instance DoodleJump PROGMEM = {
