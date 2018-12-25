@@ -109,6 +109,28 @@ const game_sprite YourSprite PROGMEM = {
         }                        \
     } while (0)
 
+#define R RED_DARK
+#define G GREEN
+#define T TRANSPARENT
+#define K BLACK
+#define Y YELLOW
+#define W WHITE_DARK
+
+static const uint8_t snail_lines[] PROGMEM = {
+    T, R, R, R, T, T, T, T,
+    R, K, K, K, R, G, T, G,
+    R, K, R, K, R, G, G, G,
+    R, K, R, R, R, W, G, W,
+    R, K, K, K, K, G, G, G,
+    T, R, R, R, R, G, G, G,
+    T, T, G, G, G, G, G, G,
+    T, G, G, G, G, G, G, T,
+};
+
+static const game_color_sprite sprite_doodle PROGMEM = {
+    8, 8, snail_lines
+};
+
 struct Entity {
     uint8_t x;
     uint32_t y;
@@ -117,6 +139,7 @@ struct Entity {
 
 struct Doodle : Entity {
     uint8_t jump_counter;
+    const game_color_sprite *sprite;
 };
 
 struct DoodleJumpData
@@ -156,6 +179,8 @@ static void DoodleJump_add_plank(uint8_t x, uint8_t y, uint8_t w)
 
 static void DoodleJump_reset()
 {
+    DEBUG("reset game\n");
+
     data->scene_height = 0;
     data->planes_size = 0;
 
@@ -163,6 +188,7 @@ static void DoodleJump_reset()
     data->doodle.y = 50;
     data->doodle.x = (WIDTH - DOODLE_WIDTH) / 2;
     data->doodle.jump_counter = 10;
+    data->doodle.sprite = &sprite_doodle;
 
     DoodleJump_add_plank(0, 5, WIDTH);
 }
@@ -175,17 +201,53 @@ static void DoodleJump_render_plane(Entity *obj)
 
 static void DoodleJump_render_doodle(Doodle *obj)
 {
-    int y = HEIGHT - obj->y - data->scene_height - DOODLE_HEIGHT;
-    game_draw_rect(obj->x, y, obj->w, DOODLE_HEIGHT, GREEN);
+    if (obj->sprite) {
+        int y = HEIGHT - obj->sprite->height - obj->y - data->scene_height;
+        game_draw_color_sprite(obj->sprite, obj->x, y);
+    } else {
+        DEBUG("no sprite\n");
+    }
 }
 
-static void DoodleJump_update_doodle(Doodle *obj)
+static bool collide_with(Entity *src, Entity *target) {
+    if (src->y == target->y) {
+        int src_x1 = src->x;
+        int src_x2 = src->x + src->w;
+        int target_x1 = target->x;
+        int target_x2 = target->x + target->w;
+
+        return (target_x1 <= src_x1 && src_x1 <= target_x1) ||
+               (target_x1 <= src_x2 && src_x2 <= target_x2);
+    }
+    return false;
+}
+
+static void DoodleJump_update_entities()
 {
-    if (obj->jump_counter > 0) {
-        obj->jump_counter--;
-        obj->y++;
+    Doodle *doodle = &data->doodle;
+
+    if (doodle->jump_counter > 0) {
+        doodle->jump_counter--;
+        doodle->y++;
     } else {
-        obj->y--;
+        bool collide = false;
+        for (int i = 0; i < data->planes_size; ++i) {
+            Entity *obj = &data->planes[i];
+            if (collide_with(doodle, obj)) {
+                collide = true;
+                break;
+            }
+        }
+
+        if (collide) {
+            doodle->jump_counter = 10;
+        } else {
+            doodle->y--;
+        }
+    }
+
+    if (doodle->y <= data->scene_height) {
+        DoodleJump_reset();
     }
 }
 
@@ -206,7 +268,7 @@ static void DoodleJump_render()
 
 static void DoodleJump_update(unsigned long delta)
 {
-    DoodleJump_update_doodle(&data->doodle);
+    DoodleJump_update_entities();
 }
 
 const game_instance DoodleJump PROGMEM = {
