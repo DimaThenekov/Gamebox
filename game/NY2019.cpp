@@ -81,11 +81,13 @@ static NY2019Data* data; /* Эта переменная - указатель н�
 
 static void NY2019_prepare()
 {
+    game_set_ups(8);
+    game_enable_frame_buffer();
+    game_draw_color_sprite(&sprite, 0, 0);
 }
 
 static void NY2019_render()
 {
-    game_draw_color_sprite(&sprite, 0, 0);
 }
 
 static void NY2019_update(unsigned long delta)
