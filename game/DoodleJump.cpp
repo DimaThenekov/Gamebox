@@ -222,7 +222,7 @@ static void remove_unused_planks(void) {
     for (i = 0; i < data->planks_size; ++i) {
         Entity *plank = &data->planks[i];
 
-        if (plank->y < data->scene_height) {
+        if (plank->y <= data->scene_height) {
             remove_plank(i);
         }
     }
