@@ -234,7 +234,7 @@ static void generate_planks() {
         data->planks_last_gen++;
         if (rand() % 5 == 0) {
             int w = 5 + rand() % 3;
-            add_plank(rand() % (64 - w), data->planks_last_gen, 5 + rand() % 3);
+            add_plank(rand() % (64 - w), data->planks_last_gen, w);
             data->planks_last_gen += 3;
         }
         --least;
