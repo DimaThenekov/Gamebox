@@ -44,6 +44,9 @@ static const MenuItem main_menu[] PROGMEM = {
     { "EEPROM", &Dump },
     { "Music", &Player },
 #endif
+#ifdef FRAME_BUFFER
+    { "ColorDemo", &ColorDemo},
+#endif
     /* Register your game like so:
      *
      * { "YOUR_GAME_NAME", &YOUR_GAME_NAME },
