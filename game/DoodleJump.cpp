@@ -51,6 +51,7 @@ struct DoodleJumpData
     uint32_t planks_size;
     uint32_t planks_last_gen;
     uint32_t planks_last_gen_complete;
+    char score_text[10];
 };
 static DoodleJumpData* data;
 
@@ -156,7 +157,6 @@ static void generate_planks() {
     }
 }
 
-
 static void update_controller()
 {
     if (game_is_button_pressed(BUTTON_LEFT)) {
@@ -222,6 +222,9 @@ static void DoodleJump_render()
     }
 
     render_doodle(&data->doodle);
+
+    sprintf(data->score_text, "%d", data->scene_height / 10);
+    game_draw_text((const uint8_t *) data->score_text, 0, 0, GREEN);
 }
 
 static void DoodleJump_update(unsigned long delta)
