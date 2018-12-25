@@ -101,7 +101,7 @@ const game_sprite YourSprite PROGMEM = {
 #define DOODLE_JUMP_STR 30
 #define PLANKS_MAX_COUNT 15
 
-#define DEBUG_ENABLE true
+#define DEBUG_ENABLE false
 #define DEBUG(...) do {          \
         if (DEBUG_ENABLE) {      \
             printf(__VA_ARGS__); \
