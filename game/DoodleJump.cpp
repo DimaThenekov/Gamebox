@@ -109,11 +109,13 @@ const game_sprite YourSprite PROGMEM = {
         }                        \
     } while (0)
 
-typedef struct _Entity {
-    uint32_t x;
-    uint8_t y;
+struct Entity {
+    uint8_t x;
+    uint32_t y;
     uint8_t w;
-} Entity;
+    uint8_t mx;
+    uint8_t my;
+};
 
 struct DoodleJumpData
 {
@@ -123,16 +125,6 @@ struct DoodleJumpData
     uint32_t planes_size;
 };
 static DoodleJumpData* data;
-
-static void DoodleJump_set_pos(Entity *obj, uint32_t x, uint32_t y) {
-    obj->x = x;
-    obj->y = y;
-}
-
-static void DoodleJump_move(Entity *obj, uint32_t x, uint32_t y) {
-    obj->x += x;
-    obj->y += y;
-}
 
 static void DoodleJump_remove_plank(uint32_t index)
 {
@@ -144,7 +136,7 @@ static void DoodleJump_remove_plank(uint32_t index)
     data->planes_size--;
 }
 
-static void DoodleJump_add_plank(uint8_t x, uint8_t y)
+static void DoodleJump_add_plank(uint8_t x, uint8_t y, uint8_t w)
 {
     if (data->planes_size >= PLANES_MAX_COUNT) {
         DEBUG("Add plane failed! (%d:%d) \n", x, y);
@@ -153,8 +145,9 @@ static void DoodleJump_add_plank(uint8_t x, uint8_t y)
 
     Entity *plane = &data->planes[data->planes_size];
     data->planes_size++;
-    DoodleJump_set_pos(plane, x, y);
-    plane->w = PLANE_WIDTH;
+    plane->x = x;
+    plane->y = y;
+    plane->w = w;
 
     DEBUG("Add plane (%d:%d)\n", plane->x, plane->y);
 }
@@ -165,10 +158,10 @@ static void DoodleJump_reset()
     data->planes_size = 0;
 
     data->doodle.w = DOODLE_WIDTH;
-    data->doodle.y = 0;
+    data->doodle.y = 50;
     data->doodle.x = (WIDTH - DOODLE_WIDTH) / 2;
 
-    DoodleJump_add_plank(5, 5);
+    DoodleJump_add_plank(0, 5, WIDTH);
 }
 
 static void DoodleJump_render_plane(Entity *obj)
@@ -181,6 +174,19 @@ static void DoodleJump_render_doodle(Entity *obj)
 {
     int y = HEIGHT - obj->y - data->scene_height - DOODLE_HEIGHT;
     game_draw_rect(obj->x, y, obj->w, DOODLE_HEIGHT, GREEN);
+    DEBUG("%d\n", obj->y);
+}
+
+static void DoodleJump_update_doodle(Entity *obj)
+{
+    obj->x += obj->mx;
+    obj->y += obj->my;
+
+    // gravity
+    if (obj->my > -1) {
+        
+    }
+    obj->my = -1;
 }
 
 static void DoodleJump_prepare()
@@ -200,6 +206,7 @@ static void DoodleJump_render()
 
 static void DoodleJump_update(unsigned long delta)
 {
+    DoodleJump_update_doodle(&data->doodle);
 }
 
 const game_instance DoodleJump PROGMEM = {
