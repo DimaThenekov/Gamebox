@@ -99,7 +99,7 @@ const game_sprite YourSprite PROGMEM = {
 #define DOODLE_WIDTH 4
 #define DOODLE_HEIGHT 4
 #define DOODLE_JUMP_STR 30
-#define PLANES_MAX_COUNT 15
+#define planks_MAX_COUNT 15
 
 #define DEBUG_ENABLE true
 #define DEBUG(...) do {          \
@@ -146,35 +146,36 @@ struct DoodleJumpData
 {
     uint32_t scene_height;
     Doodle doodle;
-    Entity planes[PLANES_MAX_COUNT];
-    uint32_t planes_size;
+    Entity planks[planks_MAX_COUNT];
+    uint32_t planks_size;
+    uint32_t planks_last_gen;
 };
 static DoodleJumpData* data;
 
 static void remove_plank(uint32_t index)
 {
-    int last = data->planes_size - 1;
-    Entity *planes = data->planes;
-    Entity *tmp = &planes[index];
-    planes[index] = planes[last];
-    planes[last] = *tmp;
-    data->planes_size--;
+    int last = data->planks_size - 1;
+    Entity *planks = data->planks;
+    Entity *tmp = &planks[index];
+    planks[index] = planks[last];
+    planks[last] = *tmp;
+    data->planks_size--;
 }
 
-static void add_plank(uint8_t x, uint8_t y, uint8_t w)
+static void add_plank(uint8_t x, uint32_t y, uint8_t w)
 {
-    if (data->planes_size >= PLANES_MAX_COUNT) {
-        DEBUG("Add plane failed! (%d:%d) \n", x, y);
+    if (data->planks_size >= planks_MAX_COUNT) {
+        DEBUG("Add plank failed! (%d:%d) \n", x, y);
         return;
     }
 
-    Entity *plane = &data->planes[data->planes_size];
-    data->planes_size++;
-    plane->x = x;
-    plane->y = y;
-    plane->w = w;
+    Entity *plank = &data->planks[data->planks_size];
+    data->planks_size++;
+    plank->x = x;
+    plank->y = y;
+    plank->w = w;
 
-    DEBUG("Add plane (%d:%d)\n", plane->x, plane->y);
+    DEBUG("Add plank (%d:%d)\n", plank->x, plank->y);
 }
 
 static void DoodleJump_reset()
@@ -182,7 +183,8 @@ static void DoodleJump_reset()
     DEBUG("reset game\n");
 
     data->scene_height = 0;
-    data->planes_size = 0;
+    data->planks_size = 0;
+    data->planks_last_gen = 0;
 
     data->doodle.w = DOODLE_WIDTH;
     data->doodle.y = 10;
@@ -193,7 +195,7 @@ static void DoodleJump_reset()
     add_plank(0, 1, WIDTH);
 }
 
-static void render_plane(Entity *obj)
+static void render_plank(Entity *obj)
 {
     int y = HEIGHT - obj->y - data->scene_height;
     game_draw_rect(obj->x, y, obj->w, 2, WHITE);
@@ -223,6 +225,28 @@ static bool collide_with(Entity *src, Entity *target) {
     return false;
 }
 
+static void remove_unused_planks(void) {
+    int i;
+    for (i = 0; i < data->planks_size; ++i) {
+        Entity *plank = &data->planks[i];
+
+        if (plank->y < data->scene_height) {
+            remove_plank(i);
+        }
+    }
+}
+
+static void generate_planks() {
+    int least = data->scene_height + HEIGHT - data->planks_last_gen;
+    while (least > 0) {
+        data->planks_last_gen++;
+        if (rand() % 10 == 0) {
+            add_plank(0, data->planks_last_gen, 5);
+        }
+        --least;
+    }
+}
+
 static void update_controller()
 {
     if (game_is_button_pressed(BUTTON_LEFT)) {
@@ -246,8 +270,8 @@ static void update_entities()
         doodle->y += round(2 * motion_mul);
     } else {
         bool collide = false;
-        for (int i = 0; i < data->planes_size; ++i) {
-            Entity *obj = &data->planes[i];
+        for (int i = 0; i < data->planks_size; ++i) {
+            Entity *obj = &data->planks[i];
             if (collide_with(doodle, obj)) {
                 collide = true;
                 break;
@@ -269,9 +293,9 @@ static void DoodleJump_prepare()
 
 static void DoodleJump_render()
 {
-    Entity *plane;
-    for (int i = 0; i < data->planes_size; ++i) {
-        render_plane(&data->planes[i]);
+    Entity *plank;
+    for (int i = 0; i < data->planks_size; ++i) {
+        render_plank(&data->planks[i]);
     }
 
     render_doodle(&data->doodle);
@@ -279,6 +303,8 @@ static void DoodleJump_render()
 
 static void DoodleJump_update(unsigned long delta)
 {
+    remove_unused_planks();
+    generate_planks();
     update_controller();
     update_entities();
 
