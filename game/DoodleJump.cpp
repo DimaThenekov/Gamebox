@@ -116,18 +116,29 @@ typedef struct _Entity {
 struct DoodleJumpData
 {
     uint32_t scene_height;
+    Entity doodle;
     Entity planes[PLANES_MAX_COUNT];
     uint32_t planes_size;
 };
 static DoodleJumpData* data;
 
+static void DoodleJump_set_pos(Entity *obj, uint32_t x, uint32_t y) {
+    obj->x = x;
+    obj->y = y;
+}
+
+static void DoodleJump_move(Entity *obj, uint32_t x, uint32_t y) {
+    obj->x += x;
+    obj->y += y;
+}
+
 static void DoodleJump_remove_plank(uint32_t index)
 {
     int last = data->planes_size - 1;
     Entity *planes = data->planes;
-    planes[index].x = planes[last].x;
-    planes[index].y = planes[last].y;
-    planes[index].w = planes[last].w;
+    Entity *tmp = &planes[index];
+    planes[index] = planes[last];
+    planes[last] = *tmp;
     data->planes_size--;
 }
 
@@ -140,8 +151,7 @@ static void DoodleJump_add_plank(uint8_t x, uint8_t y)
 
     Entity *plane = &data->planes[data->planes_size];
     data->planes_size++;
-    plane->x = x;
-    plane->y = y;
+    DoodleJump_set_pos(plane, x, y);
     plane->w = PLANE_WIDTH;
 
     DEBUG("Add plane (%d:%d)\n", plane->x, plane->y);
@@ -155,6 +165,16 @@ static void DoodleJump_reset()
     DoodleJump_add_plank(5, 5);
 }
 
+static void DoodleJump_render_plane(Entity *obj)
+{
+    //game_draw_rect(plane->x, plane->y, PLANE_WIDTH, PLANE_HEIGHT, WHITE);
+}
+
+static void DoodleJump_render_doodle(Entity *obj)
+{
+
+}
+
 static void DoodleJump_prepare()
 {
     DoodleJump_reset();
@@ -164,17 +184,14 @@ static void DoodleJump_render()
 {
     Entity *plane;
     for (int i = 0; i < data->planes_size; ++i) {
-
-        plane = &data->planes[i];
-        game_draw_rect(plane->x, plane->y, PLANE_WIDTH, PLANE_HEIGHT, WHITE);
+        DoodleJump_render_plane(&data->planes[i]);
     }
 
-    DEBUG("rand %d\n", rand());
+    DoodleJump_render_doodle(&data->doodle);
 }
 
 static void DoodleJump_update(unsigned long delta)
 {
-    
 }
 
 const game_instance DoodleJump PROGMEM = {
