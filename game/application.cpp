@@ -9,9 +9,6 @@
 #include "music.h"
 
 static const MenuItem main_menu[] PROGMEM = {
-    // { "Hackathon", NULL },
-    { "DoodleJump", &DoodleJump },
-
     { "\xcb\xca\xd8 2016", NULL },
     { "Invaders", &BackspaceInvaders },
     { "Snake", &Snake },
@@ -38,6 +35,7 @@ static const MenuItem main_menu[] PROGMEM = {
     { "NY2019", &NY2019},
     { "Tetrisnake", &Tetrisnake },
 #endif
+    { "DoodleJump", &DoodleJump },
 
     { "Demos", NULL },
     { "3D", &Raycaster },
