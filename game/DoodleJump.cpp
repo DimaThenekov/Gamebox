@@ -193,6 +193,7 @@ static void DoodleJump_reset()
     data->doodle.sprite = &sprite_doodle;
 
     add_plank(0, 1, WIDTH);
+    add_plank(5, 5, 10);
 }
 
 static void render_plank(Entity *obj)
@@ -219,8 +220,8 @@ static bool collide_with(Entity *src, Entity *target) {
         int target_x1 = target->x;
         int target_x2 = target->x + target->w;
 
-        return (target_x1 <= src_x1 && src_x1 <= target_x1) ||
-               (target_x1 <= src_x2 && src_x2 <= target_x2);
+        return (target_x1 <= src_x1 && src_x1 < target_x2) ||
+               (target_x1 < src_x2 && src_x2 <= target_x2);
     }
     return false;
 }
@@ -304,7 +305,7 @@ static void DoodleJump_render()
 static void DoodleJump_update(unsigned long delta)
 {
     remove_unused_planks();
-    generate_planks();
+    //generate_planks();
     update_controller();
     update_entities();
 
