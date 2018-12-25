@@ -46,6 +46,7 @@ extern const game_instance Mario PROGMEM;
 extern const game_instance Ghostbuster PROGMEM;
 /*extern const game_instance artyom;*/
 extern const game_instance TicTacToe PROGMEM;
+extern const game_instance Tetrisnake PROGMEM;
 
 /* NY2019 mini-hackaton */
 #ifdef FRAME_BUFFER
