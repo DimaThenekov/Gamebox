@@ -47,6 +47,9 @@ extern const game_instance Ghostbuster PROGMEM;
 /*extern const game_instance artyom;*/
 extern const game_instance TicTacToe PROGMEM;
 
+/* Hackathon */
+extern const game_instance DoodleJump PROGMEM;
+
 /* Test applications */
 #ifndef EMULATED
 extern const game_instance Dump PROGMEM;
