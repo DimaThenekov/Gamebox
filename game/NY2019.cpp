@@ -4,6 +4,8 @@
 #include "graphics.h"
 #include "binary.h"
 #include "controls.h"
+#include "music.h"
+#include "tunes.h"
 
 #ifdef FRAME_BUFFER
 
@@ -86,6 +88,10 @@ static void NY2019_prepare()
     game_set_ups(8);
     game_enable_frame_buffer();
     game_draw_color_sprite(&sprite, 0, 0);
+#ifndef EMULATED
+    tune_init(stardragon_hall_of_fame_addr());
+    tune_enable();
+#endif
 }
 
 static void NY2019_render()
