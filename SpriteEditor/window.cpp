@@ -25,15 +25,16 @@ Window::Window()
 
 void Window::updateSprite()
 {
-    static int palette[COLORS] = {0, 1};
-
     QString s;
     int left = WIDTH, right = 0, top = HEIGHT, bottom = 0;
+    int lastColor = 0;
+    bool multicolor = false;
     for (int r = 0 ; r < HEIGHT ; ++r)
     {
         for (int c = 0 ; c < WIDTH ; ++c)
         {
-            if (sprite->getPixel(r, c))
+            int col = sprite->getPixel(r, c);
+            if (col)
             {
                 if (left > c)
                     left = c;
@@ -43,12 +44,30 @@ void Window::updateSprite()
                     top = r;
                 if (bottom < r)
                     bottom = r;
+                if (lastColor && lastColor != col)
+                    multicolor = true;
+                lastColor = col;
             }
         }
     }
     if (left > right || top > bottom)
     {
-        code->setPlainText("");
+    }
+    else if (multicolor)
+    {
+        s = "const uint8_t spriteLines[] PROGMEM = {\n";
+        for (int r = top ; r <= bottom ; ++r)
+        {
+            s += "    ";
+            for (int c = left ; c <= right ; ++c)
+            {
+                s += QString("0x%1, ").arg(gameboxPalette[sprite->getPixel(r, c)], 2, 16, QChar('0'));
+            }
+            s += "\n";
+        }
+        s += "};\n";
+        s += QString("const game_color_sprite sprite PROGMEM = {%1, %2, spriteLines};\n")
+            .arg(right - left + 1).arg(bottom - top + 1);
     }
     else
     {
@@ -78,6 +97,6 @@ void Window::updateSprite()
         s += "};\n";
         s += QString("const game_sprite sprite PROGMEM = {%1, %2, spriteLines};\n")
             .arg(right - left + 1).arg(bottom - top + 1);
-        code->setPlainText(s);
     }
+    code->setPlainText(s);
 }

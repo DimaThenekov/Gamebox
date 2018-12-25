@@ -1,6 +1,15 @@
 #include "palette.h"
 
-QColor rgb[COLORS] = {QColor(0, 0, 0), QColor(255, 255, 255)};
+int gameboxPalette[COLORS] = {0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77};
+
+QColor getRGB(int col)
+{
+    int c = gameboxPalette[col];
+    int r = (c & 0x11) << 3;
+    int g = (c & 0x22) << 2;
+    int b = (c & 0x44) << 1;
+    return QColor(r, g, b);
+}
 
 Palette::Palette(QWidget *parent)
 {
@@ -23,7 +32,7 @@ void Palette::paintEvent(QPaintEvent * /* event */)
     int pixelH = height() - 2;
     for (int x = 0 ; x < COLORS ; ++x)
     {
-        QBrush brush(rgb[x]);
+        QBrush brush(getRGB(x));
         painter.setBrush(brush);
         painter.drawRect(QRect(1 + x * pixelW, 1, pixelW, pixelH));
         painter.setBrush(Qt::NoBrush);

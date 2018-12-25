@@ -37,7 +37,7 @@ void Sprite::paintEvent(QPaintEvent * /* event */)
     {
         for (int x = 0 ; x < WIDTH ; ++x)
         {
-            QBrush brush(rgb[pixels[y][x]]);
+            QBrush brush(getRGB(pixels[y][x]));
             painter.setBrush(brush);
             painter.drawRect(QRect(x * pixelW, y * pixelH, pixelW, pixelH));
             painter.setBrush(Qt::NoBrush);
