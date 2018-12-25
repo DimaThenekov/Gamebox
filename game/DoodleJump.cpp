@@ -109,27 +109,16 @@ const game_sprite YourSprite PROGMEM = {
         }                        \
     } while (0)
 
-#define R RED_DARK
-#define G GREEN
-#define T TRANSPARENT
-#define K BLACK
-#define Y YELLOW
-#define W WHITE_DARK
-
-static const uint8_t snail_lines[] PROGMEM = {
-    T, R, R, R, T, T, T, T,
-    R, K, K, K, R, G, T, G,
-    R, K, R, K, R, G, G, G,
-    R, K, R, R, R, W, G, W,
-    R, K, K, K, K, G, G, G,
-    T, R, R, R, R, G, G, G,
-    T, T, G, G, G, G, G, G,
-    T, G, G, G, G, G, G, T,
+const uint8_t spriteLines[] PROGMEM = {
+    0x00, 0x33, 0x33, 0x33, 0x00, 0x00, 0x00,
+    0x33, 0x33, 0x40, 0x33, 0x40, 0x00, 0x33,
+    0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33,
+    0x60, 0x60, 0x60, 0x60, 0x60, 0x00, 0x33,
+    0x25, 0x25, 0x25, 0x25, 0x25, 0x00, 0x00,
+    0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x00,
+    0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x00,
 };
-
-static const game_color_sprite sprite_doodle PROGMEM = {
-    8, 8, snail_lines
-};
+const game_color_sprite sprite_doodle PROGMEM = {7, 7, spriteLines};
 
 struct Entity {
     uint8_t x;
@@ -145,6 +134,7 @@ struct Doodle : Entity {
 struct DoodleJumpData
 {
     uint32_t scene_height;
+    uint32_t scene_motion;
     Doodle doodle;
     Entity planks[planks_MAX_COUNT];
     uint32_t planks_size;
@@ -183,6 +173,7 @@ static void DoodleJump_reset()
     DEBUG("reset game\n");
 
     data->scene_height = 0;
+    data->scene_motion = 0;
     data->planks_size = 0;
     data->planks_last_gen = 0;
 
@@ -198,7 +189,7 @@ static void DoodleJump_reset()
 
 static void render_plank(Entity *obj)
 {
-    int y = HEIGHT - obj->y - data->scene_height;
+    int y = HEIGHT - obj->y + data->scene_height;
     game_draw_rect(obj->x, y, obj->w, 2, WHITE);
 }
 
@@ -206,7 +197,7 @@ static void render_doodle(Doodle *obj)
 {
     if (obj->sprite) {
         int x = obj->x + (obj->w - obj->sprite->width) / 2;
-        int y = HEIGHT - data->scene_height - obj->y - obj->sprite->height;
+        int y = HEIGHT + data->scene_height - obj->y - obj->sprite->height;
         game_draw_color_sprite(obj->sprite, x, y);
     } else {
         DEBUG("no sprite\n");
@@ -242,7 +233,8 @@ static void generate_planks() {
     while (least > 0) {
         data->planks_last_gen++;
         if (rand() % 10 == 0) {
-            add_plank(0, data->planks_last_gen, 5);
+            add_plank(rand() % 64, data->planks_last_gen, 5);
+            data->planks_last_gen += 3;
         }
         --least;
     }
@@ -281,9 +273,15 @@ static void update_entities()
 
         if (collide) {
             doodle->jump_counter = DOODLE_JUMP_STR;
+            data->scene_motion = data->scene_height - doodle->y;
         } else {
             doodle->y--;
         }
+    }
+
+    if (data->scene_motion > 0) {
+        data->scene_motion--;
+        //data->scene_height++;
     }
 }
 
@@ -305,11 +303,11 @@ static void DoodleJump_render()
 static void DoodleJump_update(unsigned long delta)
 {
     remove_unused_planks();
-    //generate_planks();
+    generate_planks();
     update_controller();
     update_entities();
 
-    if (data->doodle.y <= data->scene_height) {
+    if (data->doodle.y < data->scene_height) {
         DoodleJump_reset();
     }
 }
