@@ -135,8 +135,8 @@ struct TetrisnakeData
     bool rotLeftPressed;
     bool rotRightPressed;
     bool half;
-    uint8_t snakeBegin;
-    uint8_t snakeEnd;
+    uint16_t snakeBegin;
+    uint16_t snakeEnd;
     uint8_t hiscore;
     uint8_t tact;
     uint8_t blockTimer;
@@ -308,8 +308,8 @@ static bool check_lines()
 
 static void cut_snake()
 {
-    uint8_t length = (MAXLEN + data->snakeEnd - data->snakeBegin) % MAXLEN;
-    uint8_t half_l = length >= 6 ? length/2 : 3;
+    uint16_t length = (MAXLEN + data->snakeEnd - data->snakeBegin) % MAXLEN;
+    uint16_t half_l = length >= 6 ? length/2 : 3;
     for(uint16_t i = 0, j = (MAXLEN + data->snakeEnd-1)%MAXLEN; i<half_l; i++, j = (MAXLEN + j-1) % MAXLEN)
     {
         Tetrisnake_draw_rect(data->snakeX[j], data->snakeY[j], BLACK);
@@ -333,7 +333,6 @@ static void generate_brick()
     {
         data->genFigureLines[i] = pgm_read_byte((uint8_t*)pgm_read_pointer(&tetrisnakeBrick[formIdx].lines)+i);
     }
-    
 }
 
 static void generate_block(int x, bool left, bool right, bool up, uint8_t color)
