@@ -109,7 +109,7 @@ const game_sprite YourSprite PROGMEM = {
         }                        \
     } while (0)
 
-const uint8_t spriteLines[] PROGMEM = {
+static const uint8_t spriteLines[] PROGMEM = {
    0x00, 0x37, 0x37, 0x37, 0x00, 0x00, 0x00,
    0x37, 0x33, 0x33, 0x33, 0x37, 0x00, 0x00,
    0x33, 0x33, 0x04, 0x33, 0x04, 0x00, 0x33,
@@ -119,7 +119,7 @@ const uint8_t spriteLines[] PROGMEM = {
    0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x00,
 };
 
-const game_color_sprite sprite_doodle PROGMEM = {7, 7, spriteLines};
+static const game_color_sprite sprite_doodle PROGMEM = {7, 7, spriteLines};
 
 struct Entity {
     uint8_t x;
@@ -197,8 +197,8 @@ static void render_plank(Entity *obj)
 static void render_doodle(Doodle *obj)
 {
     if (obj->sprite) {
-        int x = obj->x + (obj->w - obj->sprite->width) / 2;
-        int y = HEIGHT + data->scene_height - obj->y - obj->sprite->height;
+        int x = obj->x + (obj->w - pgm_read_byte(&obj->sprite->width)) / 2;
+        int y = HEIGHT + data->scene_height - obj->y - pgm_read_byte(&obj->sprite->height);
         game_draw_color_sprite(obj->sprite, x, y);
     } else {
         DEBUG("no sprite\n");
