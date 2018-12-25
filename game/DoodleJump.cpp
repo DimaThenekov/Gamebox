@@ -11,7 +11,7 @@
 #define DOODLE_JUMP_STR 30
 #define PLANKS_MAX_COUNT 15
 
-#define DEBUG_ENABLE false
+#define DEBUG_ENABLE true
 #define DEBUG(...) do {          \
         if (DEBUG_ENABLE) {      \
             printf(__VA_ARGS__); \
@@ -67,7 +67,7 @@ static void remove_plank(uint32_t index)
 static void add_plank(uint8_t x, uint32_t y, uint8_t w)
 {
     if (data->planks_size >= PLANKS_MAX_COUNT) {
-        DEBUG("Add plank failed! (%d:%d) \n", x, y);
+        DEBUG("Add plank failed! %d (%d:%d) \n", data->planks_size, x, y);
         return;
     }
 
@@ -77,7 +77,7 @@ static void add_plank(uint8_t x, uint32_t y, uint8_t w)
     plank->y = y;
     plank->w = w;
 
-    DEBUG("Add plank (%d:%d)\n", plank->x, plank->y);
+    DEBUG("Add plank %d (%d:%d)\n", data->planks_size, plank->x, plank->y);
 }
 
 static void DoodleJump_reset()
@@ -117,11 +117,14 @@ static void render_doodle(Doodle *obj)
     }
 }
 
+static void render_compact_number(uint16_t number, int8_t x, int8_t y, uint8_t color) {
+    int len = ceil(log10(number + 1));
+    game_draw_digits(number, len < 1 ? 1 : len, x, y, color);
+}
+
 static void render_score()
 {
-    char s[10];
-    sprintf(s, "%d", data->scene_height / 10);
-    game_draw_text((uint8_t *) s, 0, 0, GREEN);
+    render_compact_number(data->scene_height / 10, 0, 0, WHITE);
 }
 
 static bool collide_with(Entity *src, Entity *target) {
@@ -149,17 +152,20 @@ static void remove_unused_planks(void) {
 
 static void generate_planks() {
     int least = data->scene_height + HEIGHT - data->planks_last_gen;
+    int min_planks_width = 10 - sqrt(data->scene_height) / 15;
 
     while (least > 0) {
         data->planks_last_gen++;
         if (rand() % 5 == 0 ||
            (DOODLE_JUMP_STR / 2 < data->planks_last_gen - data->planks_last_gen_complete)) {
-            int w = 5 + rand() % 3;
+            int w = min_planks_width + rand() % 2;
             add_plank(rand() % (64 - w), data->planks_last_gen, w);
-            data->planks_last_gen += 3;
             data->planks_last_gen_complete = data->planks_last_gen;
+            data->planks_last_gen += 3;
+            least -= 3;
+        } else {
+            least--;
         }
-        --least;
     }
 }
 
