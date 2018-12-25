@@ -232,8 +232,9 @@ static void generate_planks() {
     int least = data->scene_height + HEIGHT - data->planks_last_gen;
     while (least > 0) {
         data->planks_last_gen++;
-        if (rand() % 10 == 0) {
-            add_plank(rand() % 64, data->planks_last_gen, 5);
+        if (rand() % 5 == 0) {
+            int w = 5 + rand() % 3;
+            add_plank(rand() % (64 - w), data->planks_last_gen, 5 + rand() % 3);
             data->planks_last_gen += 3;
         }
         --least;
