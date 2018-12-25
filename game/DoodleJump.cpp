@@ -95,33 +95,89 @@ const game_sprite YourSprite PROGMEM = {
  *
  * */
 
+#define PLANES_MAX_COUNT 5
+#define PLANE_WIDTH 5
+#define PLANE_HEIGHT 2
+
+#define DEBUG_ENABLE true
+#define DEBUG(...) do {          \
+        if (DEBUG_ENABLE) {      \
+            printf(__VA_ARGS__); \
+            fflush(stdout);      \
+        }                        \
+    } while (0)
+
+typedef struct _Plane {
+    uint8_t x;
+    uint8_t y;
+} Plane;
+
 struct DoodleJumpData
 {
+    uint32_t scene_height;
+    uint32_t doodle_x;
+    uint32_t doodle_y;
+    Plane planes[PLANES_MAX_COUNT];
+    uint32_t planes_size;
     /* Объявляйте ваши переменные здесь */
     /* Чтобы потом обращаться к ним, пишите data->ПЕРЕМЕННАЯ */
 };
-static DoodleJumpData* data; /* Эта переменная - указатель на структуру, которая содержит ваши переменные */
+static DoodleJumpData* data;
+
+static void DoodleJump_remove_plank(uint32_t index)
+{
+    int last = data->planes_size - 1;
+    Plane *planes = data->planes;
+    planes[index].x = planes[last].x;
+    planes[index].y = planes[last].y;
+    data->planes_size--;
+}
+
+static void DoodleJump_add_plank(uint8_t x, uint8_t y)
+{
+    if (data->planes_size >= PLANES_MAX_COUNT) {
+        DEBUG("Add plane failed! (%d:%d) \n", x, y);
+        return;
+    }
+
+    Plane *plane = &data->planes[data->planes_size];
+    data->planes_size++;
+    plane->x = x;
+    plane->y = y;
+
+    DEBUG("Add plane (%d:%d)\n", plane->x, plane->y);
+}
+
+static void DoodleJump_reset()
+{
+    Plane *planes = data->planes;
+
+    data->scene_height = 0;
+    data->planes_size = 0;
+
+    DoodleJump_add_plank(5, 5);
+}
 
 static void DoodleJump_prepare()
 {
-    /* Здесь код, который будет исполнятся один раз */
-    /* Здесь нужно инициализировать переменные */
+    DoodleJump_reset();
 }
 
 static void DoodleJump_render()
 {
-    /* Здесь код, который будет вывзваться для отрисовки кадра */
-    /* Он не должен менять состояние игры, для этого есть функция update */
+    Plane *plane;
+    for (int i = 0; i < data->planes_size; ++i) {
 
-    /* Здесь (и только здесь) нужно вызывать функции game_draw_??? */
+        plane = &data->planes[i];
+        game_draw_rect(plane->x, plane->y, PLANE_WIDTH, PLANE_HEIGHT, WHITE);
+    }
+
+    DEBUG("rand %d\n", rand());
 }
 
 static void DoodleJump_update(unsigned long delta)
 {
-    /* Здесь код, который будет выполняться в цикле */
-    /* Переменная delta содержит количество миллисекунд с последнего вызова */
-
-    /* Здесь можно работать с кнопками и обновлять переменные */
+    
 }
 
 const game_instance DoodleJump PROGMEM = {
@@ -132,7 +188,3 @@ const game_instance DoodleJump PROGMEM = {
     sizeof(DoodleJumpData),
     (void**)(&data)
 };
-
-
-/* Не забудьте зарегистрировать игру в application.cpp, libgame.h */
-/* Также нужно добавить файл с игрой в qt_emulator/CMakeLists.txt */
