@@ -96,10 +96,10 @@ const game_sprite YourSprite PROGMEM = {
  *
  * */
 
-#define DOODLE_WIDTH 4
+#define DOODLE_WIDTH 5
 #define DOODLE_HEIGHT 4
 #define DOODLE_JUMP_STR 30
-#define planks_MAX_COUNT 15
+#define PLANKS_MAX_COUNT 15
 
 #define DEBUG_ENABLE true
 #define DEBUG(...) do {          \
@@ -134,9 +134,9 @@ struct Doodle : Entity {
 struct DoodleJumpData
 {
     uint32_t scene_height;
-    uint32_t scene_motion;
+    int32_t scene_motion;
     Doodle doodle;
-    Entity planks[planks_MAX_COUNT];
+    Entity planks[PLANKS_MAX_COUNT];
     uint32_t planks_size;
     uint32_t planks_last_gen;
 };
@@ -154,7 +154,7 @@ static void remove_plank(uint32_t index)
 
 static void add_plank(uint8_t x, uint32_t y, uint8_t w)
 {
-    if (data->planks_size >= planks_MAX_COUNT) {
+    if (data->planks_size >= PLANKS_MAX_COUNT) {
         DEBUG("Add plank failed! (%d:%d) \n", x, y);
         return;
     }
@@ -273,7 +273,10 @@ static void update_entities()
 
         if (collide) {
             doodle->jump_counter = DOODLE_JUMP_STR;
-            data->scene_motion = data->scene_height - doodle->y;
+            data->scene_motion = doodle->y - data->scene_height - 10;
+            if (data->scene_motion < 0) {
+                data->scene_motion = 0;
+            }
         } else {
             doodle->y--;
         }
@@ -281,7 +284,7 @@ static void update_entities()
 
     if (data->scene_motion > 0) {
         data->scene_motion--;
-        //data->scene_height++;
+        data->scene_height++;
     }
 }
 
