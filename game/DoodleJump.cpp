@@ -111,11 +111,11 @@ const game_sprite YourSprite PROGMEM = {
 
 const uint8_t spriteLines[] PROGMEM = {
     0x00, 0x33, 0x33, 0x33, 0x00, 0x00, 0x00,
-    0x33, 0x33, 0x40, 0x33, 0x40, 0x00, 0x33,
+    0x33, 0x33, 0x33, 0x33, 0x33, 0x00, 0x00,
+    0x33, 0x33, 0x77, 0x33, 0x77, 0x00, 0x33,
     0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33,
     0x60, 0x60, 0x60, 0x60, 0x60, 0x00, 0x33,
     0x25, 0x25, 0x25, 0x25, 0x25, 0x00, 0x00,
-    0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x00,
     0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x00,
 };
 const game_color_sprite sprite_doodle PROGMEM = {7, 7, spriteLines};
@@ -229,17 +229,21 @@ static void remove_unused_planks(void) {
 }
 
 static void generate_planks() {
+    static int last_generated_plack = 0;
     int least = data->scene_height + HEIGHT - data->planks_last_gen;
+
     while (least > 0) {
         data->planks_last_gen++;
-        if (rand() % 5 == 0) {
+        if (rand() % 5 == 0 || (DOODLE_JUMP_STR - 10 < data->planks_last_gen - last_generated_plack)) {
             int w = 5 + rand() % 3;
             add_plank(rand() % (64 - w), data->planks_last_gen, w);
             data->planks_last_gen += 3;
+            last_generated_plack = data->planks_last_gen;
         }
         --least;
     }
 }
+
 
 static void update_controller()
 {
