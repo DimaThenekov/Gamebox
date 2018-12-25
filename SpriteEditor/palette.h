@@ -16,6 +16,7 @@ public:
     Palette(QWidget *parent = 0);
 
     int getColor() const { return color; }
+    void setColor(int c);
 
     QSize minimumSizeHint() const override;
 

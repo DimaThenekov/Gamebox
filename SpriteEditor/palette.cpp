@@ -61,3 +61,9 @@ void Palette::mousePressEvent(QMouseEvent *event)
         update();
     }
 }
+
+void Palette::setColor(int c)
+{
+    color = c;
+    update();
+}

@@ -69,6 +69,15 @@ void Sprite::mousePressEvent(QMouseEvent *event)
         putPixel(event);
     else if (event->button() == Qt::RightButton)
         putPixel(event, true);
+    else if (event->button() == Qt::MiddleButton)
+    {
+        int pixelW = width() / WIDTH;
+        int pixelH = height() / HEIGHT;
+        int x = event->x() / pixelW;
+        int y = event->y() / pixelH;
+        if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT)
+            pal->setColor(pixels[y][x]);
+    }
 }
 
 void Sprite::mouseMoveEvent(QMouseEvent *event)
