@@ -246,10 +246,14 @@ static void update_controller()
     if (game_is_button_pressed(BUTTON_LEFT)) {
         if (data->doodle.x > 0) {
             data->doodle.x--;
+        } else {
+            data->doodle.x = WIDTH;
         }
     } else if (game_is_button_pressed(BUTTON_RIGHT)) {
         if (data->doodle.x + data->doodle.w < WIDTH) {
             data->doodle.x++;
+        } else {
+            data->doodle.x = 0;
         }
     }
 }
