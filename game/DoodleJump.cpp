@@ -209,8 +209,7 @@ static void update_entities()
     doodle->jump_counter--;
 
     if (doodle->jump_counter > 0) {
-        float motion_mul = doodle->jump_counter / (float) DOODLE_JUMP_STR;
-        doodle->y += round(2 * motion_mul);
+        doodle->y += (2 * doodle->jump_counter + DOODLE_JUMP_STR / 2) / DOODLE_JUMP_STR;
     } else {
         bool collide = false;
         for (int i = 0; i < data->planks_size; ++i) {
