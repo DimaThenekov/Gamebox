@@ -62,6 +62,7 @@ extern const game_instance Player PROGMEM;
 extern const game_instance Tester PROGMEM;
 #ifdef FRAME_BUFFER
 extern const game_instance ColorDemo PROGMEM;
+extern const game_instance SpriteDemo PROGMEM;
 #endif
 
 /* Register your game like so:
