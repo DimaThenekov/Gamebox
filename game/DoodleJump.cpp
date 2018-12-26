@@ -8,7 +8,7 @@
 #define DOODLE_WIDTH 5
 #define DOODLE_HEIGHT 4
 #define DOODLE_JUMP_STR 30
-#define PLANKS_MAX_COUNT 15
+#define PLANKS_MAX_COUNT 30
 
 #define DEBUG_ENABLE false
 #define DEBUG(...) do {          \
@@ -165,7 +165,7 @@ static void remove_unused_planks(void) {
 static void generate_planks() {
     int least = data->scene_height + HEIGHT - data->planks_last_gen;
     int planks_width = 10 - sqrt(data->scene_height) / 10;
-    int chance = sqrt(data->scene_height) / 10;
+    int chance = sqrt(data->scene_height) / 5;
 
     if (chance < 1) {
         chance = 1;
