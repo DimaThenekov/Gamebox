@@ -6,96 +6,6 @@
 #include "binary.h"
 #include "controls.h"
 
-/* Встроенные цвета:
- *
- *  BLACK - Чёрный
- *  BLUE - Синий
- *  GREEN - Зелёный
- *  RED - Красный
- *  CYAN - Циановый
- *  PURPLE - Фиолетовый
- *  BROWN - Коричневый
- *  WHITE - Белый
- *
- *  Для использования 64-х цветной палитры, укажите в game.ino COLOR_6BIT = 1
- *
- * */
-
-/* Кнопки:
- *
- * НА КОРПУСЕ:
- * BUTTON_SW, BUTTON_NW, BUTTON_SE, BUTTON_NE
- *
- * NW              NE
- *  SW            SE
- *
- *
- * НА ДЖОЙСТИКЕ:
- * BUTTON_UP, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_DOWN, BUTTON_SELECT, BUTTON_START, BUTTON_A, BUTTON_B
- *
- *      UP
- *  LEFT+RIGHT     SELECT  START      B  A
- *     DOWN
- *
- * */
-
-/* Спрайты
- * 
- * максимальная высота - 16 пикселей
-
- определение спрайта
-
-
-   x     x      
-    x   x       
-     x x        
-  xxxxxxxxx     
- xxxxxxxxxxx    
-xxx  xxx  xxx   
- xxxxxxxxxxx    
-  xxxxxxxxx     
-    x x x       
-   x     x      
-
-
- --------------------------------
- 
-const uint8_t YourSprite_lines[] PROGMEM = {
-    B00010000, B01000000,
-    B00001000, B10000000,
-    B00000101, B00000000,
-    B00111111, B11100000,
-    B01111111, B11110000,
-    B11100111, B00111000,
-    B01111111, B11110000,
-    B00111111, B11100000,
-    B00001010, B10000000,
-    B00010000, B01000000
-};
-
-const game_sprite YourSprite PROGMEM = {
-    // ШИРИНА, ВЫСОТА, ДАННЫЕ
-    13, 10, YourSprite_lines
-};
-
-*/
-
-/* Функции отрисовки
- *
- * game_draw_pixel(x, y, color) - Красит точку (x, y) в цвет color
- * game_draw_char(char, x, y, color) - Выводит символ char с левым верхним углом в точке (x, y) с цветом color
- * game_draw_text(string, x, y, color) - Выводит строку string с левым верхним углом в точке (x, y) с цветом color
- * game_draw_sprite(sprite, x, y, color) - Выводит спрайт sprite с левым верхним углом в точке (x, y) с цветом color
- *
- * */
-
-/* Функции ввода
- *
- * game_is_button_pressed(button) - Нажата ли кнопка? Например: game_is_button_pressed(BUTTON_START)
- * game_is_any_button_pressed(mask) - Нажата ли хотя бы одна кнопка? Например: game_is_any_button_pressed(BITMASK(BUTTON_SW) | BITMASK(BUTTON_DOWN))
- *
- * */
-
 #define DOODLE_WIDTH 5
 #define DOODLE_HEIGHT 4
 #define DOODLE_JUMP_STR 30
@@ -114,9 +24,9 @@ static const uint8_t spriteLines[] PROGMEM = {
    0x37, 0x33, 0x33, 0x33, 0x37, 0x00, 0x00,
    0x33, 0x33, 0x04, 0x33, 0x04, 0x00, 0x33,
    0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33,
-   0x60, 0x60, 0x60, 0x60, 0x60, 0x00, 0x33,
-   0x25, 0x25, 0x25, 0x25, 0x25, 0x00, 0x00,
-   0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0x00,
+   0x60, 0x60, 0x60, 0x60, 0x60, 0xff, 0x33,
+   0x25, 0x25, 0x25, 0x25, 0x25, 0xff, 0xff,
+   0x60, 0xff, 0x60, 0xff, 0x60, 0xff, 0xff,
 };
 
 static const game_color_sprite sprite_doodle PROGMEM = {7, 7, spriteLines};
@@ -140,6 +50,9 @@ struct DoodleJumpData
     Entity planks[PLANKS_MAX_COUNT];
     uint32_t planks_size;
     uint32_t planks_last_gen;
+    uint32_t planks_last_gen_complete;
+    uint16_t score;
+    uint16_t high_score;
 };
 static DoodleJumpData* data;
 
@@ -156,7 +69,7 @@ static void remove_plank(uint32_t index)
 static void add_plank(uint8_t x, uint32_t y, uint8_t w)
 {
     if (data->planks_size >= PLANKS_MAX_COUNT) {
-        DEBUG("Add plank failed! (%d:%d) \n", x, y);
+        DEBUG("Add plank failed! %d (%d:%d) \n", data->planks_size, x, y);
         return;
     }
 
@@ -166,7 +79,15 @@ static void add_plank(uint8_t x, uint32_t y, uint8_t w)
     plank->y = y;
     plank->w = w;
 
-    DEBUG("Add plank (%d:%d)\n", plank->x, plank->y);
+    DEBUG("Add plank %d (%d:%d)\n", data->planks_size, plank->x, plank->y);
+}
+
+static void add_score(uint16_t value)
+{
+    data->score += value;
+    if (data->score > data->high_score) {
+        data->high_score = data->score;
+    }
 }
 
 static void DoodleJump_reset()
@@ -177,6 +98,7 @@ static void DoodleJump_reset()
     data->scene_motion = 0;
     data->planks_size = 0;
     data->planks_last_gen = 0;
+    data->planks_last_gen_complete = 0;
 
     data->doodle.w = DOODLE_WIDTH;
     data->doodle.y = 10;
@@ -184,8 +106,9 @@ static void DoodleJump_reset()
     data->doodle.jump_counter = 0;
     data->doodle.sprite = &sprite_doodle;
 
+    data->score = 0;
+
     add_plank(0, 1, WIDTH);
-    add_plank(5, 5, 10);
 }
 
 static void render_plank(Entity *obj)
@@ -205,6 +128,17 @@ static void render_doodle(Doodle *obj)
     }
 }
 
+static void render_score()
+{
+    int len1 = ceil(log10(data->score + 1));
+    int len2 = ceil(log10(data->high_score + 1));
+    len1 = len1 < 1 ? 1 : len1;
+    len2 = len2 < 1 ? 1 : len2;
+    uint8_t color = data->score >= data->high_score ? GREEN : RED;
+    game_draw_digits(data->score, len1, 0, 0, GREEN);
+    game_draw_digits(data->high_score, len2, WIDTH - len2 - 5, 0, color);
+}
+
 static bool collide_with(Entity *src, Entity *target) {
     if (src->y == target->y) {
         int src_x1 = src->x;
@@ -213,14 +147,14 @@ static bool collide_with(Entity *src, Entity *target) {
         int target_x2 = target->x + target->w;
 
         return (target_x1 <= src_x1 && src_x1 < target_x2) ||
-               (target_x1 < src_x2 && src_x2 <= target_x2);
+               (target_x1 < src_x2 && src_x2 <= target_x2) ||
+               (src_x1 < target_x1 && target_x1 <= src_x2);
     }
     return false;
 }
 
 static void remove_unused_planks(void) {
-    int i;
-    for (i = 0; i < data->planks_size; ++i) {
+    for (int i = 0; i < data->planks_size; ++i) {
         Entity *plank = &data->planks[i];
 
         if (plank->y <= data->scene_height) {
@@ -230,21 +164,27 @@ static void remove_unused_planks(void) {
 }
 
 static void generate_planks() {
-    static int last_generated_plack = 0;
     int least = data->scene_height + HEIGHT - data->planks_last_gen;
+    int planks_width = 10 - sqrt(data->scene_height) / 10;
+    int chance = sqrt(data->scene_height) / 10;
+
+    if (planks_width < 1) {
+        planks_width = 1;
+    }
 
     while (least > 0) {
         data->planks_last_gen++;
-        if (rand() % 5 == 0 || (DOODLE_JUMP_STR - 10 < data->planks_last_gen - last_generated_plack)) {
-            int w = 5 + rand() % 3;
-            add_plank(rand() % (64 - w), data->planks_last_gen, w);
+        if (rand() % chance == 0 ||
+           (DOODLE_JUMP_STR / 2 < data->planks_last_gen - data->planks_last_gen_complete)) {
+            add_plank(rand() % (64 - planks_width), data->planks_last_gen, planks_width);
+            data->planks_last_gen_complete = data->planks_last_gen;
             data->planks_last_gen += 3;
-            last_generated_plack = data->planks_last_gen;
+            least -= 3;
+        } else {
+            least--;
         }
-        --least;
     }
 }
-
 
 static void update_controller()
 {
@@ -294,13 +234,20 @@ static void update_entities()
 
     if (data->scene_motion > 0) {
         data->scene_motion--;
+        int prev = data->scene_height / 10;
         data->scene_height++;
+        int curr = data->scene_height / 10;
+        int changed = curr - prev;
+        if (changed > 0) {
+            add_score(changed);
+        }
     }
 }
 
 static void DoodleJump_prepare()
 {
     DoodleJump_reset();
+    game_load(&data->high_score, sizeof(data->high_score));
 }
 
 static void DoodleJump_render()
@@ -311,6 +258,7 @@ static void DoodleJump_render()
     }
 
     render_doodle(&data->doodle);
+    render_score();
 }
 
 static void DoodleJump_update(unsigned long delta)
