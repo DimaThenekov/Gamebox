@@ -164,14 +164,18 @@ static void remove_unused_planks(void) {
 
 static void generate_planks() {
     int least = data->scene_height + HEIGHT - data->planks_last_gen;
-    int min_planks_width = 10 - sqrt(data->scene_height) / 15;
+    int planks_width = 10 - sqrt(data->scene_height) / 10;
+    int chance = sqrt(data->scene_height) / 10;
+
+    if (planks_width < 1) {
+        planks_width = 1;
+    }
 
     while (least > 0) {
         data->planks_last_gen++;
-        if (rand() % 5 == 0 ||
+        if (rand() % chance == 0 ||
            (DOODLE_JUMP_STR / 2 < data->planks_last_gen - data->planks_last_gen_complete)) {
-            int w = min_planks_width + rand() % 2;
-            add_plank(rand() % (64 - w), data->planks_last_gen, w);
+            add_plank(rand() % (64 - planks_width), data->planks_last_gen, planks_width);
             data->planks_last_gen_complete = data->planks_last_gen;
             data->planks_last_gen += 3;
             least -= 3;
