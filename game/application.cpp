@@ -9,9 +9,6 @@
 #include "music.h"
 
 static const MenuItem main_menu[] PROGMEM = {
-    // { "Hackathon", NULL },
-    { "DoodleJump", &DoodleJump },
-
     { "\xcb\xca\xd8 2016", NULL },
     { "Invaders", &BackspaceInvaders },
     { "Snake", &Snake },
@@ -35,9 +32,11 @@ static const MenuItem main_menu[] PROGMEM = {
     { "TicTacToe", &TicTacToe},
 /* Not finished    { "artyom", &artyom }, */
 #ifdef FRAME_BUFFER
-    { "NY2019", &NY2019},
+    { "NY2019", NULL},
+    { "Demo", &NY2019},
     { "Tetrisnake", &Tetrisnake },
 #endif
+    { "DoodleJump", &DoodleJump },
 
     { "Demos", NULL },
     { "3D", &Raycaster },
@@ -45,6 +44,9 @@ static const MenuItem main_menu[] PROGMEM = {
     { "Font", &Tester },
     { "EEPROM", &Dump },
     { "Music", &Player },
+#endif
+#ifdef FRAME_BUFFER
+    { "ColorDemo", &ColorDemo},
 #endif
     /* Register your game like so:
      *
