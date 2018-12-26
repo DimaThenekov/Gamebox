@@ -3,8 +3,6 @@
 
 #include <QtWidgets>
 
-#define COLORS 64
-
 QColor getRGB(int col);
 int getPalette(int col);
 
