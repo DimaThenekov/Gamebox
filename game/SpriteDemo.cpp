@@ -17,7 +17,7 @@ static const uint8_t bulbasaur_idle_Lines[] PROGMEM = {
     0x00, 0x24, 0x00, 0x27, 0x24, 0x00, 0x27, 
 };
 static const game_color_sprite bulbasaur_idle PROGMEM = {7, 6, bulbasaur_idle_Lines};
-static const game_color_sprite *bulbasaur_idle_animation[] PROGMEM = {
+static const game_color_sprite * const bulbasaur_idle_animation[] PROGMEM = {
     &bulbasaur_idle, NULL
 };
 
@@ -63,7 +63,7 @@ static const uint8_t bulbasaur_walk_3_Lines[] PROGMEM = {
 };
 static const game_color_sprite bulbasaur_walk_3 PROGMEM = {7, 6, bulbasaur_walk_3_Lines};
 
-static const game_color_sprite *bulbasaur_walk_animation[] PROGMEM = {
+static const game_color_sprite * const bulbasaur_walk_animation[] PROGMEM = {
     &bulbasaur_walk_0, &bulbasaur_walk_1,
     &bulbasaur_walk_2, &bulbasaur_walk_3, NULL
 };
@@ -111,7 +111,7 @@ static const uint8_t bulbasaur_jump_3_Lines[] PROGMEM = {
 };
 static const game_color_sprite bulbasaur_jump_3 PROGMEM = {7, 7, bulbasaur_jump_3_Lines};
 
-static const game_color_sprite *bulbasaur_jump_animation[] PROGMEM = {
+static const game_color_sprite * const bulbasaur_jump_animation[] PROGMEM = {
     &bulbasaur_jump_0, &bulbasaur_jump_1,
     &bulbasaur_jump_2, NULL
 };
@@ -128,7 +128,7 @@ static const uint8_t charmander_idle_Lines[] PROGMEM = {
 };
 static const game_color_sprite charmander_idle PROGMEM = {7, 7, charmander_idle_Lines};
 
-static const game_color_sprite *charmander_idle_animation[] PROGMEM = {
+static const game_color_sprite * const charmander_idle_animation[] PROGMEM = {
     &charmander_idle, NULL
 };
 
@@ -167,7 +167,7 @@ static const uint8_t charmander_walk_2_Lines[] PROGMEM = {
 };
 static const game_color_sprite charmander_walk_2 PROGMEM = {6, 7, charmander_walk_2_Lines};
 
-static const game_color_sprite *charmander_walk_animation[] PROGMEM = {
+static const game_color_sprite * const charmander_walk_animation[] PROGMEM = {
     &charmander_walk_0, &charmander_walk_1, &charmander_walk_2, NULL
 };
 
@@ -208,7 +208,7 @@ static const uint8_t charmander_jump_2_Lines[] PROGMEM = {
 };
 static const game_color_sprite charmander_jump_2 PROGMEM = {8, 7, charmander_jump_2_Lines};
 
-static const game_color_sprite *charmander_jump_animation[] PROGMEM = {
+static const game_color_sprite * const charmander_jump_animation[] PROGMEM = {
     &charmander_jump_0, &charmander_jump_1, &charmander_jump_2, NULL
 };
 
@@ -224,7 +224,7 @@ static const uint8_t squirtle_idle_Lines[] PROGMEM = {
 };
 static const game_color_sprite squirtle_idle PROGMEM = {6, 6, squirtle_idle_Lines};
 
-static const game_color_sprite *squirtle_idle_animation[] PROGMEM = {
+static const game_color_sprite * const squirtle_idle_animation[] PROGMEM = {
     &squirtle_idle, NULL
 };
 
@@ -270,7 +270,7 @@ static const uint8_t squirtle_walk_3_Lines[] PROGMEM = {
 };
 static const game_color_sprite squirtle_walk_3 PROGMEM = {6, 6, squirtle_walk_3_Lines};
 
-static const game_color_sprite *squirtle_walk_animation[] PROGMEM = {
+static const game_color_sprite * const squirtle_walk_animation[] PROGMEM = {
     &squirtle_walk_0, &squirtle_walk_1, &squirtle_walk_2, &squirtle_walk_3, NULL
 };
 
@@ -306,7 +306,7 @@ static const uint8_t squirtle_jump_2_Lines[] PROGMEM = {
 };
 static const game_color_sprite squirtle_jump_2 PROGMEM = {6, 6, squirtle_jump_2_Lines};
 
-static const game_color_sprite *squirtle_jump_animation[] PROGMEM = {
+static const game_color_sprite * const squirtle_jump_animation[] PROGMEM = {
     &squirtle_jump_0, &squirtle_jump_1, &squirtle_jump_2, NULL
 };
 
@@ -324,7 +324,7 @@ static const uint8_t pikachu_idle_Lines[] PROGMEM = {
 };
 static const game_color_sprite pikachu_idle PROGMEM = {7, 8, pikachu_idle_Lines};
 
-static const game_color_sprite *pikachu_idle_animation[] PROGMEM = {
+static const game_color_sprite * const pikachu_idle_animation[] PROGMEM = {
     &pikachu_idle, NULL
 };
 
@@ -378,7 +378,7 @@ static const uint8_t pikachu_walk_3_Lines[] PROGMEM = {
 };
 static const game_color_sprite pikachu_walk_3 PROGMEM = {7, 8, pikachu_walk_3_Lines};
 
-static const game_color_sprite *pikachu_walk_animation[] PROGMEM = {
+static const game_color_sprite * const pikachu_walk_animation[] PROGMEM = {
     &pikachu_walk_0, &pikachu_walk_1, &pikachu_walk_2, &pikachu_walk_3, NULL
 };
 
@@ -417,11 +417,11 @@ static const uint8_t pikachu_jump_2_Lines[] PROGMEM = {
 };
 static const game_color_sprite pikachu_jump_2 PROGMEM = {7, 7, pikachu_jump_2_Lines};
 
-static const game_color_sprite *pikachu_jump_animation[] PROGMEM = {
+static const game_color_sprite * const pikachu_jump_animation[] PROGMEM = {
     &pikachu_jump_0, &pikachu_jump_1, &pikachu_jump_2, NULL
 };
 
-static const game_color_sprite **animations[] PROGMEM = {
+static const game_color_sprite * const * const animations[] PROGMEM = {
     bulbasaur_idle_animation, bulbasaur_walk_animation, bulbasaur_jump_animation,
     charmander_idle_animation, charmander_walk_animation, charmander_jump_animation,
     squirtle_idle_animation, squirtle_walk_animation, squirtle_jump_animation,
@@ -444,7 +444,7 @@ static void SpriteDemo_prepare()
 
 static void SpriteDemo_render()
 {
-    const game_color_sprite **anim = pgm_read_pointer(&animations[data->animation]);
+    const game_color_sprite * const *anim = pgm_read_pointer(&animations[data->animation]);
     const game_color_sprite *spr = pgm_read_pointer(&anim[data->sprite]);
     game_draw_color_sprite(spr, 16, 16);
 }
@@ -452,7 +452,7 @@ static void SpriteDemo_render()
 static void SpriteDemo_update(unsigned long delta)
 {
     ++data->sprite;
-    const game_color_sprite **anim = pgm_read_pointer(&animations[data->animation]);
+    const game_color_sprite * const *anim = pgm_read_pointer(&animations[data->animation]);
     const game_color_sprite *spr = pgm_read_pointer(&anim[data->sprite]);
     if (!spr)
     {
