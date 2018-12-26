@@ -10,6 +10,7 @@
 #define DOODLE_HEIGHT 4
 #define DOODLE_JUMP_STR 30
 #define PLANKS_MAX_COUNT 15
+#define PLANKS_MAX_COUNT 30
 
 #define DEBUG_ENABLE false
 #define DEBUG(...) do {          \
