@@ -147,7 +147,8 @@ static bool collide_with(Entity *src, Entity *target) {
         int target_x2 = target->x + target->w;
 
         return (target_x1 <= src_x1 && src_x1 < target_x2) ||
-               (target_x1 < src_x2 && src_x2 <= target_x2);
+               (target_x1 < src_x2 && src_x2 <= target_x2) ||
+               (src_x1 < target_x1 && target_x1 <= src_x2);
     }
     return false;
 }
