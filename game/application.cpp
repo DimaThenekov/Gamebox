@@ -32,7 +32,8 @@ static const MenuItem main_menu[] PROGMEM = {
     { "TicTacToe", &TicTacToe},
 /* Not finished    { "artyom", &artyom }, */
 #ifdef FRAME_BUFFER
-    { "NY2019", &NY2019},
+    { "NY2019", NULL},
+    { "Demo", &NY2019},
     { "Tetrisnake", &Tetrisnake },
 #endif
     { "DoodleJump", &DoodleJump },
