@@ -168,6 +168,10 @@ static void generate_planks() {
     int planks_width = 10 - sqrt(data->scene_height) / 10;
     int chance = sqrt(data->scene_height) / 10;
 
+    if (chance < 1) {
+        chance = 1;
+    }
+
     if (planks_width < 1) {
         planks_width = 1;
     }
