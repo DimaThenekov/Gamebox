@@ -1,5 +1,6 @@
 #pragma GCC optimize ("-O3")
 
+#include <math.h> 
 #include "libgame.h"
 #include "graphics.h"
 #include "binary.h"
