@@ -156,7 +156,6 @@ static void set_blk_prop(uint16_t i, uint8_t mask, uint8_t value)
 {
     uint8_t bit = (value & 1);
     data->blocks[i] = bit ? (data->blocks[i] | mask) : (data->blocks[i] & ~mask);
-    value>>=1;
 }
 
 static void set_color(uint16_t i, uint8_t value)
@@ -397,26 +396,27 @@ static void generate_blocks()
     }
 }
 
-static bool fall_dfs(uint16_t i)
+static bool fall_dfs(int16_t i)
 {
     bool isFall = block_property(i, PHYS) != data->tact;
     bool isAlien = false;
     if(block_property(i, DFS) != data->tact)
     {
-        uint16_t blocks[16];
+        int16_t blocks[16];
         uint8_t count = 1;
         blocks[0]=i;
         for(uint8_t j=0; j<count && j<16; j++)
         {
-            uint16_t k = blocks[j];
+            int16_t k = blocks[j];
             set_blk_prop(k, DFS, data->tact);
-            if((k%TETRISNAKE_WIDTH) > 0 && block_property(k-1, IS_EXIST) && block_property(k-1, IS_BOND_R)  && 
+            uint8_t x = k%TETRISNAKE_WIDTH;
+            if(x > 0 && block_property(k-1, IS_EXIST) && block_property(k-1, IS_BOND_R)  && 
                 block_property(k-1, DFS) != data->tact)
             {
                 blocks[count]=k-1;
                 count++;
             }
-            if(block_property(k, IS_BOND_R)&& block_property(k+1, IS_EXIST) && block_property(k+1, DFS) != data->tact)
+            if(x < TETRISNAKE_WIDTH - 1 && block_property(k, IS_BOND_R)&& block_property(k+1, IS_EXIST) && block_property(k+1, DFS) != data->tact)
             {
                 blocks[count]=k+1;
                 count++;
@@ -436,19 +436,19 @@ static bool fall_dfs(uint16_t i)
                 blocks[count]=k+TETRISNAKE_WIDTH;
                 count++;
             }
-            if(is_alien_block(k+TETRISNAKE_WIDTH))
+            if(k+TETRISNAKE_WIDTH < BLOCK_BUFFER_SIZE && is_alien_block(k+TETRISNAKE_WIDTH))
             {
                 isFall = false;
                 isAlien = true;
             }
-            if(is_a_snake(k+TETRISNAKE_WIDTH))
+            if(k+TETRISNAKE_WIDTH < BLOCK_BUFFER_SIZE && is_a_snake(k+TETRISNAKE_WIDTH))
                 isFall = false;
         }
         if(!isFall)
         {
             for(uint8_t j=0; j<count; j++)
             {
-                uint16_t k = blocks[j];
+                int16_t k = blocks[j];
                 set_blk_prop(k, PHYS, data->tact);
                 set_blk_prop(k, ALIEN, isAlien);
             }
@@ -470,7 +470,6 @@ static void fall_block(uint16_t i)
             data->blocks[j] = data->blocks[i];
             set_blk_prop(i, IS_EXIST, 0);
             Tetrisnake_draw_rect(x, y, BLACK);
-            uint16_t it = i;
             Tetrisnake_draw_rect(x, y+1, get_color(block_color(i)));
         }
     }
@@ -480,7 +479,7 @@ static void fall_block(uint16_t i)
 
 static void fall_blocks()
 {
-    for(uint16_t i=BLOCK_BUFFER_SIZE-1; i<BLOCK_BUFFER_SIZE;i--)
+    for(int16_t i=BLOCK_BUFFER_SIZE - TETRISNAKE_WIDTH - 1; i >= 0;i--)
     {
         fall_block(i);
     }
