@@ -444,7 +444,10 @@ static bool fall_dfs(int16_t i)
             if(k+TETRISNAKE_WIDTH < BLOCK_BUFFER_SIZE && is_a_snake(k+TETRISNAKE_WIDTH))
                 isFall = false;
             if (k + TETRISNAKE_WIDTH >= BLOCK_BUFFER_SIZE)
+            {
                 isFall = false;
+                isAlien = true;
+            }
         }
         if(!isFall)
         {
