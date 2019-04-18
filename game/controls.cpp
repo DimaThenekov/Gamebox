@@ -63,10 +63,9 @@ void controls_update()
             buttons &= ~(1 << button);
         }
         else
-        {
+        { 
             buttons |= (1 << button);
         }
     }
     sei();
 }
-

@@ -43,6 +43,7 @@ extern const game_instance LodeRunner PROGMEM;
 #endif
 extern const game_instance SpaceShips PROGMEM;
 extern const game_instance Mario PROGMEM;
+extern const game_instance Minecraft PROGMEM;
 extern const game_instance Ghostbuster PROGMEM;
 /*extern const game_instance artyom;*/
 extern const game_instance TicTacToe PROGMEM;
