@@ -126,26 +126,26 @@
 #define T TRANSPARENT
 #define K BLACK
 #define B BLUE
-#define Y YELLOW
-#define W WHITE
-const uint8_t TestBlock_lines[] PROGMEM = {
-  B01000000, B00000000, B00000000,/*1*/
-  B00000000, B00000000, B00000000,/*2*/
-  B00000000, B00000000, B00000000,/*3*/
-  B00000000, B00000000, B00000000,/*4*/
-  B00000000, B00000000, B00000000,/*5*/
-  B00000000, B00000000, B00000000,/*6*/
-  B00000000, B00000000, B00000000,/*7*/
-  B00000000, B00000000, B00000000,/*8*/
-  B00000000, B00000000, B00000000,/*9*/
-  B00000000, B00000000, B00000000,/*10*/
-  B00000000, B00000000, B00000000,/*11*/
-  B00000000, B00000000, B00000000,/*12*/
-  B00000000, B00000000, B00000000,/*13*/
-  B00000000, B00000000, B00000000,/*14*/
-  B00000000, B00000000, B00000000,/*15*/
-  B00000000, B00000000, B00000000 /*16*/
-};
+//#define Y YELLOW
+//#define W WHITE
+//const uint8_t TestBlock_lines[] PROGMEM = {
+//  B01000000, B00000000, B00000000,/*1*/
+//  B00000000, B00000000, B00000000,/*2*/
+//  B00000000, B00000000, B00000000,/*3*/
+//  B00000000, B00000000, B00000000,/*4*/
+//  B00000000, B00000000, B00000000,/*5*/
+//  B00000000, B00000000, B00000000,/*6*/
+//  B00000000, B00000000, B00000000,/*7*/
+//  B00000000, B00000000, B00000000,/*8*/
+//  B00000000, B00000000, B00000000,/*9*/
+//  B00000000, B00000000, B00000000,/*10*/
+//  B00000000, B00000000, B00000000,/*11*/
+//  B00000000, B00000000, B00000000,/*12*/
+//  B00000000, B00000000, B00000000,/*13*/
+//  B00000000, B00000000, B00000000,/*14*/
+//  B00000000, B00000000, B00000000,/*15*/
+//  B00000000, B00000000, B00000000 /*16*/
+//};
 const uint8_t Minecraft_Texture[] PROGMEM = {
   K, K, K, K, K, K, K, K, K, K, K, K,/*0*///кислород
   GR, GR, GR, GR, GR, GR, GR, GR, GR, GR, GR, GR,/*0*///камень
@@ -159,7 +159,7 @@ const uint8_t Minecraft_Texture[] PROGMEM = {
 const uint8_t mysinarray[] PROGMEM = {
   127, 129, 130, 132, 134, 136, 137, 139, 141, 143, 144, 146, 148, 149, 151, 153, 155, 156, 158, 160, 161, 163, 164, 166, 168, 169, 171, 172, 174, 175, 177, 179, 180, 181, 183, 184, 186, 187, 189, 190, 191, 193, 194, 195, 196, 198, 199, 200, 201, 202, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 214, 215, 216, 217, 218, 218, 219, 220, 220, 221, 222, 222, 223, 223, 224, 224, 224, 225, 225, 225, 226, 226, 226, 226, 227, 227, 227, 227, 227, 227, 227, 227, 227, 227, 227, 226, 226, 226, 226, 225, 225, 225, 224, 224, 224, 223, 223, 222, 222, 221, 220, 220, 219, 218, 218, 217, 216, 215, 214, 214, 213, 212, 211, 210, 209, 208, 207, 206, 205, 204, 202, 201, 200, 199, 198, 196, 195, 194, 193, 191, 190, 189, 187, 186, 184, 183, 181, 180, 179, 177, 175, 174, 172, 171, 169, 168, 166, 164, 163, 161, 160, 158, 156, 155, 153, 151, 150, 148, 146, 144, 143, 141, 139, 137, 136, 134, 132, 130, 129, 127, 125, 124, 122, 120, 118, 117, 115, 113, 111, 110, 108, 106, 105, 103, 101, 99, 98, 96, 94, 93, 91, 90, 88, 86, 85, 83, 82, 80, 79, 77, 76, 74, 73, 71, 70, 68, 67, 65, 64, 63, 61, 60, 59, 58, 56, 55, 54, 53, 52, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 40, 39, 38, 37, 36, 36, 35, 34, 34, 33, 32, 32, 31, 31, 30, 30, 30, 29, 29, 29, 28, 28, 28, 28, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 28, 28, 28, 28, 29, 29, 29, 30, 30, 30, 31, 31, 32, 32, 33, 34, 34, 35, 36, 36, 37, 38, 39, 40, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 56, 58, 59, 60, 61, 63, 64, 65, 67, 68, 70, 71, 73, 74, 75, 77, 79, 80, 82, 83, 85, 86, 88, 90, 91, 93, 94, 96, 98, 99, 101, 103, 104, 106, 108, 110, 111, 113, 115, 117, 118, 120, 122, 123, 125
 };
-
+//pgm_read_byte(&mysinarray[sinx]);
 
 
 struct MinecraftData
@@ -202,11 +202,11 @@ static void Minecraft_render()
 static float Minecraft_sin(int sinx)
 {
   if ((sinx >= 0) && (sinx < 359)) {
-    return ( ((int)mysinarray[sinx] - (int)128) / (float)100);
+    return ( ((int)pgm_read_byte(&mysinarray[sinx])- (int)128) / (float)100);
   }
 
   if ((sinx >= -359) && (sinx < 0)) {
-    return ( ((int)mysinarray[sinx + 359] - (int)128) / (float)100);
+    return ( ((int)pgm_read_byte(&mysinarray[sinx + 359]) - (int)128) / (float)100);
   }
   //game_draw_text("error",32,32,RED,TRANSPARENT);
   game_draw_digits(sinx, 45, 32, 6, BLUE );
@@ -421,29 +421,29 @@ static void Minecraft_Draw3DCube(int x1, int y1, int z1, uint8_t color)
   }
 
   if (data->CameraPositionZ > -z1 + 0.5 ) {
-    Minecraft_Draw3DTriangle(x1 + 0.5, y1 + 0.5, z1 - 0.5,   x1 + 0.5, y1 - 0.5, z1 - 0.5,    x1 - 0.5, y1 + 0.5, z1 - 0.5   , Minecraft_Texture[color * 12 + 0]);
-    Minecraft_Draw3DTriangle(x1 - 0.5, y1 - 0.5, z1 - 0.5,   x1 + 0.5, y1 - 0.5, z1 - 0.5,    x1 - 0.5, y1 + 0.5, z1 - 0.5   , Minecraft_Texture[color * 12 + 1]); //передняя
+    Minecraft_Draw3DTriangle(x1 + 0.5, y1 + 0.5, z1 - 0.5,   x1 + 0.5, y1 - 0.5, z1 - 0.5,    x1 - 0.5, y1 + 0.5, z1 - 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 0]));
+    Minecraft_Draw3DTriangle(x1 - 0.5, y1 - 0.5, z1 - 0.5,   x1 + 0.5, y1 - 0.5, z1 - 0.5,    x1 - 0.5, y1 + 0.5, z1 - 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 1])); //передняя
   }
   if (data->CameraPositionZ < -z1 - 0.5 ) {
-    Minecraft_Draw3DTriangle(x1 + 0.5, y1 + 0.5, z1 + 0.5,   x1 + 0.5, y1 - 0.5, z1 + 0.5,    x1 - 0.5, y1 + 0.5, z1 + 0.5   , Minecraft_Texture[color * 12 + 2]);
-    Minecraft_Draw3DTriangle(x1 - 0.5, y1 - 0.5, z1 + 0.5,   x1 + 0.5, y1 - 0.5, z1 + 0.5,    x1 - 0.5, y1 + 0.5, z1 + 0.5   , Minecraft_Texture[color * 12 + 3]); //задняя
+    Minecraft_Draw3DTriangle(x1 + 0.5, y1 + 0.5, z1 + 0.5,   x1 + 0.5, y1 - 0.5, z1 + 0.5,    x1 - 0.5, y1 + 0.5, z1 + 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 2]));
+    Minecraft_Draw3DTriangle(x1 - 0.5, y1 - 0.5, z1 + 0.5,   x1 + 0.5, y1 - 0.5, z1 + 0.5,    x1 - 0.5, y1 + 0.5, z1 + 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 3])); //задняя
   }
 
   if (data->CameraPositionX > -x1 + 0.5) {
-    Minecraft_Draw3DTriangle(x1 - 0.5, y1  - 0.5, z1 - 0.5,   x1 - 0.5, y1 - 0.5, z1 + 0.5,    x1 - 0.5, y1 + 0.5, z1 - 0.5   , Minecraft_Texture[color * 12 + 4]);
-    Minecraft_Draw3DTriangle(x1 - 0.5, y1  + 0.5, z1 - 0.5,   x1 - 0.5, y1 - 0.5, z1 + 0.5,    x1 - 0.5, y1 + 0.5, z1 + 0.5   , Minecraft_Texture[color * 12 + 5]); //левая
+    Minecraft_Draw3DTriangle(x1 - 0.5, y1  - 0.5, z1 - 0.5,   x1 - 0.5, y1 - 0.5, z1 + 0.5,    x1 - 0.5, y1 + 0.5, z1 - 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 4]));
+    Minecraft_Draw3DTriangle(x1 - 0.5, y1  + 0.5, z1 - 0.5,   x1 - 0.5, y1 - 0.5, z1 + 0.5,    x1 - 0.5, y1 + 0.5, z1 + 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 5])); //левая
   }
   if (data->CameraPositionX < -x1 - 0.5) {
-    Minecraft_Draw3DTriangle(x1 + 0.5, y1 + 0.5, z1 - 0.5,   x1 + 0.5, y1 + 0.5, z1 + 0.5,    x1 + 0.5, y1 - 0.5, z1 - 0.5   , Minecraft_Texture[color * 12 + 6]);
-    Minecraft_Draw3DTriangle(x1 + 0.5, y1 - 0.5, z1 - 0.5,   x1 + 0.5, y1 + 0.5, z1 + 0.5,    x1 + 0.5, y1 - 0.5, z1 + 0.5   , Minecraft_Texture[color * 12 + 7]); //правая
+    Minecraft_Draw3DTriangle(x1 + 0.5, y1 + 0.5, z1 - 0.5,   x1 + 0.5, y1 + 0.5, z1 + 0.5,    x1 + 0.5, y1 - 0.5, z1 - 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 6]));
+    Minecraft_Draw3DTriangle(x1 + 0.5, y1 - 0.5, z1 - 0.5,   x1 + 0.5, y1 + 0.5, z1 + 0.5,    x1 + 0.5, y1 - 0.5, z1 + 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 7])); //правая
   }
   if (data->CameraPositionY < y1 - 0.5 ) {
-    Minecraft_Draw3DTriangle(x1 - 0.5, y1  - 0.5, z1 - 0.5,   x1 - 0.5, y1 - 0.5, z1 + 0.5,    x1 + 0.5, y1 - 0.5, z1 - 0.5   , Minecraft_Texture[color * 12 + 8]);
-    Minecraft_Draw3DTriangle(x1 + 0.5, y1  - 0.5, z1 + 0.5,   x1 - 0.5, y1 - 0.5, z1 + 0.5,    x1 + 0.5, y1 - 0.5, z1 - 0.5   , Minecraft_Texture[color * 12 + 9]); //верхния
+    Minecraft_Draw3DTriangle(x1 - 0.5, y1  - 0.5, z1 - 0.5,   x1 - 0.5, y1 - 0.5, z1 + 0.5,    x1 + 0.5, y1 - 0.5, z1 - 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 8]));
+    Minecraft_Draw3DTriangle(x1 + 0.5, y1  - 0.5, z1 + 0.5,   x1 - 0.5, y1 - 0.5, z1 + 0.5,    x1 + 0.5, y1 - 0.5, z1 - 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 9])); //верхния
   }
   if (data->CameraPositionY > y1 + 0.5) {
-    Minecraft_Draw3DTriangle(x1 - 0.5, y1 + 0.5, z1 - 0.5,   x1 - 0.5, y1 + 0.5, z1 + 0.5,    x1 + 0.5, y1 + 0.5, z1 - 0.5   , Minecraft_Texture[color * 12 + 10]);
-    Minecraft_Draw3DTriangle(x1 + 0.5, y1 + 0.5, z1 + 0.5,   x1 - 0.5, y1 + 0.5, z1 + 0.5,    x1 + 0.5, y1 + 0.5, z1 - 0.5   , Minecraft_Texture[color * 12 + 11]); //нижняя
+    Minecraft_Draw3DTriangle(x1 - 0.5, y1 + 0.5, z1 - 0.5,   x1 - 0.5, y1 + 0.5, z1 + 0.5,    x1 + 0.5, y1 + 0.5, z1 - 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 10]));
+    Minecraft_Draw3DTriangle(x1 + 0.5, y1 + 0.5, z1 + 0.5,   x1 - 0.5, y1 + 0.5, z1 + 0.5,    x1 + 0.5, y1 + 0.5, z1 - 0.5   , (uint8_t)pgm_read_byte(&Minecraft_Texture[color * 12 + 11])); //нижняя
   }
 
 
@@ -453,7 +453,7 @@ static int Minecraft_random()
   data->v_rand = data->v_rand * 1103515245 + 12345;
   return ((unsigned int)(data->v_rand / 65536) % 32768);
 }
-static void Minecraft_render(int x1, int z1)
+static void Minecraft_rendermap(int x1, int z1)
 {
   data->v_rand = 1;
   x1 = x1 % 100;
@@ -523,25 +523,25 @@ static void Minecraft_update(unsigned long delta)
     game_clear_screen();
     for (int myx = round(-data->CameraPositionX) ; myx < round(-data->CameraPositionX) + 5 ; myx++)
       for (int myz = round(-data->CameraPositionZ) ; myz < round(-data->CameraPositionZ) + 5 ; myz++) {
-        Minecraft_render(myx,  myz);
+        Minecraft_rendermap(myx,  myz);
         for (int myy = 127; myy > 0; myy--)
           Minecraft_Draw3DCube( myx, myy, myz, data->MapHight[myy] );
       }
     for (int myx = round(-data->CameraPositionX) ; myx > round(-data->CameraPositionX) - 5 ; myx--)
       for (int myz = round(-data->CameraPositionZ) ; myz > round(-data->CameraPositionZ) - 5 ; myz--) {
-        Minecraft_render(myx,  myz);
+        Minecraft_rendermap(myx,  myz);
         for (int myy = 127; myy > 0; myy--)
           Minecraft_Draw3DCube( myx, myy,  myz, data->MapHight[myy] );
       }
     for (int myx = round(-data->CameraPositionX) ; myx > round(-data->CameraPositionX) - 5 ; myx--)
       for (int myz = round(-data->CameraPositionZ) ; myz < round(-data->CameraPositionZ) + 5 ; myz++) {
-        Minecraft_render(myx,  myz);
+        Minecraft_rendermap(myx,  myz);
         for (int myy = 127; myy > 0; myy--)
           Minecraft_Draw3DCube( myx, myy, myz, data->MapHight[myy] );
       }
     for (int myx = round(-data->CameraPositionX) ; myx < round(-data->CameraPositionX) + 5 ; myx++)
       for (int myz = round(-data->CameraPositionZ) ; myz > round(-data->CameraPositionZ) - 5 ; myz--) {
-        Minecraft_render(myx,  myz);
+        Minecraft_rendermap(myx,  myz);
         for (int myy = 127; myy > 0; myy--)
           Minecraft_Draw3DCube( myx, myy, myz, data->MapHight[myy] );
       }
