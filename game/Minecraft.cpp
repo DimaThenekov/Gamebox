@@ -379,7 +379,7 @@ static void Minecraft_Draw3DTriangle(float x1, float y1, float z1, float x2, flo
   y3 = wy3;
   z3 = wz3;
 
-  if ((z1 >= 1) && (z1 >= 1) && (z1 >= 1)) {
+  if ((z1 >= 1) && (z2 >= 1) && (z3 >= 1)) {
     wx1 = x1 / z1;
     wy1 = y1 / z1;
 
